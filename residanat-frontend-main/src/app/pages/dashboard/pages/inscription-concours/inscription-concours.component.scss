@@ -1,0 +1,494 @@
+.inscription-page {
+    padding: 2.5rem;
+    max-width: 1000px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 3rem;
+}
+
+.concours-banner {
+    background: white;
+    border: 1px solid #eef2f6;
+    border-radius: 2rem;
+    padding: 1.75rem 2.5rem;
+    display: flex;
+    align-items: center;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.02);
+
+    .banner-left {
+        display: flex;
+        align-items: center;
+        gap: 1.5rem;
+    }
+
+    .banner-icon {
+        width: 54px;
+        height: 54px;
+        background: #008fbb;
+        border-radius: 1.25rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        box-shadow: 0 10px 20px -5px rgba(0, 143, 187, 0.25);
+    }
+
+    .banner-title {
+        font-size: 1.35rem;
+        font-weight: 850;
+        color: #0f172a;
+        margin: 0 0 0.5rem 0;
+        letter-spacing: -0.03em;
+    }
+
+    .banner-meta {
+        display: flex;
+        align-items: center;
+        gap: 1.25rem;
+        flex-wrap: wrap;
+
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            color: #64748b;
+            font-size: 0.9rem;
+            font-weight: 500;
+
+            svg {
+                color: #94a3b8;
+                width: 18px;
+            }
+
+            strong {
+                color: #1e293b;
+                font-weight: 700;
+            }
+        }
+
+        .meta-dot {
+            width: 4px;
+            height: 4px;
+            background: #e2e8f0;
+            border-radius: 50%;
+        }
+    }
+}
+
+.page-header {
+    .page-title {
+        font-size: 2.8rem;
+        font-weight: 850;
+        color: #0f172a;
+        margin: 0 0 0.75rem 0;
+        letter-spacing: -0.04em;
+    }
+
+    .page-subtitle {
+        font-size: 1.15rem;
+        color: #64748b;
+        margin: 0;
+        max-width: 650px;
+        line-height: 1.6;
+        font-weight: 500;
+    }
+}
+
+.stepper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 2rem;
+    padding: 1.5rem 0;
+
+    .step {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.85rem;
+        position: relative;
+        z-index: 1;
+
+        .step-icon {
+            width: 50px;
+            height: 50px;
+            background: white;
+            border: 2px solid #eef2f6;
+            border-radius: 1.25rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #94a3b8;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.02);
+        }
+
+        .step-label {
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: #94a3b8;
+            transition: all 0.3s;
+        }
+
+        &.active {
+            .step-icon {
+                background: #008fbb;
+                border-color: #008fbb;
+                color: white;
+                box-shadow: 0 10px 25px -5px rgba(0, 143, 187, 0.3);
+                transform: scale(1.1);
+            }
+
+            .step-label {
+                color: #008fbb;
+            }
+        }
+
+        &.completed {
+            .step-icon {
+                background: #f0fdf4;
+                border-color: #bbf7d0;
+                color: #22c55e;
+            }
+
+            .step-label {
+                color: #22c55e;
+            }
+        }
+    }
+
+    .step-line {
+        flex: 0 0 100px;
+        height: 2px;
+        background: #eef2f6;
+        margin-bottom: 2.2rem;
+
+        &.active {
+            background: #008fbb;
+            opacity: 0.3;
+        }
+    }
+}
+
+.form-container {
+    background: white;
+    padding: 3.5rem;
+    border-radius: 3rem;
+    border: 1px solid #eef2f6;
+    box-shadow: 0 10px 40px rgba(15, 23, 42, 0.03);
+
+    .step-content-box {
+        animation: fadeIn 0.4s ease-out;
+    }
+
+    .form-title {
+        font-size: 1.6rem;
+        font-weight: 850;
+        color: #0f172a;
+        margin: 0 0 0.75rem 0;
+        letter-spacing: -0.03em;
+    }
+
+    .form-desc {
+        color: #64748b;
+        font-weight: 500;
+        margin-bottom: 2.5rem;
+    }
+
+    .form-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 2rem;
+
+        .field-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+
+            &.full {
+                grid-column: span 2;
+            }
+
+            label {
+                font-size: 0.95rem;
+                font-weight: 700;
+                color: #334155;
+            }
+
+            .form-input,
+            .form-select {
+                padding: 1rem 1.25rem;
+                background: #f8fafc;
+                border: 1.5px solid #eef2f6;
+                border-radius: 1.25rem;
+                font-size: 1rem;
+                color: #0f172a;
+                font-weight: 500;
+                transition: all 0.3s cubic-bezier(0.165, 0.84, 0.44, 1);
+
+                &:focus {
+                    outline: none;
+                    background: white;
+                    border-color: #008fbb;
+                    box-shadow: 0 0 0 5px rgba(0, 143, 187, 0.1);
+                }
+            }
+        }
+
+        .input-with-icon {
+            position: relative;
+
+            .field-icon {
+                position: absolute;
+                right: 1.25rem;
+                top: 50%;
+                transform: translateY(-50%);
+                color: #94a3b8;
+                pointer-events: none;
+            }
+        }
+    }
+}
+
+.upload-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    gap: 1.5rem;
+}
+
+.upload-card {
+    background: #f8fafc;
+    border: 2px dashed #eef2f6;
+    border-radius: 1.5rem;
+    padding: 2rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 1rem;
+    transition: all 0.3s;
+
+    &:hover {
+        border-color: #008fbb;
+        background: rgba(0, 143, 187, 0.02);
+        transform: translateY(-2px);
+    }
+
+    .upload-icon {
+        width: 50px;
+        height: 50px;
+        border-radius: 1rem;
+        background: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #008fbb;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.03);
+    }
+
+    .upload-label {
+        font-weight: 700;
+        color: #1e293b;
+        display: block;
+    }
+
+    .upload-hint {
+        font-size: 0.8rem;
+        color: #94a3b8;
+        font-weight: 500;
+    }
+
+    .upload-btn {
+        margin-top: 0.5rem;
+        padding: 0.6rem 1.25rem;
+        background: white;
+        border: 1.5px solid #eef2f6;
+        border-radius: 1rem;
+        font-weight: 700;
+        font-size: 0.85rem;
+        color: #334155;
+        cursor: pointer;
+        transition: all 0.2s;
+
+        &:hover {
+            background: #008fbb;
+            border-color: #008fbb;
+            color: white;
+        }
+    }
+}
+
+.confirmation-box {
+    text-align: center;
+
+    .success-icon {
+        width: 80px;
+        height: 80px;
+        background: #f0fdf4;
+        color: #22c55e;
+        border-radius: 2rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 1.5rem;
+    }
+}
+
+.summary-card {
+    background: #f8fafc;
+    border-radius: 1.5rem;
+    padding: 1.5rem 2rem;
+    margin: 2rem 0;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+
+    .summary-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding-bottom: 0.75rem;
+        border-bottom: 1px solid #eef2f6;
+
+        &:last-child {
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+
+        .summary-label {
+            font-weight: 600;
+            color: #64748b;
+            font-size: 0.9rem;
+        }
+
+        .summary-value {
+            font-weight: 700;
+            color: #0f172a;
+        }
+
+        .text-success {
+            color: #22c55e;
+        }
+    }
+}
+
+.disclaimer {
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+    padding: 1rem;
+    justify-content: center;
+
+    input[type="checkbox"] {
+        width: 20px;
+        height: 20px;
+        accent-color: #008fbb;
+    }
+
+    label {
+        font-weight: 600;
+        color: #475569;
+        font-size: 0.95rem;
+        cursor: pointer;
+    }
+}
+
+.form-footer {
+    margin-top: 3.5rem;
+    padding-top: 1.5rem;
+    border-top: 1.5px solid #f8fafc;
+    display: flex;
+    align-items: center;
+
+    button {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        padding: 1rem 2rem;
+        border-radius: 1.5rem;
+        font-weight: 850;
+        font-size: 1.1rem;
+        cursor: pointer;
+        transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+        border: none;
+    }
+
+    .btn-prev {
+        background: transparent;
+        color: #94a3b8;
+
+        &:hover {
+            color: #334155;
+            transform: translateX(-5px);
+        }
+    }
+
+    .btn-next,
+    .btn-submit {
+        background: #008fbb;
+        color: white;
+        box-shadow: 0 12px 24px -6px rgba(0, 143, 187, 0.3);
+
+        &:hover {
+            transform: translateY(-4px);
+            filter: brightness(1.1);
+            box-shadow: 0 15px 30px -8px rgba(0, 143, 187, 0.4);
+        }
+
+        &:active {
+            transform: translateY(0);
+        }
+    }
+
+    .btn-submit {
+        background: linear-gradient(135deg, #10b981, #059669);
+        box-shadow: 0 12px 24px -6px rgba(16, 185, 129, 0.3);
+
+        &:hover {
+            box-shadow: 0 15px 30px -8px rgba(16, 185, 129, 0.4);
+        }
+    }
+
+    .spacer {
+        flex: 1;
+    }
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@media (max-width: 768px) {
+    .inscription-page {
+        padding: 1.5rem;
+    }
+
+    .form-grid {
+        grid-template-columns: 1fr !important;
+
+        .field-group.full {
+            grid-column: span 1;
+        }
+    }
+
+    .stepper .step-line {
+        flex: 0 0 50px;
+    }
+
+    .page-header .page-title {
+        font-size: 2.2rem;
+    }
+
+    .form-container {
+        padding: 2rem;
+    }
+}

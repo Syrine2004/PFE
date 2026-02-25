@@ -1,0 +1,82 @@
+<div class="page-container">
+    <div class="content-wrapper">
+        <div class="page-header">
+            <p class="section-tag">Formation</p>
+            <h1 class="page-title">Colleges & Formations</h1>
+            <p class="page-description">
+                Decouvrez les colleges de specialites responsables de la
+                formation des residents et les stages hospitaliers associes.
+            </p>
+        </div>
+
+        <div class="colleges-grid">
+            <div *ngFor="let college of colleges" class="college-card">
+                <div class="card-header">
+                    <div class="icon-box">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="4" y="2" width="16" height="20" rx="2" ry="2" />
+                            <path d="M9 22v-4h6v4" />
+                            <path d="M8 6h.01" />
+                            <path d="M16 6h.01" />
+                            <path d="M12 6h.01" />
+                            <path d="M12 10h.01" />
+                            <path d="M12 14h.01" />
+                            <path d="M16 10h.01" />
+                            <path d="M16 14h.01" />
+                            <path d="M8 10h.01" />
+                            <path d="M8 14h.01" />
+                        </svg>
+                    </div>
+                    <div class="title-meta">
+                        <h3 class="college-name">{{ college.name }}</h3>
+                        <p class="president-name">{{ college.president }}</p>
+                    </div>
+                </div>
+
+                <div class="card-body">
+                    <div class="sub-section">
+                        <div class="sub-title">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round">
+                                <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />
+                                <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" />
+                            </svg>
+                            Specialites
+                        </div>
+                        <div class="badge-list">
+                            <span *ngFor="let spec of college.specialites" class="spec-badge">{{ spec }}</span>
+                        </div>
+                    </div>
+
+                    <div class="sub-section">
+                        <div class="sub-title">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round">
+                                <path
+                                    d="M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 3.5 8 5.1A7 7 0 1 1 11 20z" />
+                                <path d="M11 13a4 4 0 1 0-8 0 4 4 0 0 0 8 0z" />
+                                <path d="M11 13v9" />
+                                <path d="m9 22 4-4-4-4" />
+                            </svg>
+                            Stages hospitaliers
+                        </div>
+                        <ul class="stages-list">
+                            <li *ngFor="let stage of college.stages">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"
+                                    fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                    stroke-linejoin="round">
+                                    <path d="M22 10v6M2 10l10-5 10 5-10 5z" />
+                                    <path d="M6 12v5c3 3 9 3 12 0v-5" />
+                                </svg>
+                                {{ stage }}
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

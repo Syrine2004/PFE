@@ -1,0 +1,31 @@
+<header class="navbar">
+    <nav class="nav-inner container">
+        <a routerLink="/" class="brand">
+            <span class="brand-icon" aria-hidden="true">
+                <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M22 10v6M2 10l10-5 10 5-10 5z" />
+                    <path d="M6 12v5c3 3 9 3 12 0v-5" />
+                </svg>
+            </span>
+            <span class="brand-text">
+                <strong>Residanat TN</strong>
+                <em>Concours National</em>
+            </span>
+        </a>
+        <button type="button" class="menu-btn" (click)="toggleMenu()" [attr.aria-expanded]="open()" aria-label="Menu">
+            @if (open()) { ✕ } @else { ☰ }
+        </button>
+        <div class="nav-row" [class.open]="open()">
+            <div class="nav-links">
+                @for (link of navLinks; track link.route) {
+                <a [routerLink]="link.route" routerLinkActive="active"
+                    [routerLinkActiveOptions]="{ exact: link.route === '/' }" (click)="closeMenu()">{{ link.label }}</a>
+                }
+            </div>
+            <div class="nav-actions">
+                <a routerLink="/connexion" class="btn-primary" (click)="closeMenu()">Concours Résidant →</a>
+            </div>
+        </div>
+    </nav>
+</header>

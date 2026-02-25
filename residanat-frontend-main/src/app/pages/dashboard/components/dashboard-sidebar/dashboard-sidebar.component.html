@@ -1,0 +1,133 @@
+<button class="mobile-toggle" (click)="toggleMobile()" aria-label="Toggle sidebar">
+    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+        stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-menu">
+        <line x1="3" x2="21" y1="6" y2="6" />
+        <line x1="3" x2="21" y1="12" y2="12" />
+        <line x1="3" x2="21" y1="18" y2="18" />
+    </svg>
+</button>
+
+<div *ngIf="mobileOpen" class="mobile-overlay" (click)="closeMobile()"></div>
+
+<aside [ngClass]="{'sidebar-collapsed': collapsed, 'mobile-open': mobileOpen}" class="sidebar">
+
+    <div class="sidebar-header">
+        <a routerLink="/dashboard" class="logo-container">
+            <div class="logo-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M22 10v6M2 10l10-5 10 5-10 5z" />
+                    <path d="M6 12v5c3 3 9 3 12 0v-5" />
+                </svg>
+            </div>
+            <div *ngIf="!collapsed" class="logo-text-group">
+                <span class="logo-text">Residanat TN</span>
+                <span class="logo-subtext">ESPACE CANDIDAT</span>
+            </div>
+        </a>
+
+        <button class="collapse-btn" (click)="toggleSidebar()" aria-label="Toggle sidebar">
+            <svg [ngClass]="{'rotate-180': collapsed}" xmlns="http://www.w3.org/2000/svg" width="18" height="18"
+                viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                stroke-linejoin="round" class="lucide lucide-chevron-left transition-transform">
+                <path d="m15 18-6-6 6-6" />
+            </svg>
+        </button>
+    </div>
+
+    <nav class="sidebar-nav">
+        <div class="nav-items-wrapper">
+            <ng-container *ngFor="let item of navItems; let i = index">
+                <a *ngIf="i < 2 && userRole != 'ADMIN'" [routerLink]="item.href" routerLinkActive="active"
+                    [routerLinkActiveOptions]="{exact: item.href === '/dashboard'}" (click)="closeMobile()"
+                    class="nav-item group">
+                    <div class="item-icon">
+                        <ng-container [ngSwitch]="item.icon">
+                            <svg *ngSwitchCase="'layout-dashboard'" xmlns="http://www.w3.org/2000/svg" width="18"
+                                height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                stroke-linecap="round" stroke-linejoin="round">
+                                <rect width="7" height="9" x="3" y="3" rx="1" />
+                                <rect width="7" height="5" x="14" y="3" rx="1" />
+                                <rect width="7" height="9" x="14" y="12" rx="1" />
+                                <rect width="7" height="5" x="3" y="16" rx="1" />
+                            </svg>
+                            <svg *ngSwitchCase="'file-plus'" xmlns="http://www.w3.org/2000/svg" width="18" height="18"
+                                viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z" />
+                                <polyline points="14 2 14 8 20 8" />
+                                <line x1="12" x2="12" y1="18" y2="12" />
+                                <line x1="9" x2="15" y1="15" y2="15" />
+                            </svg>
+                        </ng-container>
+                    </div>
+                    <span *ngIf="!collapsed" class="item-label">{{item.label}}</span>
+                </a>
+
+                <a *ngIf="item.href === '/dashboard/dossier'" [routerLink]="['/dashboard/dossier', getCandidatId()]"
+                    routerLinkActive="active" (click)="closeMobile()" class="nav-item group">
+                    <div class="item-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path
+                                d="m6 14 1.45-2.9A2 2 0 0 1 9.24 10H20a2 2 0 0 1 1.94 2.5l-1.55 6a2 2 0 0 1-1.94 1.5H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h3.9a2 2 0 0 1 1.69.9l.81 1.2a2 2 0 0 0 1.69.9H18a2 2 0 0 1 2 2v2" />
+                        </svg>
+                    </div>
+                    <span *ngIf="!collapsed" class="item-label">{{item.label}}</span>
+                </a>
+
+                <div *ngIf="i >= 2 && item.href !== '/dashboard/dossier'" class="nav-item group interactive-mock"
+                    (click)="onMockClick($event, item.label)">
+                    <div class="item-icon">
+                        <ng-container [ngSwitch]="item.icon">
+                            <svg *ngSwitchCase="'folder-open'" xmlns="http://www.w3.org/2000/svg" width="18" height="18"
+                                viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                stroke-linecap="round" stroke-linejoin="round">
+                                <path
+                                    d="m6 14 1.45-2.9A2 2 0 0 1 9.24 10H20a2 2 0 0 1 1.94 2.5l-1.55 6a2 2 0 0 1-1.94 1.5H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h3.9a2 2 0 0 1 1.69.9l.81 1.2a2 2 0 0 0 1.69.9H18a2 2 0 0 1 2 2v2" />
+                            </svg>
+                            <svg *ngSwitchCase="'stethoscope'" xmlns="http://www.w3.org/2000/svg" width="18" height="18"
+                                viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                stroke-linecap="round" stroke-linejoin="round">
+                                <path
+                                    d="M4.8 2.3A.3.3 0 1 0 5 2H4a2 2 0 0 0-2 2v5a6 6 0 0 0 6 6v0a6 6 0 0 0 6-6V4a2 2 0 0 0-2-2h-1a.2.2 0 1 0 .3.3" />
+                                <path d="M8 15v1a6 6 0 0 0 6 6v0a6 6 0 0 0 6-6v-4" />
+                                <circle cx="20" cy="10" r="2" />
+                            </svg>
+                            <svg *ngSwitchCase="'map-pin'" xmlns="http://www.w3.org/2000/svg" width="18" height="18"
+                                viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z" />
+                                <circle cx="12" cy="10" r="3" />
+                            </svg>
+                        </ng-container>
+                    </div>
+                    <span *ngIf="!collapsed" class="item-label">{{item.label}}</span>
+                </div>
+            </ng-container>
+        </div>
+    </nav>
+
+    <div class="sidebar-footer">
+        <div class="user-profile" [ngClass]="{'profile-center': collapsed}">
+            <div class="user-avatar">SB</div>
+            <div *ngIf="!collapsed" class="user-info">
+                <p class="user-name">Syrine Boulabiar</p>
+                <p class="user-email">syrine&#64;email.com</p>
+            </div>
+        </div>
+
+        <button (click)="onLogout()" class="logout-btn" [ngClass]="{'logout-center': collapsed}"
+            style="background: none; border: none; width: 100%; text-align: left; cursor: pointer; color: inherit; font: inherit;">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                class="lucide lucide-log-out">
+                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+                <polyline points="16 17 21 12 16 7" />
+                <line x1="21" x2="9" y1="12" y2="12" />
+            </svg>
+            <span *ngIf="!collapsed">Deconnexion</span>
+        </button>
+    </div>
+
+</aside>

@@ -1,0 +1,78 @@
+<div class="page-container">
+    <div class="content-wrapper">
+        <div class="page-header">
+            <p class="section-tag">Formation</p>
+            <h1 class="page-title">Specialites medicales</h1>
+            <p class="page-description">
+                Decouvrez les differentes specialites proposees au concours de
+                residanat, organisees par duree de formation.
+            </p>
+        </div>
+
+        <div class="tabs-container">
+            <div class="tabs-list">
+                <button (click)="setTab('5ans')" [class.active]="activeTab === '5ans'" class="tab-trigger">
+                    5 ans ({{ specialites['5ans'].length }})
+                </button>
+                <button (click)="setTab('4ans')" [class.active]="activeTab === '4ans'" class="tab-trigger">
+                    4 ans ({{ specialites['4ans'].length }})
+                </button>
+                <button (click)="setTab('3ans')" [class.active]="activeTab === '3ans'" class="tab-trigger">
+                    3 ans ({{ specialites['3ans'].length }})
+                </button>
+            </div>
+
+            <div class="tabs-content">
+                <div class="specialites-grid">
+                    <div *ngFor="let s of specialites[activeTab]" class="specialite-card">
+                        <div class="card-header">
+                            <h3 class="spec-name">{{ s.name }}</h3>
+                            <span class="posts-badge">{{ s.postes }} postes</span>
+                        </div>
+                        <div class="card-details">
+                            <div class="detail-item">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+                                    fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                    stroke-linejoin="round">
+                                    <circle cx="12" cy="12" r="10" />
+                                    <polyline points="12 6 12 12 16 14" />
+                                </svg>
+                                <span>Duree: {{ activeTab === '5ans' ? '5 ans' : activeTab === '4ans' ? '4 ans' : '3
+                                    ans' }}</span>
+                            </div>
+                            <div class="detail-item">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+                                    fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                    stroke-linejoin="round">
+                                    <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+                                    <circle cx="9" cy="7" r="4" />
+                                    <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
+                                    <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+                                </svg>
+                                <span>{{ s.postes }} postes ouverts</span>
+                            </div>
+                            <div class="detail-item">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+                                    fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                    stroke-linejoin="round">
+                                    <rect x="4" y="2" width="16" height="20" rx="2" ry="2" />
+                                    <path d="M9 22v-4h6v4" />
+                                    <path d="M8 6h.01" />
+                                    <path d="M16 6h.01" />
+                                    <path d="M12 6h.01" />
+                                    <path d="M12 10h.01" />
+                                    <path d="M12 14h.01" />
+                                    <path d="M16 10h.01" />
+                                    <path d="M16 14h.01" />
+                                    <path d="M8 10h.01" />
+                                    <path d="M8 14h.01" />
+                                </svg>
+                                <span>{{ s.college }}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
