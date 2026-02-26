@@ -47,8 +47,8 @@
         </div>
     </header>
 
-    <!-- Banner -->
-    <section class="concours-banner">
+    <!-- Banner (Dynamic) -->
+    <section class="concours-banner" *ngFor="let concours of publiesConcours">
         <div class="banner-left">
             <div class="banner-icon">
                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
@@ -59,7 +59,7 @@
                 </svg>
             </div>
             <div class="banner-info">
-                <h2 class="banner-title">Concours National du Residanat — Session 2026</h2>
+                <h2 class="banner-title">{{concours.libelle}} — Session {{concours.annee}}</h2>
                 <div class="banner-meta">
                     <span class="meta-item">
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
@@ -76,7 +76,8 @@
                             <path d="M12 18h.01" />
                             <path d="M16 18h.01" />
                         </svg>
-                        Date limite : <strong>15 Mars 2026</strong>
+                        <span *ngIf="concours.dateFin" style="margin-left: 6px;">Date limite : <strong>{{concours.dateFin | date:'dd/MM/yyyy'}}</strong></span>
+                        <span *ngIf="!concours.dateFin" style="margin-left: 6px;">Date limite non définie</span>
                     </span>
                     <span class="meta-dot"></span>
                     <span class="meta-item">
@@ -86,12 +87,21 @@
                             <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z" />
                             <circle cx="12" cy="10" r="3" />
                         </svg>
-                        Tunis
+                        Tunisia ({{concours.typeConcours}})
                     </span>
                 </div>
             </div>
         </div>
-        <a routerLink="/dashboard/creer-dossier" class="banner-btn">S'inscrire au concours</a>
+        <a routerLink="/dashboard/creer-dossier" class="banner-btn" [queryParams]="{ concoursId: concours.id }">S'inscrire au concours</a>
+    </section>
+
+    <!-- Empty State -->
+    <section class="concours-banner empty-banner" *ngIf="publiesConcours.length === 0">
+        <div class="banner-left">
+            <div class="banner-info">
+                <p>Aucun concours publié pour le moment.</p>
+            </div>
+        </div>
     </section>
 
     <!-- Stats Grid -->

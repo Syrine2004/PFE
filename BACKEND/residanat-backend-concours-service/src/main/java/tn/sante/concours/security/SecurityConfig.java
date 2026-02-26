@@ -13,50 +13,66 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+
+import java.util.List;
 
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity // Permet @PreAuthorize("hasRole('ADMIN')")
 public class SecurityConfig {
 
-        private final JwtAuthenticationFilter jwtAuthFilter;
+  private final JwtAuthenticationFilter jwtAuthFilter;
 
-        public SecurityConfig(JwtAuthenticationFilter jwtAuthFilter) {
-                this.jwtAuthFilter = jwtAuthFilter;
-        }
+  public SecurityConfig(JwtAuthenticationFilter jwtAuthFilter) {
+    this.jwtAuthFilter = jwtAuthFilter;
+  }
 
-        @Bean
-        public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-                http
-                                .csrf(AbstractHttpConfigurer::disable)
-                                .cors(cors -> {
-                                }) // Utilise la configuration cors par défaut globale ou celle du gateway
-                                .authorizeHttpRequests(authz -> authz
-                                                .requestMatchers("/api/concours/**").permitAll() // La restriction sur
-                                                                                                 // POST/PUT/DELETE se
-                                                                                                 // fera via
-                                                                                                 // @PreAuthorize
-                                                .requestMatchers("/v3/api-docs/**", "/swagger-ui/**",
-                                                                "/swagger-ui.html")
-                                                .permitAll() // Accès libre à Swagger
-                                                .anyRequest().authenticated())
-                                .sessionManagement(session -> session
-                                                .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
+  @Bean
+  public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    http
+      .csrf(AbstractHttpConfigurer::disable)
+      // FIX : On applique la configuration CORS définie plus bas
+      .cors(cors -> cors.configurationSource(corsConfigurationSource()))
+      .authorizeHttpRequests(authz -> authz
+        .requestMatchers("/api/concours/**").permitAll() // Sécurisé par @PreAuthorize dans le controller
+        .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
+        .anyRequest().authenticated()
+      )
+      .sessionManagement(session -> session
+        .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+      )
+      .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 
-                return http.build();
-        }
+    return http.build();
+  }
 
-        // Configuration OpenAPI pour le bouton "Authorize" dans Swagger UI
-        @Bean
-        public OpenAPI customOpenAPI() {
-                return new OpenAPI()
-                                .components(new Components()
-                                                .addSecuritySchemes("bearerAuth",
-                                                                new SecurityScheme()
-                                                                                .type(SecurityScheme.Type.HTTP)
-                                                                                .scheme("bearer")
-                                                                                .bearerFormat("JWT")))
-                                .addSecurityItem(new SecurityRequirement().addList("bearerAuth"));
-        }
+  // FIX : On déclare explicitement qui a le droit de faire des requêtes (Angular)
+  @Bean
+  public CorsConfigurationSource corsConfigurationSource() {
+    CorsConfiguration configuration = new CorsConfiguration();
+    configuration.setAllowedOrigins(List.of("http://localhost:4200")); // Ton frontend Angular
+    configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
+    configuration.setAllowedHeaders(List.of("Authorization", "Content-Type"));
+    configuration.setAllowCredentials(true);
+
+    UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+    source.registerCorsConfiguration("/**", configuration);
+    return source;
+  }
+
+  // Configuration OpenAPI pour le bouton "Authorize" dans Swagger UI
+  @Bean
+  public OpenAPI customOpenAPI() {
+    return new OpenAPI()
+      .components(new Components()
+        .addSecuritySchemes("bearerAuth",
+          new SecurityScheme()
+            .type(SecurityScheme.Type.HTTP)
+            .scheme("bearer")
+            .bearerFormat("JWT")))
+      .addSecurityItem(new SecurityRequirement().addList("bearerAuth"));
+  }
 }

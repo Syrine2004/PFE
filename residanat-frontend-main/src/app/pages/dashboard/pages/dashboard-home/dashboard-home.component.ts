@@ -1,6 +1,7 @@
-import { Component } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
+import { ConcoursService, Concours } from '../../../../core/services/concours.service';
 
 @Component({
   selector: 'app-dashboard-home',
@@ -9,7 +10,11 @@ import { RouterModule } from '@angular/router';
   templateUrl: './dashboard-home.component.html',
   styleUrl: './dashboard-home.component.scss'
 })
-export class DashboardHomeComponent {
+export class DashboardHomeComponent implements OnInit {
+  private concoursService = inject(ConcoursService);
+
+  publiesConcours: Concours[] = [];
+
   notifications = [
     {
       message: 'Bienvenue sur Residanat TN. Veuillez débuter votre inscription.',
@@ -38,5 +43,20 @@ export class DashboardHomeComponent {
 
   toggleNotifications() {
     this.isNotificationsOpen = !this.isNotificationsOpen;
+  }
+
+  ngOnInit() {
+    this.fetchPublishedConcours();
+  }
+
+  fetchPublishedConcours() {
+    this.concoursService.getConcours(0, 100, undefined, undefined, 'PUBLIE').subscribe({
+      next: (response) => {
+        this.publiesConcours = response.content;
+      },
+      error: (err) => {
+        console.error('Erreur lors de la récupération des concours publiés', err);
+      }
+    });
   }
 }
