@@ -1,0 +1,170 @@
+services:
+  # --- Databases ---
+  postgres-auth:
+    image: postgres:15
+    environment:
+      POSTGRES_DB: residanat_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: system
+    ports:
+      - "5433:5432"
+
+  postgres-concours:
+    image: postgres:15
+    environment:
+      POSTGRES_DB: residanat_concours_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: system
+    ports:
+      - "5434:5432"
+
+  postgres-dossier:
+    image: postgres:15
+    environment:
+      POSTGRES_DB: residanat_dossier_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: system
+    ports:
+      - "5435:5432"
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+
+  # --- Infrastructure ---
+  discovery-service:
+    build: ./discovery-service
+    ports:
+      - "8761:8761"
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8761/actuator/health" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  config-service:
+    build: ./config-service
+    ports:
+      - "8888:8888"
+    environment:
+      - SPRING_PROFILES_ACTIVE=native
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery-service:8761/eureka/
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8888/actuator/health" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    volumes:
+      - ./shared-config:/app/config
+    depends_on:
+      discovery-service:
+        condition: service_healthy
+
+  # --- Microservices ---
+  auth-service:
+    build: ./residanat-backend-auth-service-main
+    ports:
+      - "8081:8081"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - SPRING_CONFIG_IMPORT=optional:configserver:http://config-service:8888
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8081/actuator/health" ]
+      interval: 15s
+      timeout: 10s
+      retries: 10
+      start_period: 60s
+    depends_on:
+      config-service:
+        condition: service_healthy
+      postgres-auth:
+        condition: service_started
+
+  concours-service:
+    build: ./residanat-backend-concours-service
+    ports:
+      - "8082:8082"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - SPRING_CONFIG_IMPORT=optional:configserver:http://config-service:8888
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8082/actuator/health" ]
+      interval: 15s
+      timeout: 10s
+      retries: 10
+      start_period: 60s
+    depends_on:
+      config-service:
+        condition: service_healthy
+      postgres-concours:
+        condition: service_started
+
+  dossier-service:
+    build: ./Dossier-Candidature-service
+    ports:
+      - "8084:8084"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - SPRING_CONFIG_IMPORT=optional:configserver:http://config-service:8888
+    volumes:
+      - dossier-uploads:/app/uploads
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8084/actuator/health" ]
+      interval: 15s
+      timeout: 10s
+      retries: 10
+      start_period: 60s
+    depends_on:
+      config-service:
+        condition: service_healthy
+      postgres-dossier:
+        condition: service_started
+      rabbitmq:
+        condition: service_started
+
+  ia-validation-service:
+    build: ./ia-validation-service
+    ports:
+      - "8085:8085"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - SPRING_CONFIG_IMPORT=optional:configserver:http://config-service:8888
+    volumes:
+      - dossier-uploads:/app/uploads
+      - ../test-IA-residanat/test_ia.py:/app/scripts/test_ia.py
+      - ../test-IA-residanat/test_diplome_ia.py:/app/scripts/test_diplome_ia.py
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8085/actuator/health" ]
+      interval: 15s
+      timeout: 10s
+      retries: 10
+      start_period: 60s
+    depends_on:
+      config-service:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_started
+
+  gateway-service:
+    build: ./gateway-service-main
+    ports:
+      - "8080:8080"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - SPRING_CONFIG_IMPORT=optional:configserver:http://config-service:8888
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8080/actuator/health" ]
+      interval: 15s
+      timeout: 10s
+      retries: 10
+      start_period: 60s
+    depends_on:
+      discovery-service:
+        condition: service_healthy
+      config-service:
+        condition: service_healthy
+
+volumes:
+  dossier-uploads:

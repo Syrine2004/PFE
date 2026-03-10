@@ -1,0 +1,206 @@
+<div class="dossier-detail-page" *ngIf="!loading; else loader">
+    <div class="page-background">
+        <div class="blob blob-1"></div>
+        <div class="blob blob-2"></div>
+    </div>
+
+    <div class="content-container">
+        <!-- Modern Header -->
+        <header class="header-section">
+            <button [routerLink]="authService.getRole() === 'ADMIN' ? '/admin/candidats' : '/dashboard/home'"
+                class="back-btn">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="m15 18-6-6 6-6" />
+                </svg>
+                <span>Tableau de bord</span>
+            </button>
+            <div class="title-wrapper">
+                <h1>Détails du Dossier</h1>
+                <div class="status-pill" [class]="dossier?.statut">
+                    <span class="pulse"></span>
+                    {{getStatutLabel(dossier?.statut || '')}}
+                </div>
+            </div>
+        </header>
+
+        <div class="main-grid">
+            <!-- Left Side: Identity & Documents -->
+            <div class="left-column">
+                <!-- Profile Card -->
+                <section class="glass-card" *ngIf="candidateProfile">
+                    <div class="card-header">
+                        <div class="icon-box">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round">
+                                <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" />
+                                <circle cx="12" cy="7" r="4" />
+                            </svg>
+                        </div>
+                        <h2>Informations Candidat</h2>
+                    </div>
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <span class="label">Nom Complet</span>
+                            <span class="value">{{candidateProfile.nom}} {{candidateProfile.prenom}}</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="label">Identifiant CIN</span>
+                            <span class="value">{{candidateProfile.cin}}</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="label">E-mail</span>
+                            <span class="value">{{candidateProfile.email}}</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="label">Établissement</span>
+                            <span class="value">{{candidateProfile.faculte}}</span>
+                        </div>
+                        <div class="info-item" *ngIf="dossier?.dateDiplome">
+                            <span class="label">Année Diplôme</span>
+                            <span class="value">{{dossier?.dateDiplome | date:'yyyy'}}</span>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- Documents Card -->
+                <section class="glass-card documents-card">
+                    <div class="card-header">
+                        <div class="icon-box">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round">
+                                <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z" />
+                                <polyline points="14 2 14 8 20 8" />
+                            </svg>
+                        </div>
+                        <h2>Pièces Justificatives</h2>
+                    </div>
+                    <div class="docs-list">
+                        <div class="doc-item" *ngFor="let doc of dossier?.documents">
+                            <div class="doc-main">
+                                <div class="file-icon" [ngClass]="doc.type.toLowerCase()">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24"
+                                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                        stroke-linejoin="round">
+                                        <path
+                                            d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z" />
+                                        <polyline points="14 2 14 8 20 8" />
+                                    </svg>
+                                </div>
+                                <div class="doc-meta">
+                                    <span class="doc-name">{{doc.nom}}</span>
+                                    <span class="doc-type">{{doc.type}}</span>
+                                </div>
+                            </div>
+                            <a [href]="'http://localhost:8084/uploads/' + doc.cheminFichier" target="_blank"
+                                class="download-btn" title="Voir le document">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"
+                                    fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
+                                    stroke-linejoin="round">
+                                    <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z" />
+                                    <circle cx="12" cy="12" r="3" />
+                                </svg>
+                            </a>
+                        </div>
+                        <div class="empty-docs" *ngIf="!dossier?.documents?.length">
+                            <p style="text-align: center; color: var(--slate-400); font-weight: 700;">Aucun document
+                                disponible.</p>
+                        </div>
+                    </div>
+                </section>
+            </div>
+
+            <!-- Right Side: IA Result -->
+            <div class="right-column">
+                <section class="glass-card ia-card" *ngIf="dossier?.evaluationIA">
+                    <div class="card-header">
+                        <div class="icon-box">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
+                                stroke-linejoin="round">
+                                <path
+                                    d="m12 2 3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+                            </svg>
+                        </div>
+                        <h2>Analyse Prédictive</h2>
+                    </div>
+
+                    <div class="score-visualization">
+                        <div class="progress-ring">
+                            <svg viewBox="0 0 100 100">
+                                <circle class="ring-bg" cx="50" cy="50" r="45"></circle>
+                                <circle class="ring-fill" cx="50" cy="50" r="45"
+                                    [style.stroke-dashoffset]="283 - (283 * (dossier?.evaluationIA?.score || 0) / 100)">
+                                </circle>
+                            </svg>
+                            <div class="score-box">
+                                <span class="number">{{dossier?.evaluationIA?.score | number:'1.0-0'}}%</span>
+                            </div>
+                        </div>
+                        <span class="score-label">Indice de Conformité</span>
+                        <span class="score-details" *ngIf="iaDetails"
+                            style="display: block; font-size: 0.85rem; color: var(--slate-500); margin-top: 4px; font-weight: 500;">
+                            {{iaDetails}}
+                        </span>
+                    </div>
+
+                    <div class="observations-section">
+                        <div class="obs-header">
+                            <span class="dot"></span>
+                            <span>Points de vigilance IA</span>
+                        </div>
+                        <div class="obs-card"
+                            [class.has-anomalies]="dossier?.evaluationIA?.anomalies && dossier?.evaluationIA?.anomalies !== 'Aucune anomalie détectée.'">
+                            <div class="anomaly-header"
+                                *ngIf="dossier?.evaluationIA?.anomalies && dossier?.evaluationIA?.anomalies !== 'Aucune anomalie détectée.'">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+                                    fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
+                                    stroke-linejoin="round">
+                                    <path
+                                        d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z" />
+                                    <path d="M12 9v4" />
+                                    <path d="M12 17h.01" />
+                                </svg>
+                                <span>Anomalies détectées</span>
+                            </div>
+                            <div class="obs-text">{{ dossier?.evaluationIA?.anomalies || 'Le dossier semble complet et
+                                conforme aux exigences réglementaires.' }}</div>
+                        </div>
+                        <div class="action-footer">
+                            <button class="btn-reanalyse" (click)="$event.stopPropagation(); reAnalyser()"
+                                [disabled]="reanalysing">
+                                <span *ngIf="reanalysing" class="spinner-small"></span>
+                                <svg *ngIf="!reanalysing" xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                                    viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+                                    stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8" />
+                                    <path d="M21 3v5h-5" />
+                                    <path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16" />
+                                    <path d="M3 21v-5h5" />
+                                </svg>
+                                {{ reanalysing ? 'Analyse...' : 'Réanalyser' }}
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="ia-footer">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+                        </svg>
+                        <span>Verified by SmartCheck IA</span>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </div>
+</div>
+
+<ng-template #loader>
+    <div class="loading-state">
+        <div class="spinner"></div>
+        <p>Finalisation du rendu premium...</p>
+    </div>
+</ng-template>

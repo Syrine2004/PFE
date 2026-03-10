@@ -1,0 +1,3 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://postgres-dossier:5432/residanat_dossier_db

@@ -1,0 +1,148 @@
+<div class="sheet-overlay" [class.open]="isOpen" (click)="onClose()">
+    <div class="sheet-content" [class.open]="isOpen" (click)="$event.stopPropagation()">
+        <ng-container *ngIf="formData">
+            <!-- Hero Header -->
+            <div class="hero-header">
+                <div class="hero-content">
+                    <div class="settings-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.1a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/>
+                            <circle cx="12" cy="12" r="3"/>
+                        </svg>
+                    </div>
+                    <div class="title-group">
+                        <h2 class="sheet-title">Configuration</h2>
+                        <p class="sheet-desc">Personnalisez les détails de votre concours en quelques clics.</p>
+                        <div class="id-badge">
+                            <span class="pulse-dot"></span>
+                            <span>Session ID: {{formData.id}}</span>
+                        </div>
+                    </div>
+                    <button class="close-sheet-btn" (click)="onClose()" title="Fermer">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Scrollable Form Body -->
+            <div class="sheet-body">
+                <!-- Informations Générales -->
+                <div class="form-card">
+                    <div class="card-header">
+                        <div class="icon-bg blue">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/></svg>
+                        </div>
+                        <h4>Informations Générales</h4>
+                    </div>
+
+                    <div class="form-fields">
+                        <div class="form-group-premium">
+                            <label>Titre du concours</label>
+                            <div class="input-wrapper">
+                                <span class="input-icon">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z"/><path d="M8 7h6"/><path d="M8 11h8"/></svg>
+                                </span>
+                                <input type="text" [(ngModel)]="formData.titre" placeholder="Ex: Résidanat Session 2026">
+                            </div>
+                        </div>
+                        <div class="grid-2">
+                            <div class="form-group-premium">
+                                <label>Année</label>
+                                <div class="input-wrapper">
+                                    <span class="input-icon">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/></svg>
+                                    </span>
+                                    <input type="number" [(ngModel)]="formData.annee">
+                                </div>
+                            </div>
+                            <div class="form-group-premium">
+                                <label>Type</label>
+                                <div class="custom-select-wrapper" (click)="toggleTypeDropdown($event)">
+                                    <div class="custom-select-trigger" [class.trigger-active]="showTypeDropdown">
+                                        <span class="input-icon">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m16 12-4 4-4-4"/><path d="M12 8v7"/></svg>
+                                        </span>
+                                        <span class="trigger-text">{{ formData.type }}</span>
+                                        <span class="chevron" [class.rotate]="showTypeDropdown">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+                                        </span>
+                                    </div>
+                                    <div class="custom-dropdown-options" *ngIf="showTypeDropdown">
+                                        <div class="option-item" (click)="selectType('National')">
+                                            <span class="option-label">National</span>
+                                            <span class="check" *ngIf="formData.type === 'National'">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                                            </span>
+                                        </div>
+                                        <div class="option-item" (click)="selectType('Supplementaire')">
+                                            <span class="option-label">Supplémentaire</span>
+                                            <span class="check" *ngIf="formData.type === 'Supplementaire'">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Planification -->
+                <div class="form-card">
+                    <div class="card-header">
+                        <div class="icon-bg indigo">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/></svg>
+                        </div>
+                        <h4>Planification</h4>
+                    </div>
+                    <div class="grid-2">
+                        <div class="form-group-premium">
+                            <label>Date de début</label>
+                            <div class="input-wrapper">
+                                <span class="input-icon">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                                </span>
+                                <input type="date" [(ngModel)]="formData.dateDebut"
+                                    [class.input-error]="formData.dateDebut && formData.dateFin && formData.dateDebut > formData.dateFin">
+                            </div>
+                        </div>
+                        <div class="form-group-premium">
+                            <label>Date de fin</label>
+                            <div class="input-wrapper">
+                                <span class="input-icon">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                                </span>
+                                <input type="date" [(ngModel)]="formData.dateFin"
+                                    [class.input-error]="formData.dateDebut && formData.dateFin && formData.dateDebut > formData.dateFin">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="error-msg-inline-premium"
+                        *ngIf="formData.dateDebut && formData.dateFin && formData.dateDebut > formData.dateFin">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="10" />
+                            <line x1="12" y1="8" x2="12" y2="12" />
+                            <line x1="12" y1="16" x2="12.01" y2="16" />
+                        </svg>
+                        <span>La date de début doit impérativement être antérieure à la date de fin.</span>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Footer -->
+            <div class="sheet-footer">
+                <button class="btn-ghost" (click)="onClose()">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+                    Annuler
+                </button>
+                <button class="btn-primary" (click)="onSave()">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+                    Enregistrer la configuration
+                </button>
+            </div>
+        </ng-container>
+    </div>
+</div>

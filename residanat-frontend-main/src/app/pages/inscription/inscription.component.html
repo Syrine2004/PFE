@@ -1,0 +1,448 @@
+<div class="auth-page">
+
+    <!-- Animated background blobs -->
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+
+    <div class="auth-wrapper auth-wrapper--lg">
+
+        <!-- Logo & Header -->
+        <div class="auth-header">
+            <img src="assets/images/logo.png" alt="Logo" class="auth-logo">
+            <h1 class="auth-title">S'inscrire au concours</h1>
+            <p class="auth-subtitle">Créez votre compte candidat en quelques étapes</p>
+        </div>
+
+        <div class="glass-card">
+            <form [formGroup]="registrationForm" (ngSubmit)="onSubmit()" class="auth-form">
+
+                <!-- Civilité & Nom -->
+                <div class="grid-2col">
+                    <div class="field-group">
+                        <label for="civilite" class="field-label">Civilité</label>
+                        <div class="input-wrapper">
+                            <span class="input-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+                                    fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                    stroke-linejoin="round">
+                                    <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" />
+                                    <circle cx="12" cy="7" r="4" />
+                                </svg>
+                            </span>
+                            <select id="civilite" formControlName="civilite" class="auth-select"
+                                [class.input-error]="registrationForm.get('civilite')?.invalid && registrationForm.get('civilite')?.touched">
+                                <option value="" disabled selected>Civilité</option>
+                                <option *ngFor="let c of civilites" [value]="c.value">{{ c.label }}</option>
+                            </select>
+                            <span class="select-chevron">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"
+                                    fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
+                                    stroke-linejoin="round">
+                                    <path d="m6 9 6 6 6-6" />
+                                </svg>
+                            </span>
+                        </div>
+                        <div class="error-container"
+                            *ngIf="registrationForm.get('civilite')?.invalid && registrationForm.get('civilite')?.touched">
+                            <span class="error-msg">Civilité requise</span>
+                        </div>
+                    </div>
+                    <div class="field-group">
+                        <label for="nom" class="field-label">Nom</label>
+                        <div class="input-wrapper">
+                            <span class="input-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+                                    fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                    stroke-linejoin="round">
+                                    <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" />
+                                    <circle cx="12" cy="7" r="4" />
+                                </svg>
+                            </span>
+                            <input id="nom" type="text" formControlName="nom" placeholder="Votre nom" class="auth-input"
+                                [class.input-error]="registrationForm.get('nom')?.invalid && registrationForm.get('nom')?.touched" />
+                        </div>
+                        <div class="error-container"
+                            *ngIf="registrationForm.get('nom')?.invalid && registrationForm.get('nom')?.touched">
+                            <span class="error-msg">Nom requis (min 2 car.)</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Prénom & Date de naissance -->
+                <div class="grid-2col">
+                    <div class="field-group">
+                        <label for="prenom" class="field-label">Prénom</label>
+                        <div class="input-wrapper">
+                            <span class="input-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+                                    fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                    stroke-linejoin="round">
+                                    <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" />
+                                    <circle cx="12" cy="7" r="4" />
+                                </svg>
+                            </span>
+                            <input id="prenom" type="text" formControlName="prenom" placeholder="Votre prénom"
+                                class="auth-input"
+                                [class.input-error]="registrationForm.get('prenom')?.invalid && registrationForm.get('prenom')?.touched" />
+                        </div>
+                        <div class="error-container"
+                            *ngIf="registrationForm.get('prenom')?.invalid && registrationForm.get('prenom')?.touched">
+                            <span class="error-msg">Prénom requis (min 2 car.)</span>
+                        </div>
+                    </div>
+                    <div class="field-group">
+                        <label for="date-naissance" class="field-label">Date de naissance</label>
+                        <input id="date-naissance" type="date" formControlName="dateNaissance" class="auth-input"
+                            [class.input-error]="registrationForm.get('dateNaissance')?.invalid && registrationForm.get('dateNaissance')?.touched" />
+                        <div class="error-container"
+                            *ngIf="registrationForm.get('dateNaissance')?.invalid && registrationForm.get('dateNaissance')?.touched">
+                            <span class="error-msg">Date obligatoire</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Lieu de naissance & Nationalité -->
+                <div class="grid-2col">
+                    <div class="field-group">
+                        <label for="lieu-naissance" class="field-label">Lieu de naissance</label>
+                        <div class="input-wrapper">
+                            <span class="input-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+                                    fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                    stroke-linejoin="round">
+                                    <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z" />
+                                    <circle cx="12" cy="10" r="3" />
+                                </svg>
+                            </span>
+                            <input id="lieu-naissance" type="text" formControlName="lieuNaissance"
+                                placeholder="Ville de naissance" class="auth-input"
+                                [class.input-error]="registrationForm.get('lieuNaissance')?.invalid && registrationForm.get('lieuNaissance')?.touched" />
+                        </div>
+                        <div class="error-container"
+                            *ngIf="registrationForm.get('lieuNaissance')?.invalid && registrationForm.get('lieuNaissance')?.touched">
+                            <span class="error-msg">Lieu requis</span>
+                        </div>
+                    </div>
+                    <div class="field-group">
+                        <label for="nationalite" class="field-label">Nationalité</label>
+                        <div class="input-wrapper">
+                            <span class="input-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+                                    fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                    stroke-linejoin="round">
+                                    <path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z" />
+                                    <line x1="4" y1="22" x2="4" y2="15" />
+                                </svg>
+                            </span>
+                            <input id="nationalite" type="text" formControlName="nationalite"
+                                placeholder="Votre nationalité" class="auth-input"
+                                [class.input-error]="registrationForm.get('nationalite')?.invalid && registrationForm.get('nationalite')?.touched" />
+                        </div>
+                        <div class="error-container"
+                            *ngIf="registrationForm.get('nationalite')?.invalid && registrationForm.get('nationalite')?.touched">
+                            <span class="error-msg">Nationalité requise</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Adresse -->
+                <div class="field-group">
+                    <label for="adresse" class="field-label">Adresse</label>
+                    <div class="input-wrapper">
+                        <span class="input-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+                                fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                stroke-linejoin="round">
+                                <path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+                                <polyline points="9 22 9 12 15 12 15 22" />
+                            </svg>
+                        </span>
+                        <input id="adresse" type="text" formControlName="adresse" placeholder="Votre adresse complète"
+                            class="auth-input"
+                            [class.input-error]="registrationForm.get('adresse')?.invalid && registrationForm.get('adresse')?.touched" />
+                    </div>
+                    <div class="error-container"
+                        *ngIf="registrationForm.get('adresse')?.invalid && registrationForm.get('adresse')?.touched">
+                        <span class="error-msg">Adresse obligatoire</span>
+                    </div>
+                </div>
+
+                <!-- Pièce d'identité -->
+                <div class="grid-2col">
+                    <div class="field-group">
+                        <label class="field-label">Type de document</label>
+                        <div class="custom-select-container">
+                            <div class="custom-select-trigger" 
+                                 (click)="toggleDocTypeDropdown($event)"
+                                 [class.trigger-active]="showDocTypeDropdown"
+                                 [class.input-error]="registrationForm.get('typeDocumentIdentite')?.invalid && registrationForm.get('typeDocumentIdentite')?.touched">
+                                <span class="input-icon">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/>
+                                    </svg>
+                                </span>
+                                <span class="trigger-value" *ngIf="registrationForm.get('typeDocumentIdentite')?.value; else placeholder">
+                                    {{ registrationForm.get('typeDocumentIdentite')?.value === 'CIN' ? 'Carte d\'Identité Nationale (CIN)' : 'Passeport' }}
+                                </span>
+                                <ng-template #placeholder>
+                                    <span class="trigger-placeholder">Choisir votre document</span>
+                                </ng-template>
+                                <span class="select-chevron" [class.chevron-rotate]="showDocTypeDropdown">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="m6 9 6 6 6-6" />
+                                    </svg>
+                                </span>
+                            </div>
+
+                            <div class="custom-dropdown-menu" *ngIf="showDocTypeDropdown">
+                                <div class="dropdown-option" (click)="selectDocType('CIN')">
+                                    <div class="option-icon-box">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <rect width="20" height="14" x="2" y="5" rx="2"/><line x1="2" x2="22" y1="10" y2="10"/>
+                                        </svg>
+                                    </div>
+                                    <div class="option-info">
+                                        <span class="option-title">Carte d'Identité</span>
+                                        <span class="option-desc">Citoyen tunisien</span>
+                                    </div>
+                                    <div class="check-mark" *ngIf="registrationForm.get('typeDocumentIdentite')?.value === 'CIN'">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                                            <polyline points="20 6 9 17 4 12"/>
+                                        </svg>
+                                    </div>
+                                </div>
+                                
+                                <div class="dropdown-divider"></div>
+
+                                <div class="dropdown-option" (click)="selectDocType('PASSEPORT')">
+                                    <div class="option-icon-box passport-icon">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/>
+                                        </svg>
+                                    </div>
+                                    <div class="option-info">
+                                        <span class="option-title">Passeport</span>
+                                        <span class="option-desc">Candidat étranger</span>
+                                    </div>
+                                    <div class="check-mark" *ngIf="registrationForm.get('typeDocumentIdentite')?.value === 'PASSEPORT'">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                                            <polyline points="20 6 9 17 4 12"/>
+                                        </svg>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="field-group">
+                        <label for="cin" class="field-label">Numéro d'identité</label>
+                        <div class="input-wrapper" [class.wrapper-disabled]="registrationForm.get('cin')?.disabled">
+                            <span class="input-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+                                    fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                    stroke-linejoin="round">
+                                    <rect width="20" height="14" x="2" y="5" rx="2" />
+                                    <line x1="2" y1="10" x2="22" y2="10" />
+                                </svg>
+                            </span>
+                            <input id="cin" type="text" formControlName="cin" 
+                                [placeholder]="registrationForm.get('cin')?.disabled ? 'Sélectionnez d\'abord un type' : 'Votre numéro'" 
+                                class="auth-input"
+                                [class.input-error]="registrationForm.get('cin')?.invalid && registrationForm.get('cin')?.touched" />
+                        </div>
+                        <div class="error-container"
+                            *ngIf="registrationForm.get('cin')?.invalid && registrationForm.get('cin')?.touched">
+                            <span class="error-msg" *ngIf="registrationForm.get('cin')?.errors?.['required']">Numéro
+                                obligatoire</span>
+                            <span class="error-msg" *ngIf="registrationForm.get('cin')?.errors?.['pattern']">8 chiffres
+                                requis pour CIN</span>
+                            <span class="error-msg" *ngIf="registrationForm.get('cin')?.errors?.['minlength']">Minimum 6 
+                                caractères requis</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Téléphone -->
+                <div class="field-group">
+                        <label for="telephone" class="field-label">Téléphone</label>
+                        <div class="input-wrapper">
+                            <span class="input-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+                                    fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                    stroke-linejoin="round">
+                                    <path
+                                        d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" />
+                                </svg>
+                            </span>
+                            <input id="telephone" type="tel" formControlName="telephone" placeholder="55 000 000"
+                                class="auth-input"
+                                [class.input-error]="registrationForm.get('telephone')?.invalid && registrationForm.get('telephone')?.touched" />
+                        </div>
+                        <div class="error-container"
+                            *ngIf="registrationForm.get('telephone')?.invalid && registrationForm.get('telephone')?.touched">
+                            <span class="error-msg"
+                                *ngIf="registrationForm.get('telephone')?.errors?.['required']">Téléphone
+                                obligatoire</span>
+                            <span class="error-msg" *ngIf="registrationForm.get('telephone')?.errors?.['pattern']">8
+                                chiffres (ex: 2/4/5/7/9)</span>
+                        </div>
+                    </div>
+
+                <!-- Email & Faculté -->
+                <div class="grid-2col">
+                    <div class="field-group">
+                        <label for="reg-email" class="field-label">Email</label>
+                        <div class="input-wrapper">
+                            <span class="input-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+                                    fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                    stroke-linejoin="round">
+                                    <rect width="20" height="16" x="2" y="4" rx="2" />
+                                    <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
+                                </svg>
+                            </span>
+                            <input id="reg-email" type="email" formControlName="email" placeholder="votre@email.com"
+                                class="auth-input" autocomplete="email"
+                                [class.input-error]="registrationForm.get('email')?.invalid && registrationForm.get('email')?.touched" />
+                        </div>
+                        <div class="error-container"
+                            *ngIf="registrationForm.get('email')?.invalid && registrationForm.get('email')?.touched">
+                            <span class="error-msg">Email invalide</span>
+                        </div>
+                    </div>
+                    <div class="field-group">
+                        <label for="faculte" class="field-label">Faculté de médecine</label>
+                        <div class="input-wrapper">
+                            <span class="input-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+                                    fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                    stroke-linejoin="round">
+                                    <rect width="16" height="20" x="4" y="2" rx="2" ry="2" />
+                                    <path d="M9 22v-4h6v4" />
+                                    <path
+                                        d="M8 6h.01M16 6h.01M12 6h.01M12 10h.01M12 14h.01M16 10h.01M16 14h.01M8 10h.01M8 14h.01" />
+                                </svg>
+                            </span>
+                            <select id="faculte" formControlName="faculte" class="auth-select"
+                                [class.input-error]="registrationForm.get('faculte')?.invalid && registrationForm.get('faculte')?.touched">
+                                <option value="" disabled selected>Choisir votre faculté</option>
+                                <option *ngFor="let f of facultes" [value]="f.value">{{ f.label }}</option>
+                            </select>
+                            <span class="select-chevron">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"
+                                    fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
+                                    stroke-linejoin="round">
+                                    <path d="m6 9 6 6 6-6" />
+                                </svg>
+                            </span>
+                        </div>
+                        <div class="error-container"
+                            *ngIf="registrationForm.get('faculte')?.invalid && registrationForm.get('faculte')?.touched">
+                            <span class="error-msg">Faculté obligatoire</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Password & Confirm -->
+                <div class="grid-2col">
+                    <div class="field-group">
+                        <label for="reg-password" class="field-label">Mot de passe</label>
+                        <div class="input-wrapper">
+                            <span class="input-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+                                    fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                    stroke-linejoin="round">
+                                    <rect width="18" height="11" x="3" y="11" rx="2" ry="2" />
+                                    <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                                </svg>
+                            </span>
+                            <input id="reg-password" [type]="showPassword ? 'text' : 'password'"
+                                formControlName="password" placeholder="Mot de passe" class="auth-input"
+                                autocomplete="new-password"
+                                [class.input-error]="registrationForm.get('password')?.invalid && registrationForm.get('password')?.touched" />
+                            <button type="button" class="toggle-pw" (click)="togglePassword()" tabindex="-1">
+                                <svg *ngIf="!showPassword" xmlns="http://www.w3.org/2000/svg" width="14" height="14"
+                                    viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                    stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7z" />
+                                    <circle cx="12" cy="12" r="3" />
+                                </svg>
+                                <svg *ngIf="showPassword" xmlns="http://www.w3.org/2000/svg" width="14" height="14"
+                                    viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                    stroke-linecap="round" stroke-linejoin="round">
+                                    <path
+                                        d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94" />
+                                    <path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19" />
+                                    <line x1="1" y1="1" x2="23" y2="23" />
+                                </svg>
+                            </button>
+                        </div>
+                        <div class="error-container"
+                            *ngIf="registrationForm.get('password')?.invalid && registrationForm.get('password')?.touched">
+                            <span class="error-msg">Min 6 caractères obligatoire</span>
+                        </div>
+                    </div>
+                    <div class="field-group">
+                        <label for="confirm-password" class="field-label">Confirmer</label>
+                        <div class="input-wrapper">
+                            <span class="input-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24"
+                                    fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                    stroke-linejoin="round">
+                                    <rect width="18" height="11" x="3" y="11" rx="2" ry="2" />
+                                    <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                                </svg>
+                            </span>
+                            <input id="confirm-password" [type]="showConfirm ? 'text' : 'password'"
+                                formControlName="confirmPassword" placeholder="Confirmer" class="auth-input"
+                                autocomplete="new-password"
+                                [class.input-error]="registrationForm.get('confirmPassword')?.invalid && registrationForm.get('confirmPassword')?.touched" />
+                            <button type="button" class="toggle-pw" (click)="toggleConfirm()" tabindex="-1">
+                                <svg *ngIf="!showConfirm" xmlns="http://www.w3.org/2000/svg" width="14" height="14"
+                                    viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                    stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7z" />
+                                    <circle cx="12" cy="12" r="3" />
+                                </svg>
+                                <svg *ngIf="showConfirm" xmlns="http://www.w3.org/2000/svg" width="14" height="14"
+                                    viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                    stroke-linecap="round" stroke-linejoin="round">
+                                    <path
+                                        d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94" />
+                                    <path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19" />
+                                    <line x1="1" y1="1" x2="23" y2="23" />
+                                </svg>
+                            </button>
+                        </div>
+                        <div class="error-container"
+                            *ngIf="registrationForm.get('confirmPassword')?.invalid && registrationForm.get('confirmPassword')?.touched">
+                            <span class="error-msg"
+                                *ngIf="registrationForm.get('confirmPassword')?.hasError('passwordMismatch')">Mots de
+                                passe différents</span>
+                            <span class="error-msg"
+                                *ngIf="registrationForm.get('confirmPassword')?.hasError('required')">Confirmation
+                                obligatoire</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Submit -->
+                <button type="submit" class="submit-btn" [disabled]="registrationForm.invalid">
+                    Créer mon compte
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                        stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M5 12h14" />
+                        <path d="m12 5 7 7-7 7" />
+                    </svg>
+                </button>
+
+            </form>
+        </div>
+
+        <!-- Footer link -->
+        <p class="auth-footer">
+            Déjà un compte ?
+            <a routerLink="/connexion" class="auth-link">Se connecter</a>
+        </p>
+
+    </div>
+</div>

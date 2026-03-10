@@ -1,0 +1,276 @@
+﻿[INFO] Scanning for projects...
+[INFO] 
+[INFO] ------------< tn.sante:residanat-backend-concours-service >-------------
+[INFO] Building residanat-backend-concours-service 0.0.1-SNAPSHOT
+[INFO]   from pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] --- clean:3.3.2:clean (default-clean) @ residanat-backend-concours-service ---
+[INFO] Deleting C:\Users\syrine\Desktop\PFE\BACKEND\residanat-backend-concours-service\target
+[INFO] 
+[INFO] --- resources:3.3.1:resources (default-resources) @ residanat-backend-concours-service ---
+[INFO] Copying 1 resource from src\main\resources to target\classes
+[INFO] Copying 0 resource from src\main\resources to target\classes
+[INFO] 
+[INFO] --- compiler:3.13.0:compile (default-compile) @ residanat-backend-concours-service ---
+[INFO] Recompiling the module because of changed source code.
+[INFO] Compiling 15 source files with javac [debug parameters release 17] to target\classes
+[INFO] /C:/Users/syrine/Desktop/PFE/BACKEND/residanat-backend-concours-service/src/main/java/tn/sante/concours/models/Concours.java: C:\Users\syrine\Desktop\PFE\BACKEND\residanat-backend-concours-service\src\main\java\tn\sante\concours\models\Concours.java uses or overrides a deprecated API.
+[INFO] /C:/Users/syrine/Desktop/PFE/BACKEND/residanat-backend-concours-service/src/main/java/tn/sante/concours/models/Concours.java: Recompile with -Xlint:deprecation for details.
+[INFO] /C:/Users/syrine/Desktop/PFE/BACKEND/residanat-backend-concours-service/src/main/java/tn/sante/concours/security/JwtAuthenticationFilter.java: C:\Users\syrine\Desktop\PFE\BACKEND\residanat-backend-concours-service\src\main\java\tn\sante\concours\security\JwtAuthenticationFilter.java uses unchecked or unsafe operations.
+[INFO] /C:/Users/syrine/Desktop/PFE/BACKEND/residanat-backend-concours-service/src/main/java/tn/sante/concours/security/JwtAuthenticationFilter.java: Recompile with -Xlint:unchecked for details.
+[INFO] -------------------------------------------------------------
+[ERROR] COMPILATION ERROR : 
+[INFO] -------------------------------------------------------------
+[ERROR] /C:/Users/syrine/Desktop/PFE/BACKEND/residanat-backend-concours-service/src/main/java/tn/sante/concours/controllers/ConcoursController.java:[28,35] variable concoursService not initialized in the default constructor
+[ERROR] /C:/Users/syrine/Desktop/PFE/BACKEND/residanat-backend-concours-service/src/main/java/tn/sante/concours/services/ConcoursServiceImpl.java:[34,9] cannot find symbol
+  symbol:   variable log
+  location: class tn.sante.concours.services.ConcoursServiceImpl
+[ERROR] /C:/Users/syrine/Desktop/PFE/BACKEND/residanat-backend-concours-service/src/main/java/tn/sante/concours/services/ConcoursServiceImpl.java:[34,79] cannot find symbol
+  symbol:   method getLibelle()
+  location: variable requestDTO of type tn.sante.concours.dto.ConcoursRequestDTO
+[ERROR] /C:/Users/syrine/Desktop/PFE/BACKEND/residanat-backend-concours-service/src/main/java/tn/sante/concours/services/ConcoursServiceImpl.java:[36,66] cannot find symbol
+  symbol:   method getLibelle()
+  location: variable requestDTO of type tn.sante.concours.dto.ConcoursRequestDTO
+[ERROR] /C:/Users/syrine/Desktop/PFE/BACKEND/residanat-backend-concours-service/src/main/java/tn/sante/concours/services/ConcoursServiceImpl.java:[36,91] cannot find symbol
+  symbol:   method getAnnee()
+  location: variable requestDTO of type tn.sante.concours.dto.ConcoursRequestDTO
+[ERROR] /C:/Users/syrine/Desktop/PFE/BACKEND/residanat-backend-concours-service/src/main/java/tn/sante/concours/services/ConcoursServiceImpl.java:[40,37] cannot find symbol
+  symbol:   method builder()
+  location: class tn.sante.concours.models.Concours
+[ERROR] /C:/Users/syrine/Desktop/PFE/BACKEND/residanat-backend-concours-service/src/main/java/tn/sante/concours/services/ConcoursServiceImpl.java:[41,41] cannot find symbol
+  symbol:   method getTypeConcours()
+  location: variable requestDTO of type tn.sante.concours.dto.ConcoursRequestDTO
+[ERROR] /C:/Users/syrine/Desktop/PFE/BACKEND/residanat-backend-concours-service/src/main/java/tn/sante/concours/services/ConcoursServiceImpl.java:[42,36] cannot find symbol
+  symbol:   method getLibelle()
+  location: variable requestDTO of type tn.sante.concours.dto.ConcoursRequestDTO
+[ERROR] /C:/Users/syrine/Desktop/PFE/BACKEND/residanat-backend-concours-service/src/main/java/tn/sante/concours/services/ConcoursServiceImpl.java:[43,34] cannot find symbol
+  symbol:   method getAnnee()
+  location: variable requestDTO of type tn.sante.concours.dto.ConcoursRequestDTO
+[ERROR] /C:/Users/syrine/Desktop/PFE/BACKEND/residanat-backend-concours-service/src/main/java/tn/sante/concours/services/ConcoursServiceImpl.java:[44,43] cannot find symbol
+  symbol:   method getStatutResultat()
+  location: variable requestDTO of type tn.sante.concours.dto.ConcoursRequestDTO
+[ERROR] /C:/Users/syrine/Desktop/PFE/BACKEND/residanat-backend-concours-service/src/main/java/tn/sante/concours/services/ConcoursServiceImpl.java:[44,84] cannot find symbol
+  symbol:   method getStatutResultat()
+  location: variable requestDTO of type tn.sante.concours.dto.ConcoursRequestDTO
+[ERROR] /C:/Users/syrine/Desktop/PFE/BACKEND/residanat-backend-concours-service/src/main/java/tn/sante/concours/services/ConcoursServiceImpl.java:[55,9] cannot find symbol
+  symbol:   variable log
+  location: class tn.sante.concours.services.ConcoursServiceImpl
+[ERROR] /C:/Users/syrine/Desktop/PFE/BACKEND/residanat-backend-concours-service/src/main/java/tn/sante/concours/services/ConcoursServiceImpl.java:[61,23] cannot find symbol
+  symbol:   method getLibelle()
+  location: variable concours of type tn.sante.concours.models.Concours
+[ERROR] /C:/Users/syrine/Desktop/PFE/BACKEND/residanat-backend-concours-service/src/main/java/tn/sante/concours/services/ConcoursServiceImpl.java:[61,54] cannot find symbol
+  symbol:   method getLibelle()
+  location: variable requestDTO of type tn.sante.concours.dto.ConcoursRequestDTO
+[ERROR] /C:/Users/syrine/Desktop/PFE/BACKEND/residanat-backend-concours-service/src/main/java/tn/sante/concours/services/ConcoursServiceImpl.java:[62,29] cannot find symbol
+  symbol:   method getAnnee()
+  location: variable concours of type tn.sante.concours.models.Concours
+[ERROR] /C:/Users/syrine/Desktop/PFE/BACKEND/residanat-backend-concours-service/src/main/java/tn/sante/concours/services/ConcoursServiceImpl.java:[62,58] cannot find symbol
+  symbol:   method getAnnee()
+  location: variable requestDTO of type tn.sante.concours.dto.ConcoursRequestDTO
+[ERROR] /C:/Users/syrine/Desktop/PFE/BACKEND/residanat-backend-concours-service/src/main/java/tn/sante/concours/services/ConcoursServiceImpl.java:[63,70] cannot find symbol
+  symbol:   method getLibelle()
+  location: variable requestDTO of type tn.sante.concours.dto.ConcoursRequestDTO
+[ERROR] /C:/Users/syrine/Desktop/PFE/BACKEND/residanat-backend-concours-service/src/main/java/tn/sante/concours/services/ConcoursServiceImpl.java:[63,95] cannot find symbol
+  symbol:   method getAnnee()
+  location: variable requestDTO of type tn.sante.concours.dto.ConcoursRequestDTO
+[ERROR] /C:/Users/syrine/Desktop/PFE/BACKEND/residanat-backend-concours-service/src/main/java/tn/sante/concours/services/ConcoursServiceImpl.java:[67,44] cannot find symbol
+  symbol:   method getTypeConcours()
+  location: variable requestDTO of type tn.sante.concours.dto.ConcoursRequestDTO
+[ERROR] /C:/Users/syrine/Desktop/PFE/BACKEND/residanat-backend-concours-service/src/main/java/tn/sante/concours/services/ConcoursServiceImpl.java:[68,39] cannot find symbol
+  symbol:   method getLibelle()
+  location: variable requestDTO of type tn.sante.concours.dto.ConcoursRequestDTO
+[ERROR] /C:/Users/syrine/Desktop/PFE/BACKEND/residanat-backend-concours-service/src/main/java/tn/sante/concours/services/ConcoursServiceImpl.java:[69,37] cannot find symbol
+  symbol:   method getAnnee()
+  location: variable requestDTO of type tn.sante.concours.dto.ConcoursRequestDTO
+[ERROR] /C:/Users/syrine/Desktop/PFE/BACKEND/residanat-backend-concours-service/src/main/java/tn/sante/concours/services/ConcoursServiceImpl.java:[70,23] cannot find symbol
+  symbol:   method getStatutResultat()
+  location: variable requestDTO of type tn.sante.concours.dto.ConcoursRequestDTO
+[ERROR] /C:/Users/syrine/Desktop/PFE/BACKEND/residanat-backend-concours-service/src/main/java/tn/sante/concours/services/ConcoursServiceImpl.java:[71,50] cannot find symbol
+  symbol:   method getStatutResultat()
+  location: variable requestDTO of type tn.sante.concours.dto.ConcoursRequestDTO
+[ERROR] /C:/Users/syrine/Desktop/PFE/BACKEND/residanat-backend-concours-service/src/main/java/tn/sante/concours/services/ConcoursServiceImpl.java:[73,17] cannot find symbol
+  symbol:   method setUpdatedBy(java.lang.String)
+  location: variable concours of type tn.sante.concours.models.Concours
+[ERROR] /C:/Users/syrine/Desktop/PFE/BACKEND/residanat-backend-concours-service/src/main/java/tn/sante/concours/services/ConcoursServiceImpl.java:[81,9] cannot find symbol
+  symbol:   variable log
+  location: class tn.sante.concours.services.ConcoursServiceImpl
+[ERROR] /C:/Users/syrine/Desktop/PFE/BACKEND/residanat-backend-concours-service/src/main/java/tn/sante/concours/services/ConcoursServiceImpl.java:[127,31] cannot find symbol
+  symbol:   method <tn.sante.concours.dto.ConcoursResponseDTO>builder()
+  location: class tn.sante.concours.dto.PageResponseDTO
+[ERROR] /C:/Users/syrine/Desktop/PFE/BACKEND/residanat-backend-concours-service/src/main/java/tn/sante/concours/services/ConcoursServiceImpl.java:[139,9] cannot find symbol
+  symbol:   variable log
+  location: class tn.sante.concours.services.ConcoursServiceImpl
+[ERROR] /C:/Users/syrine/Desktop/PFE/BACKEND/residanat-backend-concours-service/src/main/java/tn/sante/concours/services/ConcoursServiceImpl.java:[145,9] cannot find symbol
+  symbol:   variable log
+  location: class tn.sante.concours.services.ConcoursServiceImpl
+[ERROR] /C:/Users/syrine/Desktop/PFE/BACKEND/residanat-backend-concours-service/src/main/java/tn/sante/concours/services/ConcoursServiceImpl.java:[152,17] cannot find symbol
+  symbol:   method setStatutResultat(tn.sante.concours.models.StatutResultat)
+  location: variable concours of type tn.sante.concours.models.Concours
+[ERROR] /C:/Users/syrine/Desktop/PFE/BACKEND/residanat-backend-concours-service/src/main/java/tn/sante/concours/services/ConcoursServiceImpl.java:[153,17] cannot find symbol
+  symbol:   method setUpdatedBy(java.lang.String)
+  location: variable concours of type tn.sante.concours.models.Concours
+[ERROR] /C:/Users/syrine/Desktop/PFE/BACKEND/residanat-backend-concours-service/src/main/java/tn/sante/concours/services/ConcoursServiceImpl.java:[167,35] cannot find symbol
+  symbol:   method builder()
+  location: class tn.sante.concours.dto.ConcoursResponseDTO
+[ERROR] /C:/Users/syrine/Desktop/PFE/BACKEND/residanat-backend-concours-service/src/main/java/tn/sante/concours/services/ConcoursServiceImpl.java:[168,29] cannot find symbol
+  symbol:   method getId()
+  location: variable concours of type tn.sante.concours.models.Concours
+[ERROR] /C:/Users/syrine/Desktop/PFE/BACKEND/residanat-backend-concours-service/src/main/java/tn/sante/concours/services/ConcoursServiceImpl.java:[169,39] cannot find symbol
+  symbol:   method getTypeConcours()
+  location: variable concours of type tn.sante.concours.models.Concours
+[ERROR] /C:/Users/syrine/Desktop/PFE/BACKEND/residanat-backend-concours-service/src/main/java/tn/sante/concours/services/ConcoursServiceImpl.java:[170,34] cannot find symbol
+  symbol:   method getLibelle()
+  location: variable concours of type tn.sante.concours.models.Concours
+[ERROR] /C:/Users/syrine/Desktop/PFE/BACKEND/residanat-backend-concours-service/src/main/java/tn/sante/concours/services/ConcoursServiceImpl.java:[171,32] cannot find symbol
+  symbol:   method getAnnee()
+  location: variable concours of type tn.sante.concours.models.Concours
+[ERROR] /C:/Users/syrine/Desktop/PFE/BACKEND/residanat-backend-concours-service/src/main/java/tn/sante/concours/services/ConcoursServiceImpl.java:[172,41] cannot find symbol
+  symbol:   method getStatutResultat()
+  location: variable concours of type tn.sante.concours.models.Concours
+[ERROR] /C:/Users/syrine/Desktop/PFE/BACKEND/residanat-backend-concours-service/src/main/java/tn/sante/concours/services/ConcoursServiceImpl.java:[173,39] cannot find symbol
+  symbol:   method getDateCreation()
+  location: variable concours of type tn.sante.concours.models.Concours
+[ERROR] /C:/Users/syrine/Desktop/PFE/BACKEND/residanat-backend-concours-service/src/main/java/tn/sante/concours/services/ConcoursServiceImpl.java:[174,43] cannot find symbol
+  symbol:   method getDateModification()
+  location: variable concours of type tn.sante.concours.models.Concours
+[ERROR] /C:/Users/syrine/Desktop/PFE/BACKEND/residanat-backend-concours-service/src/main/java/tn/sante/concours/services/ConcoursServiceImpl.java:[175,36] cannot find symbol
+  symbol:   method getCreatedBy()
+  location: variable concours of type tn.sante.concours.models.Concours
+[ERROR] /C:/Users/syrine/Desktop/PFE/BACKEND/residanat-backend-concours-service/src/main/java/tn/sante/concours/services/ConcoursServiceImpl.java:[176,36] cannot find symbol
+  symbol:   method getUpdatedBy()
+  location: variable concours of type tn.sante.concours.models.Concours
+[INFO] 40 errors 
+[INFO] -------------------------------------------------------------
+[INFO] ------------------------------------------------------------------------
+[INFO] BUILD FAILURE
+[INFO] ------------------------------------------------------------------------
+[INFO] Total time:  6.991 s
+[INFO] Finished at: 2026-02-25T22:48:42+01:00
+[INFO] ------------------------------------------------------------------------
+[ERROR] Failed to execute goal org.apache.maven.plugins:maven-compiler-plugin:3.13.0:compile (default-compile) on project residanat-backend-concours-service: Compilation failure: Compilation failure: 
+[ERROR] /C:/Users/syrine/Desktop/PFE/BACKEND/residanat-backend-concours-service/src/main/java/tn/sante/concours/controllers/ConcoursController.java:[28,35] variable concoursService not initialized in the default constructor
+[ERROR] /C:/Users/syrine/Desktop/PFE/BACKEND/residanat-backend-concours-service/src/main/java/tn/sante/concours/services/ConcoursServiceImpl.java:[34,9] cannot find symbol
+[ERROR]   symbol:   variable log
+[ERROR]   location: class tn.sante.concours.services.ConcoursServiceImpl
+[ERROR] /C:/Users/syrine/Desktop/PFE/BACKEND/residanat-backend-concours-service/src/main/java/tn/sante/concours/services/ConcoursServiceImpl.java:[34,79] cannot find symbol
+[ERROR]   symbol:   method getLibelle()
+[ERROR]   location: variable requestDTO of type tn.sante.concours.dto.ConcoursRequestDTO
+[ERROR] /C:/Users/syrine/Desktop/PFE/BACKEND/residanat-backend-concours-service/src/main/java/tn/sante/concours/services/ConcoursServiceImpl.java:[36,66] cannot find symbol
+[ERROR]   symbol:   method getLibelle()
+[ERROR]   location: variable requestDTO of type tn.sante.concours.dto.ConcoursRequestDTO
+[ERROR] /C:/Users/syrine/Desktop/PFE/BACKEND/residanat-backend-concours-service/src/main/java/tn/sante/concours/services/ConcoursServiceImpl.java:[36,91] cannot find symbol
+[ERROR]   symbol:   method getAnnee()
+[ERROR]   location: variable requestDTO of type tn.sante.concours.dto.ConcoursRequestDTO
+[ERROR] /C:/Users/syrine/Desktop/PFE/BACKEND/residanat-backend-concours-service/src/main/java/tn/sante/concours/services/ConcoursServiceImpl.java:[40,37] cannot find symbol
+[ERROR]   symbol:   method builder()
+[ERROR]   location: class tn.sante.concours.models.Concours
+[ERROR] /C:/Users/syrine/Desktop/PFE/BACKEND/residanat-backend-concours-service/src/main/java/tn/sante/concours/services/ConcoursServiceImpl.java:[41,41] cannot find symbol
+[ERROR]   symbol:   method getTypeConcours()
+[ERROR]   location: variable requestDTO of type tn.sante.concours.dto.ConcoursRequestDTO
+[ERROR] /C:/Users/syrine/Desktop/PFE/BACKEND/residanat-backend-concours-service/src/main/java/tn/sante/concours/services/ConcoursServiceImpl.java:[42,36] cannot find symbol
+[ERROR]   symbol:   method getLibelle()
+[ERROR]   location: variable requestDTO of type tn.sante.concours.dto.ConcoursRequestDTO
+[ERROR] /C:/Users/syrine/Desktop/PFE/BACKEND/residanat-backend-concours-service/src/main/java/tn/sante/concours/services/ConcoursServiceImpl.java:[43,34] cannot find symbol
+[ERROR]   symbol:   method getAnnee()
+[ERROR]   location: variable requestDTO of type tn.sante.concours.dto.ConcoursRequestDTO
+[ERROR] /C:/Users/syrine/Desktop/PFE/BACKEND/residanat-backend-concours-service/src/main/java/tn/sante/concours/services/ConcoursServiceImpl.java:[44,43] cannot find symbol
+[ERROR]   symbol:   method getStatutResultat()
+[ERROR]   location: variable requestDTO of type tn.sante.concours.dto.ConcoursRequestDTO
+[ERROR] /C:/Users/syrine/Desktop/PFE/BACKEND/residanat-backend-concours-service/src/main/java/tn/sante/concours/services/ConcoursServiceImpl.java:[44,84] cannot find symbol
+[ERROR]   symbol:   method getStatutResultat()
+[ERROR]   location: variable requestDTO of type tn.sante.concours.dto.ConcoursRequestDTO
+[ERROR] /C:/Users/syrine/Desktop/PFE/BACKEND/residanat-backend-concours-service/src/main/java/tn/sante/concours/services/ConcoursServiceImpl.java:[55,9] cannot find symbol
+[ERROR]   symbol:   variable log
+[ERROR]   location: class tn.sante.concours.services.ConcoursServiceImpl
+[ERROR] /C:/Users/syrine/Desktop/PFE/BACKEND/residanat-backend-concours-service/src/main/java/tn/sante/concours/services/ConcoursServiceImpl.java:[61,23] cannot find symbol
+[ERROR]   symbol:   method getLibelle()
+[ERROR]   location: variable concours of type tn.sante.concours.models.Concours
+[ERROR] /C:/Users/syrine/Desktop/PFE/BACKEND/residanat-backend-concours-service/src/main/java/tn/sante/concours/services/ConcoursServiceImpl.java:[61,54] cannot find symbol
+[ERROR]   symbol:   method getLibelle()
+[ERROR]   location: variable requestDTO of type tn.sante.concours.dto.ConcoursRequestDTO
+[ERROR] /C:/Users/syrine/Desktop/PFE/BACKEND/residanat-backend-concours-service/src/main/java/tn/sante/concours/services/ConcoursServiceImpl.java:[62,29] cannot find symbol
+[ERROR]   symbol:   method getAnnee()
+[ERROR]   location: variable concours of type tn.sante.concours.models.Concours
+[ERROR] /C:/Users/syrine/Desktop/PFE/BACKEND/residanat-backend-concours-service/src/main/java/tn/sante/concours/services/ConcoursServiceImpl.java:[62,58] cannot find symbol
+[ERROR]   symbol:   method getAnnee()
+[ERROR]   location: variable requestDTO of type tn.sante.concours.dto.ConcoursRequestDTO
+[ERROR] /C:/Users/syrine/Desktop/PFE/BACKEND/residanat-backend-concours-service/src/main/java/tn/sante/concours/services/ConcoursServiceImpl.java:[63,70] cannot find symbol
+[ERROR]   symbol:   method getLibelle()
+[ERROR]   location: variable requestDTO of type tn.sante.concours.dto.ConcoursRequestDTO
+[ERROR] /C:/Users/syrine/Desktop/PFE/BACKEND/residanat-backend-concours-service/src/main/java/tn/sante/concours/services/ConcoursServiceImpl.java:[63,95] cannot find symbol
+[ERROR]   symbol:   method getAnnee()
+[ERROR]   location: variable requestDTO of type tn.sante.concours.dto.ConcoursRequestDTO
+[ERROR] /C:/Users/syrine/Desktop/PFE/BACKEND/residanat-backend-concours-service/src/main/java/tn/sante/concours/services/ConcoursServiceImpl.java:[67,44] cannot find symbol
+[ERROR]   symbol:   method getTypeConcours()
+[ERROR]   location: variable requestDTO of type tn.sante.concours.dto.ConcoursRequestDTO
+[ERROR] /C:/Users/syrine/Desktop/PFE/BACKEND/residanat-backend-concours-service/src/main/java/tn/sante/concours/services/ConcoursServiceImpl.java:[68,39] cannot find symbol
+[ERROR]   symbol:   method getLibelle()
+[ERROR]   location: variable requestDTO of type tn.sante.concours.dto.ConcoursRequestDTO
+[ERROR] /C:/Users/syrine/Desktop/PFE/BACKEND/residanat-backend-concours-service/src/main/java/tn/sante/concours/services/ConcoursServiceImpl.java:[69,37] cannot find symbol
+[ERROR]   symbol:   method getAnnee()
+[ERROR]   location: variable requestDTO of type tn.sante.concours.dto.ConcoursRequestDTO
+[ERROR] /C:/Users/syrine/Desktop/PFE/BACKEND/residanat-backend-concours-service/src/main/java/tn/sante/concours/services/ConcoursServiceImpl.java:[70,23] cannot find symbol
+[ERROR]   symbol:   method getStatutResultat()
+[ERROR]   location: variable requestDTO of type tn.sante.concours.dto.ConcoursRequestDTO
+[ERROR] /C:/Users/syrine/Desktop/PFE/BACKEND/residanat-backend-concours-service/src/main/java/tn/sante/concours/services/ConcoursServiceImpl.java:[71,50] cannot find symbol
+[ERROR]   symbol:   method getStatutResultat()
+[ERROR]   location: variable requestDTO of type tn.sante.concours.dto.ConcoursRequestDTO
+[ERROR] /C:/Users/syrine/Desktop/PFE/BACKEND/residanat-backend-concours-service/src/main/java/tn/sante/concours/services/ConcoursServiceImpl.java:[73,17] cannot find symbol
+[ERROR]   symbol:   method setUpdatedBy(java.lang.String)
+[ERROR]   location: variable concours of type tn.sante.concours.models.Concours
+[ERROR] /C:/Users/syrine/Desktop/PFE/BACKEND/residanat-backend-concours-service/src/main/java/tn/sante/concours/services/ConcoursServiceImpl.java:[81,9] cannot find symbol
+[ERROR]   symbol:   variable log
+[ERROR]   location: class tn.sante.concours.services.ConcoursServiceImpl
+[ERROR] /C:/Users/syrine/Desktop/PFE/BACKEND/residanat-backend-concours-service/src/main/java/tn/sante/concours/services/ConcoursServiceImpl.java:[127,31] cannot find symbol
+[ERROR]   symbol:   method <tn.sante.concours.dto.ConcoursResponseDTO>builder()
+[ERROR]   location: class tn.sante.concours.dto.PageResponseDTO
+[ERROR] /C:/Users/syrine/Desktop/PFE/BACKEND/residanat-backend-concours-service/src/main/java/tn/sante/concours/services/ConcoursServiceImpl.java:[139,9] cannot find symbol
+[ERROR]   symbol:   variable log
+[ERROR]   location: class tn.sante.concours.services.ConcoursServiceImpl
+[ERROR] /C:/Users/syrine/Desktop/PFE/BACKEND/residanat-backend-concours-service/src/main/java/tn/sante/concours/services/ConcoursServiceImpl.java:[145,9] cannot find symbol
+[ERROR]   symbol:   variable log
+[ERROR]   location: class tn.sante.concours.services.ConcoursServiceImpl
+[ERROR] /C:/Users/syrine/Desktop/PFE/BACKEND/residanat-backend-concours-service/src/main/java/tn/sante/concours/services/ConcoursServiceImpl.java:[152,17] cannot find symbol
+[ERROR]   symbol:   method setStatutResultat(tn.sante.concours.models.StatutResultat)
+[ERROR]   location: variable concours of type tn.sante.concours.models.Concours
+[ERROR] /C:/Users/syrine/Desktop/PFE/BACKEND/residanat-backend-concours-service/src/main/java/tn/sante/concours/services/ConcoursServiceImpl.java:[153,17] cannot find symbol
+[ERROR]   symbol:   method setUpdatedBy(java.lang.String)
+[ERROR]   location: variable concours of type tn.sante.concours.models.Concours
+[ERROR] /C:/Users/syrine/Desktop/PFE/BACKEND/residanat-backend-concours-service/src/main/java/tn/sante/concours/services/ConcoursServiceImpl.java:[167,35] cannot find symbol
+[ERROR]   symbol:   method builder()
+[ERROR]   location: class tn.sante.concours.dto.ConcoursResponseDTO
+[ERROR] /C:/Users/syrine/Desktop/PFE/BACKEND/residanat-backend-concours-service/src/main/java/tn/sante/concours/services/ConcoursServiceImpl.java:[168,29] cannot find symbol
+[ERROR]   symbol:   method getId()
+[ERROR]   location: variable concours of type tn.sante.concours.models.Concours
+[ERROR] /C:/Users/syrine/Desktop/PFE/BACKEND/residanat-backend-concours-service/src/main/java/tn/sante/concours/services/ConcoursServiceImpl.java:[169,39] cannot find symbol
+[ERROR]   symbol:   method getTypeConcours()
+[ERROR]   location: variable concours of type tn.sante.concours.models.Concours
+[ERROR] /C:/Users/syrine/Desktop/PFE/BACKEND/residanat-backend-concours-service/src/main/java/tn/sante/concours/services/ConcoursServiceImpl.java:[170,34] cannot find symbol
+[ERROR]   symbol:   method getLibelle()
+[ERROR]   location: variable concours of type tn.sante.concours.models.Concours
+[ERROR] /C:/Users/syrine/Desktop/PFE/BACKEND/residanat-backend-concours-service/src/main/java/tn/sante/concours/services/ConcoursServiceImpl.java:[171,32] cannot find symbol
+[ERROR]   symbol:   method getAnnee()
+[ERROR]   location: variable concours of type tn.sante.concours.models.Concours
+[ERROR] /C:/Users/syrine/Desktop/PFE/BACKEND/residanat-backend-concours-service/src/main/java/tn/sante/concours/services/ConcoursServiceImpl.java:[172,41] cannot find symbol
+[ERROR]   symbol:   method getStatutResultat()
+[ERROR]   location: variable concours of type tn.sante.concours.models.Concours
+[ERROR] /C:/Users/syrine/Desktop/PFE/BACKEND/residanat-backend-concours-service/src/main/java/tn/sante/concours/services/ConcoursServiceImpl.java:[173,39] cannot find symbol
+[ERROR]   symbol:   method getDateCreation()
+[ERROR]   location: variable concours of type tn.sante.concours.models.Concours
+[ERROR] /C:/Users/syrine/Desktop/PFE/BACKEND/residanat-backend-concours-service/src/main/java/tn/sante/concours/services/ConcoursServiceImpl.java:[174,43] cannot find symbol
+[ERROR]   symbol:   method getDateModification()
+[ERROR]   location: variable concours of type tn.sante.concours.models.Concours
+[ERROR] /C:/Users/syrine/Desktop/PFE/BACKEND/residanat-backend-concours-service/src/main/java/tn/sante/concours/services/ConcoursServiceImpl.java:[175,36] cannot find symbol
+[ERROR]   symbol:   method getCreatedBy()
+[ERROR]   location: variable concours of type tn.sante.concours.models.Concours
+[ERROR] /C:/Users/syrine/Desktop/PFE/BACKEND/residanat-backend-concours-service/src/main/java/tn/sante/concours/services/ConcoursServiceImpl.java:[176,36] cannot find symbol
+[ERROR]   symbol:   method getUpdatedBy()
+[ERROR]   location: variable concours of type tn.sante.concours.models.Concours
+[ERROR] -> [Help 1]
+[ERROR] 
+[ERROR] To see the full stack trace of the errors, re-run Maven with the -e switch.
+[ERROR] Re-run Maven using the -X switch to enable full debug logging.
+[ERROR] 
+[ERROR] For more information about the errors and possible solutions, please read the following articles:
+[ERROR] [Help 1] http://cwiki.apache.org/confluence/display/MAVEN/MojoFailureException

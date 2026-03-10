@@ -1,0 +1,280 @@
+<div class="admin-page" (click)="closeDropdown()">
+    <div class="page-header-v5">
+        <div class="header-content">
+            <h1 class="page-title">Gestion des concours</h1>
+            <p class="page-subtitle">Pilotez vos sessions de recrutement avec efficacité</p>
+        </div>
+        <button class="btn-primary-v5" (click)="openCreateModal()">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14" /></svg>
+            <span>Nouveau concours</span>
+        </button>
+    </div>
+
+    <!-- Separate Stats Cards -->
+    <div class="stats-container-v5">
+        <div class="stat-card-v5 total">
+            <div class="card-inner">
+                <div class="icon-wrapper">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                </div>
+                <div class="info">
+                    <span class="label">Total Concours</span>
+                    <p class="value">{{stats.total}}</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="stat-card-v5 public">
+            <div class="card-inner">
+                <div class="icon-wrapper">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                </div>
+                <div class="info">
+                    <span class="label">Sessions Publiques</span>
+                    <p class="value">{{stats.publies}}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Search Bar - Repositioned -->
+    <div class="search-toolbar-v5">
+        <div class="search-field">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" /></svg>
+            <input type="text" [(ngModel)]="searchQuery" placeholder="Rechercher un concours spécifique..." class="search-input">
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="dashboard-content">
+        <div class="section-title-row">
+            <h2 class="section-title">Liste des Sessions</h2>
+            <div class="filters-placeholder">
+                <!-- Can add quick filters here later -->
+            </div>
+        </div>
+
+        <div class="concours-explorer">
+            <div *ngFor="let concours of filteredConcours" class="concours-item glass-card" 
+                 [class.status-publie]="concours.statut === 'publie'"
+                 [class.status-archive]="concours.statut === 'archive'">
+                
+                <div class="item-main">
+                    <div class="item-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z"/>
+                            <path d="M8 7h6"/><path d="M8 11h8"/>
+                        </svg>
+                    </div>
+                    
+                    <div class="item-details">
+                        <div class="item-header-row">
+                            <h3 class="item-title">{{concours.titre}}</h3>
+                            <div class="status-indicator">
+                                <span class="dot"></span>
+                                <span class="label">
+                                    {{concours.statut === 'non_publie' ? 'En attente' : (concours.statut === 'publie' ? 'Publié' : 'Archivé')}}
+                                </span>
+                            </div>
+                        </div>
+                        
+                        <div class="item-meta-grid">
+                            <div class="meta-block">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <rect width="18" height="18" x="3" y="4" rx="2" ry="2" /><line x1="16" x2="16" y1="2" y2="6" /><line x1="8" x2="8" y1="2" y2="6" /><line x1="3" x2="21" y1="10" y2="10" />
+                                </svg>
+                                <span>{{concours.dateDebut | date:'dd MMM yyyy'}} — {{concours.dateFin | date:'dd MMM yyyy'}}</span>
+                            </div>
+                            <div class="meta-block">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
+                                </svg>
+                                <span><strong style="color: #475569;">{{concours.nbCandidats || 0}}</strong> Candidats inscrits</span>
+                            </div>
+                            <div class="meta-block">
+                                <div class="type-tag">{{concours.type}}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="item-actions">
+                    <button class="action-btn-primary" (click)="togglePublish(concours); $event.stopPropagation()"
+                        [disabled]="concours.statut === 'archive'"
+                        [class.btn-depublish]="concours.statut === 'publie'">
+                        <ng-container *ngIf="concours.statut !== 'publie'">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                                <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z" /><circle cx="12" cy="12" r="3" />
+                            </svg>
+                            <span>Publier</span>
+                        </ng-container>
+                        <ng-container *ngIf="concours.statut === 'publie'">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                                <path d="M10.73 5.08A10.43 10.43 0 0 1 12 5c7 0 10 7 10 7a13.16 13.16 0 0 1-1.67 2.68" /><path d="M6.61 6.61A13.52 13.52 0 0 0 2 12s3 7 10 7a9.74 9.74 0 0 0 5.39-1.61" /><line x1="2" x2="22" y1="2" y2="22" />
+                            </svg>
+                            <span>Dépublier</span>
+                        </ng-container>
+                    </button>
+                    
+                    <div class="item-dropdown-wrapper">
+                        <button class="menu-trigger" (click)="toggleDropdown($event, concours.id)">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                                <circle cx="12" cy="12" r="1" /><circle cx="12" cy="5" r="1" /><circle cx="12" cy="19" r="1" />
+                            </svg>
+                        </button>
+
+                        <div class="premium-menu" *ngIf="activeDropdownId === concours.id" (click)="$event.stopPropagation()">
+                            <button class="menu-item" (click)="openEditSheet(concours)">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z" /><path d="m15 5 4 4" />
+                                </svg>
+                                Modifier la session
+                            </button>
+                            <div class="menu-divider"></div>
+                            <button class="menu-item danger" (click)="deleteConcours(concours.id)">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M3 6h18" /><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" /><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" />
+                                </svg>
+                                Supprimer définitivement
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Concours Sheet -->
+    <app-edit-concours-sheet [concours]="selectedConcours" [isOpen]="isEditSheetOpen" (close)="closeEditSheet()"
+        (save)="saveEdit($event)">
+    </app-edit-concours-sheet>
+
+    <!-- Premium Alerts -->
+    <app-premium-alert [isOpen]="alertConfig.isOpen" [type]="alertConfig.type" [title]="alertConfig.title"
+        [message]="alertConfig.message" [confirmText]="alertConfig.confirmText" [cancelText]="alertConfig.cancelText"
+        [showCancel]="alertConfig.showCancel" [selectedItem]="alertConfig.selectedItem" (confirm)="onAlertConfirm()"
+        (close)="alertConfig.isOpen = false">
+    </app-premium-alert>
+
+    <div class="modal-overlay" *ngIf="isCreateModalOpen" (click)="closeCreateModal()">
+        <div class="modal-container elevation-premium" (click)="$event.stopPropagation()">
+            <div class="modal-header-premium">
+                <div class="header-icon-box">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                    </svg>
+                </div>
+                <div class="header-text">
+                    <h2 class="modal-title">Nouveau concours</h2>
+                    <p class="modal-desc">Configurez une nouvelle session de recrutement</p>
+                </div>
+                <button class="close-btn" (click)="closeCreateModal()">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M18 6 6 18"/><path d="m6 6 12 12"/>
+                    </svg>
+                </button>
+            </div>
+
+            <div class="modal-body-premium">
+                <div class="form-field-premium">
+                    <label>Titre du concours</label>
+                    <div class="input-wrapper">
+                        <span class="input-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1-2.5-2.5Z"/><path d="M8 7h6"/><path d="M8 11h8"/>
+                            </svg>
+                        </span>
+                        <input type="text" [(ngModel)]="newConcours.titre" placeholder="Ex: Concours National de Residanat 2026">
+                    </div>
+                </div>
+
+                <div class="grid-2col">
+                    <div class="form-field-premium">
+                        <label>Année</label>
+                        <div class="input-wrapper">
+                            <span class="input-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/>
+                                </svg>
+                            </span>
+                            <input type="number" [(ngModel)]="newConcours.annee">
+                        </div>
+                    </div>
+                    <div class="form-field-premium">
+                        <label>Type</label>
+                        <div class="custom-select-wrapper" (click)="toggleTypeDropdown($event)">
+                            <div class="custom-select-trigger" [class.trigger-active]="showTypeDropdown">
+                                <span class="input-icon">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <circle cx="12" cy="12" r="10"/><path d="m16 12-4 4-4-4"/><path d="M12 8v7"/>
+                                    </svg>
+                                </span>
+                                <span class="trigger-text">{{ newConcours.type }}</span>
+                                <span class="chevron" [class.rotate]="showTypeDropdown">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="m6 9 6 6 6-6"/>
+                                    </svg>
+                                </span>
+                            </div>
+                            <div class="custom-dropdown-options" *ngIf="showTypeDropdown">
+                                <div class="option-item" (click)="selectType('National')">
+                                    <span class="option-label">National</span>
+                                    <span class="check" *ngIf="newConcours.type === 'National'">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                                    </span>
+                                </div>
+                                <div class="option-item" (click)="selectType('Supplementaire')">
+                                    <span class="option-label">Supplémentaire</span>
+                                    <span class="check" *ngIf="newConcours.type === 'Supplementaire'">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid-2col">
+                    <div class="form-field-premium">
+                        <label>Date de début</label>
+                        <div class="input-wrapper">
+                            <span class="input-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+                                </svg>
+                            </span>
+                            <input type="date" [(ngModel)]="newConcours.dateDebut" [class.input-error]="newConcours.dateDebut && newConcours.dateFin && newConcours.dateDebut > newConcours.dateFin">
+                        </div>
+                    </div>
+                    <div class="form-field-premium">
+                        <label>Date de fin</label>
+                        <div class="input-wrapper">
+                            <span class="input-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                                </svg>
+                            </span>
+                            <input type="date" [(ngModel)]="newConcours.dateFin" [class.input-error]="newConcours.dateDebut && newConcours.dateFin && newConcours.dateDebut > newConcours.dateFin">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="error-banner" *ngIf="newConcours.dateDebut && newConcours.dateFin && newConcours.dateDebut > newConcours.dateFin">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+                    </svg>
+                    <span>La date de début doit être avant la date de fin.</span>
+                </div>
+            </div>
+
+            <div class="modal-footer-premium">
+                <button class="btn-cancel-premium" (click)="closeCreateModal()">Annuler</button>
+                <button class="btn-submit-premium" (click)="createConcours()">
+                    <span>Créer le concours</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

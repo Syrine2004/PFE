@@ -1,0 +1,348 @@
+<div class="inscription-page">
+    <!-- Banner Mini -->
+    <section class="concours-banner" *ngIf="concours">
+        <div class="banner-left">
+            <div class="banner-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"
+                    class="lucide lucide-graduation-cap">
+                    <path d="M22 10v6M2 10l10-5 10 5-10 5z" />
+                    <path d="M6 12v5c3 3 9 3 12 0v-5" />
+                </svg>
+            </div>
+            <div class="banner-info">
+                <h2 class="banner-title">{{concours.libelle}} — Session {{concours.annee}}</h2>
+                <div class="banner-meta">
+                    <span class="meta-item">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                            class="lucide lucide-calendar-days">
+                            <rect width="18" height="18" x="3" y="4" rx="2" ry="2" />
+                            <line x1="16" x2="16" y1="2" y2="6" />
+                            <line x1="8" x2="8" y1="2" y2="6" />
+                            <line x1="3" x2="21" y1="10" y2="10" />
+                            <path d="M8 14h.01" />
+                            <path d="M12 14h.01" />
+                            <path d="M16 14h.01" />
+                            <path d="M8 18h.01" />
+                            <path d="M12 18h.01" />
+                            <path d="M16 18h.01" />
+                        </svg>
+                        <span *ngIf="concours.dateFin" style="margin-left: 6px;">Date limite :
+                            <strong>{{concours.dateFin | date:'dd/MM/yyyy'}}</strong></span>
+                        <span *ngIf="!concours.dateFin" style="margin-left: 6px;">Date limite non définie</span>
+                    </span>
+                    <span class="meta-dot"></span>
+                    <span class="meta-item">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                            class="lucide lucide-map-pin">
+                            <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z" />
+                            <circle cx="12" cy="10" r="3" />
+                        </svg>
+                        Tunisie ({{concours.typeConcours}})
+                    </span>
+                    <span class="meta-dot"></span>
+                    <span class="meta-item">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                            class="lucide lucide-users">
+                            <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+                            <circle cx="9" cy="7" r="4" />
+                            <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
+                            <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+                        </svg>
+                        Participez !
+                    </span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div *ngIf="!concours" class="concours-banner" style="justify-content: center; opacity: 0.7;">
+        <p>Chargement des informations du concours...</p>
+    </div>
+
+    <!-- Page Header -->
+    <header class="page-header">
+        <h1 class="page-title">Inscription au concours</h1>
+        <p class="page-subtitle">Remplissez le formulaire pour valider votre candidature. Une convocation vous sera
+            générée automatiquement.</p>
+    </header>
+
+    <!-- Stepper -->
+    <div class="stepper">
+        <div class="step" [ngClass]="{'active': currentStep === 1, 'completed': currentStep > 1}">
+            <div class="step-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" />
+                    <circle cx="12" cy="7" r="4" />
+                </svg>
+            </div>
+            <span class="step-label">Identité</span>
+        </div>
+        <div class="step-line"></div>
+        <div class="step" [ngClass]="{'active': currentStep === 2, 'completed': currentStep > 2}">
+            <div class="step-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z" />
+                    <polyline points="14 2 14 8 20 8" />
+                </svg>
+            </div>
+            <span class="step-label">Documents</span>
+        </div>
+        <div class="step-line"></div>
+        <div class="step" [ngClass]="{'active': currentStep === 3}">
+            <div class="step-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+                    <polyline points="22 4 12 14.01 9 11.01" />
+                </svg>
+            </div>
+            <span class="step-label">Confirmation</span>
+        </div>
+    </div>
+
+    <!-- Form Card -->
+    <div class="form-container">
+        <!-- Locked Alert -->
+        <div class="locked-alert" *ngIf="isDossierLocked">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                class="lucide lucide-lock">
+                <rect width="18" height="11" x="3" y="11" rx="2" ry="2" />
+                <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+            </svg>
+            <div>
+                <strong>Dossier verrouillé</strong>
+                <p>Votre dossier a déjà été traité par l'administration (Accepté ou Rejeté). Vous ne pouvez plus
+                    modifier vos informations ni vos documents.</p>
+            </div>
+        </div>
+
+        <div *ngIf="currentStep === 1" class="step-content-box" [formGroup]="inscriptionForm">
+            <h2 class="form-title">Informations personnelles</h2>
+            <div class="form-grid">
+                <div class="field-group">
+                    <label>Nom</label>
+                    <input type="text" placeholder="Votre nom" class="form-input" formControlName="nom"
+                        [class.invalid]="isInvalid('nom')" [attr.disabled]="isDossierLocked ? true : null">
+                </div>
+                <div class="field-group">
+                    <label>Prénom</label>
+                    <input type="text" placeholder="Votre prénom" class="form-input" formControlName="prenom"
+                        [class.invalid]="isInvalid('prenom')">
+                </div>
+                <div class="field-group">
+                    <label>Numéro CIN/Passeport</label>
+                    <input type="text" placeholder="00000000 / Passeport" class="form-input" formControlName="cin"
+                        [class.invalid]="isInvalid('cin')">
+                </div>
+                <div class="field-group">
+                    <label>Date de naissance</label>
+                    <input type="date" class="form-input" formControlName="dateNaissance"
+                        [class.invalid]="isInvalid('dateNaissance')">
+                </div>
+                <div class="field-group">
+                    <label>Nationalité</label>
+                    <input type="text" placeholder="Votre nationalité" class="form-input" formControlName="nationalite"
+                        [class.invalid]="isInvalid('nationalite')">
+                </div>
+                <div class="field-group">
+                    <label>Date de diplôme</label>
+                    <input type="date" class="form-input" formControlName="dateDiplome"
+                        [class.invalid]="isInvalid('dateDiplome')">
+                </div>
+                <div class="field-group full">
+                    <label>Faculté de médecine</label>
+                    <select class="form-select" (change)="onFaculteChange($event)" formControlName="faculte"
+                        [class.invalid]="isInvalid('faculte')">
+                        <option value="" disabled selected>Choisir votre faculté</option>
+                        <option *ngFor="let f of facultes" [value]="f.value">{{ f.label }}</option>
+                        <option value="autre">Autre</option>
+                    </select>
+                </div>
+                <div class="field-group full" *ngIf="showAutreFaculte">
+                    <label>Précisez votre faculté</label>
+                    <input type="text" placeholder="Nom de la faculté" class="form-input"
+                        formControlName="autreFaculte">
+                </div>
+            </div>
+        </div>
+
+        <!-- STEP 2: Documents -->
+        <div *ngIf="currentStep === 2" class="step-content-box">
+            <h2 class="form-title">Documents justificatifs</h2>
+            <p class="form-desc">Veuillez télécharger les documents requis au format PDF ou JPG.</p>
+
+            <div class="upload-grid">
+                <div class="upload-card" [class.uploaded]="uploadedDocs.has(documentType)">
+                    <div class="upload-icon">
+                        <svg *ngIf="!uploading.get(documentType)" xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                            viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z" />
+                            <polyline points="14 2 14 8 20 8" />
+                            <path d="M12 18v-6" />
+                            <path d="m9 15 3 3 3-3" />
+                        </svg>
+                        <div *ngIf="uploading.get(documentType)" class="spinner-small"></div>
+                    </div>
+                    <div class="upload-info">
+                        <span class="upload-label">Copie {{ documentType === 'CIN' ? 'de la CIN' : 'du Passeport' }}</span>
+                        <span class="upload-hint">{{ documentType === 'CIN' ? 'Recto-Verso' : 'Page principale' }}</span>
+                    </div>
+                    <label class="upload-btn" *ngIf="!isDossierLocked">
+                        {{ uploadedDocs.has(documentType) ? 'Modifier' : 'Choisir' }}
+                        <input type="file" (change)="onFileUpload($event, documentType)" hidden accept=".pdf,.jpg,.png">
+                    </label>
+                    <span *ngIf="fileNames.get(documentType)" class="file-name">📎 {{ fileNames.get(documentType) }}</span>
+                </div>
+
+                <div class="upload-card" [class.uploaded]="uploadedDocs.has('DIPLOME')">
+                    <div class="upload-icon">
+                        <svg *ngIf="!uploading.get('DIPLOME')" xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                            viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M22 10v6M2 10l10-5 10 5-10 5z" />
+                            <path d="M6 12v5c3 3 9 3 12 0v-5" />
+                        </svg>
+                        <div *ngIf="uploading.get('DIPLOME')" class="spinner-small"></div>
+                    </div>
+                    <div class="upload-info">
+                        <span class="upload-label">Diplôme</span>
+                        <span class="upload-hint">Ou attestation de réussite</span>
+                    </div>
+                    <label class="upload-btn" *ngIf="!isDossierLocked">
+                        {{ uploadedDocs.has('DIPLOME') ? 'Modifier' : 'Choisir' }}
+                        <input type="file" (change)="onFileUpload($event, 'DIPLOME')" hidden accept=".pdf,.jpg,.png">
+                    </label>
+                    <span *ngIf="fileNames.get('DIPLOME')" class="file-name">📎 {{ fileNames.get('DIPLOME') }}</span>
+                </div>
+
+                <div class="upload-card" [class.uploaded]="uploadedDocs.has('PHOTO_IDENTITE')">
+                    <div class="upload-icon">
+                        <svg *ngIf="!uploading.get('PHOTO_IDENTITE')" xmlns="http://www.w3.org/2000/svg" width="24"
+                            height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <rect width="18" height="18" x="3" y="3" rx="2" ry="2" />
+                            <circle cx="9" cy="9" r="2" />
+                            <path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21" />
+                        </svg>
+                        <div *ngIf="uploading.get('PHOTO_IDENTITE')" class="spinner-small"></div>
+                    </div>
+                    <div class="upload-info">
+                        <span class="upload-label">Photo d'identité</span>
+                        <span class="upload-hint">Format passeport</span>
+                    </div>
+                    <label class="upload-btn" *ngIf="!isDossierLocked">
+                        {{ uploadedDocs.has('PHOTO_IDENTITE') ? 'Modifier' : 'Choisir' }}
+                        <input type="file" (change)="onFileUpload($event, 'PHOTO_IDENTITE')" hidden
+                            accept=".pdf,.jpg,.png">
+                    </label>
+                    <span *ngIf="fileNames.get('PHOTO_IDENTITE')" class="file-name">📎 {{
+                        fileNames.get('PHOTO_IDENTITE') }}</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- STEP 3: Confirmation -->
+        <div *ngIf="currentStep === 3" class="step-content-box confirmation-box">
+            <div class="success-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+                    <polyline points="22 4 12 14.01 9 11.01" />
+                </svg>
+            </div>
+            <h2 class="form-title">Vérification finale</h2>
+            <p class="form-desc">Veuillez confirmer que toutes les informations saisies sont exactes.</p>
+
+            <div class="summary-card">
+                <div class="summary-row">
+                    <span class="summary-label">Candidat</span>
+                    <span class="summary-value">{{inscriptionForm.value.nom}} {{inscriptionForm.value.prenom}}</span>
+                </div>
+                <div class="summary-row">
+                    <span class="summary-label">Concours</span>
+                    <span class="summary-value">{{concours?.libelle}}</span>
+                </div>
+                <div class="summary-row">
+                    <span class="summary-label">Documents</span>
+                    <span class="summary-value" [class.text-success]="uploadedDocs.size === 3">
+                        {{uploadedDocs.size}}/3 Téléchargés
+                    </span>
+                </div>
+            </div>
+
+            <div class="disclaimer" *ngIf="!isDossierLocked">
+                <input type="checkbox" id="terms" [(ngModel)]="certifChecked" [ngModelOptions]="{standalone: true}">
+                <label for="terms">Je certifie sur l'honneur l'exactitude des informations fournies.</label>
+            </div>
+
+            <!-- Inscription validée (Locked) message -->
+            <div class="locked-completion-msg" *ngIf="isDossierLocked">
+                <p *ngIf="dossier?.statut === 'VALIDE'" class="msg-valide">
+                    Votre inscription est <strong>validée</strong>. Vous pouvez suivre la suite des étapes sur votre
+                    tableau de bord.
+                </p>
+                <p *ngIf="dossier?.statut === 'REJETE'" class="msg-rejete">
+                    Votre dossier a été <strong>rejeté</strong>. Veuillez contacter le support pour plus d'informations.
+                </p>
+            </div>
+
+            <!-- Overlay d'analyse IA -->
+            <div class="ia-check-overlay" *ngIf="isCheckingIA">
+                <div class="ia-check-content">
+                    <div class="ia-spinner"></div>
+                    <p class="ia-message">{{iaCheckMessage}}</p>
+                    <span class="ia-hint">Vérification automatique par le service IA de validation</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- NAVIGATION -->
+        <div class="form-footer">
+            <button *ngIf="currentStep > 1" (click)="prevStep()" class="btn-prev">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="m15 18-6-6 6-6" />
+                </svg>
+                Précédent
+            </button>
+
+            <button *ngIf="isDossierLocked" routerLink="/dashboard" class="btn-dashboard-back">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect width="7" height="9" x="3" y="3" rx="1" />
+                    <rect width="7" height="5" x="14" y="3" rx="1" />
+                    <rect width="7" height="9" x="14" y="12" rx="1" />
+                    <rect width="7" height="5" x="3" y="16" rx="1" />
+                </svg>
+                Retour au tableau de bord
+            </button>
+
+            <div class="spacer"></div>
+
+            <button *ngIf="currentStep < 3" (click)="nextStep()" class="btn-next">
+                {{ isDossierLocked ? 'Continuer' : 'Suivant' }}
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="m9 18 6-6-6-6" />
+                </svg>
+            </button>
+
+            <button *ngIf="currentStep === 3 && !isDossierLocked" (click)="submitForm()" class="btn-submit"
+                [disabled]="!certifChecked || uploadedDocs.size < 3">
+                Soumettre le dossier
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="m5 12 5 5L20 7" />
+                </svg>
+            </button>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,118 @@
+/* Residanat TN - Même palette que le site principal */
+:root {
+  --header-bg: #cfe0ed;
+  --header-text: #1a3a5c;
+  --ministry-bar: #2389a8;
+  --primary-dark: #1a3a5c;
+  --primary-teal: #2389a8;
+  --nav-bg: rgba(207, 224, 237, 0.95);
+  --nav-border: rgba(26, 58, 92, 0.15);
+  --text-dark: #1a3a5c;
+  --text-muted: #4a6b82;
+  --accent: #2389a8;
+  --card-bg: #ffffff;
+  --footer-bg: #cfe0ed;
+  --radius: 0.625rem;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  background: #f8fafc;
+  color: var(--text-dark);
+  -webkit-font-smoothing: antialiased;
+}
+
+a {
+  color: var(--accent);
+  text-decoration: none;
+  transition: color 0.2s ease;
+
+  &:hover {
+    color: var(--primary-dark);
+  }
+}
+
+.container {
+  max-width: 80rem;
+  margin-inline: auto;
+  padding-inline: 1rem;
+}
+
+@media (min-width: 1024px) {
+  .container {
+    padding-inline: 2rem;
+  }
+}
+
+/* Utilitaires couleurs */
+.text-accent {
+  color: var(--accent);
+}
+
+.bg-ministry {
+  background: var(--ministry-bar);
+}
+
+.bg-header {
+  background: var(--header-bg);
+}
+
+/* Animation crossfade pour le slideshow hero (même que le site Next.js) */
+@keyframes hero-crossfade {
+  0% {
+    opacity: 0;
+    transform: scale(1.3) translateX(8%);
+  }
+
+  10% {
+    opacity: 1;
+    transform: scale(1.2) translateX(4%);
+  }
+
+  25% {
+    opacity: 1;
+    transform: scale(1.1) translateX(-4%);
+  }
+
+  35% {
+    opacity: 0;
+    transform: scale(1.05) translateX(-8%);
+  }
+
+  100% {
+    opacity: 0;
+    transform: scale(1.02) translateX(-10%);
+  }
+}
+
+.hero-slide {
+  position: absolute;
+  inset: 0;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  opacity: 0;
+  filter: blur(4px);
+  animation: hero-crossfade 25s infinite;
+}
+
+.hero-slide-1 {
+  animation-delay: 0s;
+}
+
+.hero-slide-2 {
+  animation-delay: -16.66s;
+}
+
+.hero-slide-3 {
+  animation-delay: -8.33s;
+}

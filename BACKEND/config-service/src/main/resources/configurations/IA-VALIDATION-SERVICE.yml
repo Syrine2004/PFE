@@ -1,0 +1,10 @@
+spring:
+  rabbitmq:
+    listener:
+      simple:
+        queues: q.ia.request
+
+# Configuration spécifique IA si nécessaire
+ia:
+  script:
+    path: C:\Users\syrine\Desktop\PFE\pfe_version\test-IA-residanat\test_ia.py

@@ -1,0 +1,13 @@
+spring:
+  application:
+    name: ia-validation-service
+  config:
+    import: "optional:configserver:http://localhost:8888"
+
+server:
+  port: 8085
+
+# Le chemin local reste ici car il est spécifique à l'environnement de dev local
+ia:
+  script:
+    path: C:\Users\syrine\Desktop\PFE\pfe_version\test-IA-residanat\test_ia.py

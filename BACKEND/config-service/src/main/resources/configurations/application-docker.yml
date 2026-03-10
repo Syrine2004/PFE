@@ -1,0 +1,9 @@
+# Shared Configuration for Docker
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://discovery-service:8761/eureka/
+
+spring:
+  rabbitmq:
+    host: rabbitmq

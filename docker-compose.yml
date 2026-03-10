@@ -1,0 +1,59 @@
+version: '3.8'
+services:
+  auth-service:
+    build:
+      context: ./BACKEND/residanat-backend-auth-service-main
+      dockerfile: Dockerfile
+    container_name: auth-service
+    ports:
+      - "8081:8080"
+    environment:
+      - SPRING_PROFILES_ACTIVE=dev
+    networks:
+      - app-network
+
+  gateway-service:
+    build:
+      context: ./BACKEND/gateway-service-main
+      dockerfile: Dockerfile
+    container_name: gateway-service
+    ports:
+      - "8080:8080"
+    depends_on:
+      - auth-service
+    environment:
+      - SPRING_PROFILES_ACTIVE=dev
+    networks:
+      - app-network
+
+  concours-service:
+    build:
+      context: ./BACKEND/residanat-backend-concours-service
+      dockerfile: Dockerfile
+    container_name: concours-service
+    ports:
+      - "8082:8080"
+    depends_on:
+      - auth-service
+    environment:
+      - SPRING_PROFILES_ACTIVE=dev
+    networks:
+      - app-network
+
+  ia-validation-service:
+    build:
+      context: ./BACKEND/ia-validation-service
+      dockerfile: Dockerfile
+    container_name: ia-validation-service
+    ports:
+      - "8083:8080"
+    depends_on:
+      - auth-service
+    environment:
+      - SPRING_PROFILES_ACTIVE=dev
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge

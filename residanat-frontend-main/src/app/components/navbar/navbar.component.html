@@ -1,0 +1,33 @@
+<header class="navbar">
+    <nav class="nav-inner container">
+        <!-- Logo Area -->
+        <div class="nav-brand-wrapper">
+            <a routerLink="/" class="brand">
+                <img src="assets/images/logo.png" alt="Residanat TN Logo" class="brand-logo-img">
+            </a>
+        </div>
+
+        <!-- Mobile Menu Toggle -->
+        <button type="button" class="menu-btn" (click)="toggleMenu()" [attr.aria-expanded]="open()" aria-label="Menu">
+            @if (open()) { ✕ } @else { ☰ }
+        </button>
+
+        <!-- Main Navigation content -->
+        <div class="nav-main-content" [class.open]="open()">
+            <!-- Center Links -->
+            <div class="nav-links">
+                @for (link of navLinks; track link.route) {
+                <a [routerLink]="link.route" routerLinkActive="active"
+                    [routerLinkActiveOptions]="{ exact: link.route === '/' }" (click)="closeMenu()">{{ link.label }}</a>
+                }
+            </div>
+
+            <!-- Right Actions -->
+            <div class="nav-actions-wrapper">
+                <div class="nav-actions">
+                    <a [routerLink]="actionLink" class="btn-primary" (click)="closeMenu()">{{ actionLabel }} →</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+</header>

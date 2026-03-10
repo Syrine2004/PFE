@@ -1,0 +1,286 @@
+<section class="hero">
+    <!-- Slideshow fond (animation crossfade des images) -->
+    <div class="hero-slideshow">
+        <div class="hero-slideshow-base" [style.backgroundImage]="slideUrl(1)"></div>
+        <div class="hero-slide hero-slide-1" [style.backgroundImage]="slideUrl(1)"></div>
+        <div class="hero-slide hero-slide-2" [style.backgroundImage]="slideUrl(2)"></div>
+        <div class="hero-slide hero-slide-3" [style.backgroundImage]="slideUrl(3)"></div>
+        <div class="hero-overlay"></div>
+    </div>
+
+    <div class="container hero-inner">
+        <div class="hero-content">
+            <span class="hero-badge">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+                </svg>
+                Plateforme officielle sécurisée
+            </span>
+            <h1 class="hero-title">
+                Concours National<br>de Residanat
+                <span class="hero-title-accent">en Médecine</span>
+            </h1>
+            <p class="hero-desc">
+                Plateforme officielle de gestion du concours national de résidanat.
+                Inscription, suivi de dossier, convocation et résultats en toute sécurité.
+            </p>
+            <div *ngIf="!isLoggedIn()" class="hero-actions">
+                <a routerLink="/connexion" class="btn-hero-primary">Concours Résidant →</a>
+            </div>
+        </div>
+
+        <div class="hero-card">
+            <div class="hero-card-head">
+                <h3>Session 2026</h3>
+                <span class="hero-card-badge">
+                    <span class="badge-dot"></span>
+                    EN COURS
+                </span>
+            </div>
+            <div class="hero-stats">
+                <div class="stat">
+                    <strong>1,250</strong>
+                    <span>Postes ouverts</span>
+                </div>
+                <div class="stat">
+                    <strong>48</strong>
+                    <span>Spécialités</span>
+                </div>
+                <div class="stat">
+                    <strong>12,340</strong>
+                    <span>Candidats inscrits</span>
+                </div>
+                <div class="stat">
+                    <strong>4</strong>
+                    <span>Facultés</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Dates importantes (FlashInfos) -->
+<section class="flash-infos">
+    <div class="bg-decoration">
+        <div class="blob-top"></div>
+        <div class="blob-bottom"></div>
+    </div>
+
+    <div class="container">
+        <div class="section-header center">
+            <div class="badge-tag">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path
+                        d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+                </svg>
+                <span>CALENDRIER OFFICIEL</span>
+            </div>
+            <div class="title-with-icon">
+                <div class="icon-box-blue">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none"
+                        stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
+                        <path d="M13.73 21a2 2 0 0 1-3.46 0" />
+                    </svg>
+                </div>
+                <h2>Dates importantes</h2>
+            </div>
+            <p class="section-subtitle">Suivez le calendrier du concours de residanat pour ne rien manquer</p>
+        </div>
+
+        <div class="flash-grid">
+            <div *ngFor="let item of flashItems" class="flash-card" [class.urgent]="item.urgent">
+                <div class="card-glow"></div>
+                <div class="card-accent"></div>
+                <div class="card-content">
+                    <div class="icon-circle" [class.urgent]="item.urgent">
+                        <svg *ngIf="item.urgent" xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                            viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="10" />
+                            <polyline points="12 6 12 12 16 14" />
+                        </svg>
+                        <svg *ngIf="!item.urgent" xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                            viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
+                            <line x1="16" y1="2" x2="16" y2="6" />
+                            <line x1="8" y1="2" x2="8" y2="6" />
+                            <line x1="3" y1="10" x2="21" y2="10" />
+                        </svg>
+                    </div>
+                    <div class="info">
+                        <span class="date">{{ item.date }}</span>
+                        <h3 class="title">{{ item.title }}</h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Présentation (A propos) -->
+<section class="presentation-redesigned">
+    <div class="bg-decoration">
+        <div class="radial-tl"></div>
+        <div class="radial-br"></div>
+    </div>
+
+    <div class="container">
+        <div class="section-header align-left">
+            <div class="badge-tag">
+                <span>A PROPOS</span>
+            </div>
+            <h2 class="large-title">
+                Le concours de residanat<br>
+                <span class="text-gradient">en medecine</span>
+            </h2>
+            <p class="section-desc">
+                Le concours national de residanat est le passage obligatoire pour tout medecin souhaitant acceder a une
+                specialite medicale ou chirurgicale en Tunisie. Il est organise chaque annee sous l'egide du Ministere
+                de la Sante.
+            </p>
+        </div>
+
+        <div class="features-grid">
+            <div *ngFor="let feature of features" class="feature-card">
+                <div class="card-hover-bg" [style.background]="feature.gradient"></div>
+                <div class="card-top-line"></div>
+                <div class="card-content">
+                    <div class="icon-box-primary">
+                        <!-- Dynamic icon placeholder - using common medical/edu icons -->
+                        <svg *ngIf="feature.icon === 'book-open'" xmlns="http://www.w3.org/2000/svg" width="32"
+                            height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" />
+                            <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" />
+                        </svg>
+                        <svg *ngIf="feature.icon === 'users'" xmlns="http://www.w3.org/2000/svg" width="32" height="32"
+                            viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" />
+                            <circle cx="9" cy="7" r="4" />
+                            <path d="M22 21v-2a4 4 0 0 0-3-3.87" />
+                            <path d="M16 3.13a4 4 0 0 1 0 7.75" />
+                        </svg>
+                        <svg *ngIf="feature.icon === 'award'" xmlns="http://www.w3.org/2000/svg" width="32" height="32"
+                            viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="8" r="7" />
+                            <polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88" />
+                        </svg>
+                        <svg *ngIf="feature.icon === 'building'" xmlns="http://www.w3.org/2000/svg" width="32"
+                            height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="4" y="2" width="16" height="20" rx="2" ry="2" />
+                            <path d="M9 22v-4h6v4" />
+                            <path d="M8 6h.01" />
+                            <path d="M16 6h.01" />
+                            <path d="M12 6h.01" />
+                            <path d="M12 10h.01" />
+                            <path d="M12 14h.01" />
+                            <path d="M16 10h.01" />
+                            <path d="M16 14h.01" />
+                            <path d="M8 10h.01" />
+                            <path d="M8 14h.01" />
+                        </svg>
+                    </div>
+                    <h3 class="feature-title">{{ feature.title }}</h3>
+                    <p class="feature-desc">{{ feature.description }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Processus (Les etapes) -->
+<section class="process-section">
+    <div class="bg-decoration">
+        <div class="radial-top"></div>
+    </div>
+
+    <div class="container">
+        <div class="section-header center">
+            <div class="badge-tag blue">
+                <span>PROCESSUS</span>
+            </div>
+            <h2 class="large-title">Les etapes du concours</h2>
+            <p class="section-subtitle">Du depot de candidature jusqu'aux resultats finaux, suivez chaque etape
+                directement depuis votre espace candidat.</p>
+        </div>
+
+        <div class="process-grid">
+            <div class="connecting-line"></div>
+            <div *ngFor="let step of steps" class="step-card-wrapper">
+                <div class="step-card">
+                    <div class="card-top-line"></div>
+                    <div class="step-badge">{{ step.number }}</div>
+
+                    <div class="icon-box-primary">
+                        <svg *ngIf="step.icon === 'clipboard'" xmlns="http://www.w3.org/2000/svg" width="32" height="32"
+                            viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2" />
+                            <rect x="8" y="2" width="8" height="4" rx="1" ry="1" />
+                            <path d="M9 14h6" />
+                            <path d="M9 18h6" />
+                            <path d="M9 10h6" />
+                        </svg>
+                        <svg *ngIf="step.icon === 'file-check'" xmlns="http://www.w3.org/2000/svg" width="32"
+                            height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z" />
+                            <polyline points="14 2 14 8 20 8" />
+                            <path d="m9 15 2 2 4-4" />
+                        </svg>
+                        <svg *ngIf="step.icon === 'calendar-check'" xmlns="http://www.w3.org/2000/svg" width="32"
+                            height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
+                            <line x1="16" y1="2" x2="16" y2="6" />
+                            <line x1="8" y1="2" x2="8" y2="6" />
+                            <line x1="3" y1="10" x2="21" y2="10" />
+                            <path d="m9 16 2 2 4-4" />
+                        </svg>
+                        <svg *ngIf="step.icon === 'bar-chart'" xmlns="http://www.w3.org/2000/svg" width="32" height="32"
+                            viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="12" y1="20" x2="12" y2="10" />
+                            <line x1="18" y1="20" x2="18" y2="4" />
+                            <line x1="6" y1="20" x2="6" y2="16" />
+                        </svg>
+                        <svg *ngIf="step.icon === 'message-circle'" xmlns="http://www.w3.org/2000/svg" width="32"
+                            height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <path d="m3 21 1.9-5.7a8.5 8.5 0 1 1 3.8 3.8z" />
+                        </svg>
+                    </div>
+
+                    <span class="step-label">Etape {{ step.number }}</span>
+                    <h3 class="step-title">{{ step.title }}</h3>
+                    <p class="step-desc">{{ step.description }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Stats (Statistics) -->
+<section class="stats-section">
+    <div class="bg-decoration">
+        <div class="radial-center"></div>
+    </div>
+
+    <div class="container">
+        <div class="stats-grid">
+            <div *ngFor="let stat of stats" class="stat-card">
+                <div class="card-hover-bg"></div>
+                <div class="card-top-line"></div>
+                <p class="stat-value">{{ stat.value }}</p>
+                <p class="stat-label">{{ stat.label }}</p>
+            </div>
+        </div>
+    </div>
+</section>

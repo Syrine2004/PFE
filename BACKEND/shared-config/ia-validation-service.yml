@@ -1,0 +1,12 @@
+spring:
+  rabbitmq:
+    listener:
+      simple:
+        queues: q.ia.request
+
+# Configuration spécifique IA si nécessaire
+ia:
+  script:
+    path: /app/scripts/test_ia.py
+    diplome:
+      path: /app/scripts/test_diplome_ia.py

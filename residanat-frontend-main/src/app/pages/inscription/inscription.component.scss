@@ -1,0 +1,530 @@
+/* ============================================================
+   Inscription – auth styles (same design as connexion)
+   Using exact OKLCH values from the original Next.js design
+   ============================================================ */
+
+// ─── Design Tokens (Exact OKLCH) ──────────────────────────────
+$teal: oklch(0.65 0.18 190);
+$blue: oklch(0.55 0.18 250);
+$teal-glow: oklch(0.65 0.18 190 / 0.35);
+$blue-glow: oklch(0.55 0.15 250 / 0.12);
+$btn-glow: oklch(0.65 0.18 190 / 0.40);
+$label-col: oklch(0.3 0.05 250);
+$sub-col: oklch(0.55 0.03 250);
+$input-bg: oklch(0.97 0.01 250);
+$glass-bg: oklch(1 0 0 / 0.75);
+$glass-border: oklch(1 0 0 / 0.6);
+
+.auth-page {
+    position: relative;
+    min-height: 90vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    padding: 4rem 1rem;
+}
+
+.blob {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(80px);
+    opacity: 0.22;
+    pointer-events: none;
+    animation: drift 12s ease-in-out infinite alternate;
+
+    &.blob-1 {
+        width: 520px;
+        height: 520px;
+        background: radial-gradient(circle, $teal, transparent 70%);
+        top: -160px;
+        right: -120px;
+        animation-delay: 0s;
+    }
+
+    &.blob-2 {
+        width: 440px;
+        height: 440px;
+        background: radial-gradient(circle, $blue, transparent 70%);
+        bottom: -140px;
+        left: -100px;
+        animation-delay: -6s;
+    }
+}
+
+@keyframes drift {
+    from {
+        transform: translate(0, 0) scale(1);
+    }
+
+    to {
+        transform: translate(30px, 20px) scale(1.06);
+    }
+}
+
+.auth-wrapper {
+    width: 100%;
+    max-width: 28rem;
+    position: relative;
+    z-index: 1;
+
+    &--lg {
+        max-width: 32rem;
+    }
+}
+
+.auth-header {
+    margin-bottom: 2rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+.auth-logo {
+    height: 80px;
+    width: auto;
+    margin-bottom: 1.5rem;
+    object-fit: contain;
+    filter: drop-shadow(0 8px 16px rgba(0, 143, 187, 0.2));
+    transition: transform 0.3s ease;
+
+    &:hover {
+        transform: scale(1.05);
+    }
+}
+
+.auth-title {
+    font-size: 1.875rem;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    margin: 0;
+    background: linear-gradient(135deg, $blue, $teal);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.auth-subtitle {
+    margin: 0.5rem 0 0;
+    font-size: 0.875rem;
+    color: $sub-col;
+}
+
+.glass-card {
+    border-radius: 1.5rem;
+    padding: 2rem;
+    background: $glass-bg;
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border: 1px solid $glass-border;
+    box-shadow:
+        0 20px 60px $blue-glow,
+        0 2px 8px oklch(0 0 0 / 0.06);
+}
+
+.auth-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.25rem;
+}
+
+.grid-2col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+
+    @media (max-width: 480px) {
+        grid-template-columns: 1fr;
+    }
+}
+
+.field-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.field-label {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: $label-col;
+}
+
+.field-label-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.forgot-link {
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: $teal;
+    text-decoration: none;
+    transition: opacity 0.2s;
+
+    &:hover {
+        opacity: 0.7;
+    }
+}
+
+.input-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.input-icon {
+    position: absolute;
+    left: 0.875rem;
+    display: flex;
+    align-items: center;
+    color: oklch(0.65 0.15 190);
+    pointer-events: none;
+    z-index: 1;
+}
+
+.auth-input {
+    width: 100%;
+    padding: 0.65rem 2.75rem 0.65rem 2.75rem;
+    font-size: 0.875rem;
+    font-family: inherit;
+    color: $label-col;
+    background: $input-bg;
+    border: none;
+    border-radius: 0.75rem;
+    outline: none;
+    box-shadow: inset 0 1px 4px oklch(0 0 0 / 0.06);
+
+    &.input-error {
+        border: 1px solid #ff4d4f !important;
+        background-color: rgba(255, 77, 79, 0.03);
+
+        &:focus {
+            box-shadow: 0 0 0 4px rgba(255, 77, 79, 0.1);
+        }
+    }
+
+    &:focus {
+        background: #fff;
+        box-shadow:
+            inset 0 1px 4px oklch(0 0 0 / 0.06),
+            0 0 0 2.5px oklch(0.65 0.18 190 / 0.25);
+    }
+}
+
+.auth-select {
+    width: 100%;
+    padding: 0.65rem 2.25rem 0.65rem 2.75rem;
+    font-size: 0.875rem;
+    font-family: inherit;
+    color: $label-col;
+    background: $input-bg;
+    border: none;
+    border-radius: 0.75rem;
+    outline: none;
+    box-shadow: inset 0 1px 4px oklch(0 0 0 / 0.06);
+    transition: box-shadow 0.2s ease, background 0.2s ease;
+    cursor: pointer;
+    appearance: none;
+    -webkit-appearance: none;
+
+    &:focus {
+        background: #fff;
+        box-shadow:
+            inset 0 1px 4px oklch(0 0 0 / 0.06),
+            0 0 0 2.5px oklch(0.65 0.18 190 / 0.25);
+    }
+}
+
+.select-chevron {
+    position: absolute;
+    right: 0.875rem;
+    display: flex;
+    align-items: center;
+    color: $sub-col;
+    pointer-events: none;
+}
+
+// ─── Input Disabled States ──────────────────────────────────
+.wrapper-disabled {
+    opacity: 0.6;
+    background: oklch(0.95 0.01 250);
+    cursor: not-allowed;
+    
+    .input-icon {
+        color: oklch(0.8 0.01 250);
+    }
+}
+
+.auth-input:disabled {
+    cursor: not-allowed;
+    background: transparent;
+    &::placeholder {
+        color: oklch(0.7 0.01 250);
+        font-style: italic;
+    }
+}
+
+// ─── Custom Select Component ──────────────────────────────────
+.custom-select-container {
+    position: relative;
+    width: 100%;
+}
+
+.custom-select-trigger {
+    width: 100%;
+    padding: 0.65rem 1rem 0.65rem 2.85rem;
+    font-size: 0.875rem;
+    color: $label-col;
+    background: $input-bg;
+    border: 1px solid transparent;
+    border-radius: 0.875rem;
+    display: flex;
+    align-items: center;
+    position: relative;
+    cursor: pointer;
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: inset 0 1px 4px oklch(0 0 0 / 0.04);
+    min-height: 42px;
+
+    &:hover {
+        background: #fff;
+        border-color: oklch(0.65 0.18 190 / 0.2);
+        box-shadow: 0 4px 12px oklch(0 0 0 / 0.04);
+    }
+
+    &.trigger-active {
+        background: #fff;
+        border-color: $teal;
+        box-shadow: 0 0 0 4px oklch(0.65 0.18 190 / 0.12);
+    }
+
+    .trigger-placeholder {
+        color: oklch(0.7 0.01 250);
+        font-style: italic;
+    }
+
+    .select-chevron {
+        position: absolute;
+        right: 1rem;
+        color: $sub-col;
+        transition: transform 0.3s ease;
+        
+        &.chevron-rotate {
+            transform: rotate(180deg);
+            color: $teal;
+        }
+    }
+}
+
+.custom-dropdown-menu {
+    position: absolute;
+    top: calc(100% + 8px);
+    left: 0;
+    width: 100%;
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid oklch(1 0 0 / 0.4);
+    border-radius: 1.25rem;
+    padding: 0.6rem;
+    z-index: 100;
+    box-shadow: 
+        0 20px 40px oklch(0 0 0 / 0.12),
+        0 0 0 1px oklch(1 0 0 / 0.1);
+    animation: dropdownPop 0.3s cubic-bezier(0.19, 1, 0.22, 1);
+    transform-origin: top center;
+}
+
+@keyframes dropdownPop {
+    from { opacity: 0; transform: scale(0.95) translateY(-10px); }
+    to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+.dropdown-option {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 0.875rem 0.75rem;
+    border-radius: 0.875rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    position: relative;
+
+    &:hover {
+        background: oklch(0.65 0.18 190 / 0.08);
+        
+        .option-icon-box {
+            transform: scale(1.1);
+            background: #fff;
+        }
+        
+        .option-title { color: $teal; }
+    }
+
+    .option-icon-box {
+        width: 38px;
+        height: 38px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: oklch(0.97 0.01 250);
+        color: $teal;
+        border-radius: 0.75rem;
+        transition: all 0.3s ease;
+        flex-shrink: 0;
+    }
+
+    .option-info {
+        display: flex;
+        flex-direction: column;
+        flex: 1;
+
+        .option-title {
+            font-size: 0.875rem;
+            font-weight: 700;
+            color: $label-col;
+            transition: color 0.2s;
+        }
+
+        .option-desc {
+            font-size: 0.7rem;
+            color: $sub-col;
+            font-weight: 500;
+        }
+    }
+
+    .check-mark {
+        color: $teal;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        animation: checkPop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+}
+
+@keyframes checkPop {
+    from { transform: scale(0.5); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+}
+
+.dropdown-divider {
+    height: 1px;
+    background: oklch(0 0 0 / 0.04);
+    margin: 0.4rem 0.75rem;
+}
+.toggle-pw {
+    position: absolute;
+    right: 0.75rem;
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    color: $sub-col;
+    transition: color 0.2s;
+    z-index: 1;
+
+    &:hover {
+        color: $teal;
+    }
+}
+
+.submit-btn {
+    margin-top: 0.5rem;
+    display: flex;
+    width: 100%;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.875rem 1.5rem;
+    font-size: 0.875rem;
+    font-weight: 700;
+    font-family: inherit;
+    color: #fff;
+    background: linear-gradient(135deg, $teal, $blue);
+    border: none;
+    border-radius: 0.75rem;
+    cursor: pointer;
+    box-shadow: 0 6px 24px $btn-glow;
+    transition: transform 0.2s ease, opacity 0.2s ease, box-shadow 0.2s ease;
+
+    &:hover {
+        transform: scale(1.02);
+        opacity: 0.92;
+        box-shadow: 0 8px 30px $btn-glow;
+    }
+
+    &:active {
+        transform: scale(0.98);
+    }
+}
+
+.error-container {
+    min-height: 22px;
+    margin-top: 6px;
+    padding-left: 4px;
+}
+
+.error-msg {
+    display: flex !important;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.8rem;
+    color: #ff4d4f;
+    background: rgba(255, 77, 79, 0.05);
+    padding: 4px 10px;
+    border-radius: 6px;
+    width: fit-content;
+    font-weight: 500;
+    border-left: 2px solid #ff4d4f;
+    animation: errorSlideIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+
+    &::before {
+        content: "!";
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 14px;
+        height: 14px;
+        background: #ff4d4f;
+        color: white;
+        border-radius: 50%;
+        font-size: 10px;
+        font-weight: 800;
+        flex-shrink: 0;
+    }
+}
+
+@keyframes errorSlideIn {
+    from {
+        opacity: 0;
+        transform: translateX(-10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+.auth-footer {
+    margin-top: 1.5rem;
+    text-align: center;
+    font-size: 0.875rem;
+    color: $sub-col;
+}
+
+.auth-link {
+    font-weight: 600;
+    color: $teal;
+    text-decoration: none;
+    transition: opacity 0.2s;
+
+    &:hover {
+        opacity: 0.7;
+    }
+}

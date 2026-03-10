@@ -1,0 +1,64 @@
+.gov-header {
+    width: 100%;
+}
+
+.gov-top {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem 0;
+    gap: 0.35rem;
+    background: var(--header-bg);
+    /* #cfe0ed — light blue */
+}
+
+.gov-arms {
+    object-fit: contain;
+}
+
+.gov-title {
+    margin-top: 0.35rem;
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--header-text);
+}
+
+.gov-bar {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+    /* ministères aux deux extrémités, séparateur au centre */
+    padding: 0.25rem 2.5rem;
+    background: var(--ministry-bar);
+    /* teal #2389a8 */
+    color: white;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+
+    .ministry-item:last-child {
+        justify-self: end;
+    }
+}
+
+.ministry-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.ministry-logo {
+    height: 1.5rem;
+    width: auto;
+    object-fit: contain;
+}
+
+.gov-sep {
+    width: 1px;
+    height: 1.25rem;
+    background: rgba(255, 255, 255, 0.4);
+}
