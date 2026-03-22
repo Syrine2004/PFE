@@ -1,59 +1,208 @@
-version: '3.8'
 services:
-  auth-service:
-    build:
-      context: ./BACKEND/residanat-backend-auth-service-main
-      dockerfile: Dockerfile
-    container_name: auth-service
-    ports:
-      - "8081:8080"
+  # --- Databases ---
+  postgres-auth:
+    image: postgres:15
     environment:
-      - SPRING_PROFILES_ACTIVE=dev
+      POSTGRES_DB: residanat_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: system
+    ports:
+      - "5433:5432"
     networks:
       - app-network
 
-  gateway-service:
-    build:
-      context: ./BACKEND/gateway-service-main
-      dockerfile: Dockerfile
-    container_name: gateway-service
-    ports:
-      - "8080:8080"
-    depends_on:
-      - auth-service
+  postgres-concours:
+    image: postgres:15
     environment:
-      - SPRING_PROFILES_ACTIVE=dev
+      POSTGRES_DB: residanat_concours_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: system
+    ports:
+      - "5434:5432"
+    networks:
+      - app-network
+
+  postgres-dossier:
+    image: postgres:15
+    environment:
+      POSTGRES_DB: residanat_dossier_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: system
+    ports:
+      - "5435:5432"
+    networks:
+      - app-network
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    networks:
+      - app-network
+
+  # --- Infrastructure ---
+  discovery-service:
+    build:
+      context: ./BACKEND/discovery-service
+    ports:
+      - "8761:8761"
+    networks:
+      - app-network
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8761/actuator/health" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  config-service:
+    build:
+      context: ./BACKEND/config-service
+    ports:
+      - "8888:8888"
+    environment:
+      - SPRING_PROFILES_ACTIVE=native
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery-service:8761/eureka/
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8888/actuator/health" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    volumes:
+      - ./BACKEND/shared-config:/app/config
+    depends_on:
+      discovery-service:
+        condition: service_healthy
+    networks:
+      - app-network
+
+  # --- Microservices ---
+  auth-service:
+    build:
+      context: ./BACKEND/residanat-backend-auth-service-main
+    container_name: auth-service
+    ports:
+      - "8081:8081"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - SPRING_CONFIG_IMPORT=optional:configserver:http://config-service:8888
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8081/actuator/health" ]
+      interval: 15s
+      timeout: 10s
+      retries: 10
+      start_period: 60s
+    depends_on:
+      config-service:
+        condition: service_healthy
+      postgres-auth:
+        condition: service_started
     networks:
       - app-network
 
   concours-service:
     build:
       context: ./BACKEND/residanat-backend-concours-service
-      dockerfile: Dockerfile
     container_name: concours-service
     ports:
-      - "8082:8080"
-    depends_on:
-      - auth-service
+      - "8082:8082"
     environment:
-      - SPRING_PROFILES_ACTIVE=dev
+      - SPRING_PROFILES_ACTIVE=docker
+      - SPRING_CONFIG_IMPORT=optional:configserver:http://config-service:8888
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8082/actuator/health" ]
+      interval: 15s
+      timeout: 10s
+      retries: 10
+      start_period: 60s
+    depends_on:
+      config-service:
+        condition: service_healthy
+      postgres-concours:
+        condition: service_started
+    networks:
+      - app-network
+
+  dossier-service:
+    build:
+      context: ./BACKEND/Dossier-Candidature-service
+    container_name: dossier-service
+    ports:
+      - "8084:8084"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - SPRING_CONFIG_IMPORT=optional:configserver:http://config-service:8888
+    volumes:
+      - dossier-uploads:/app/uploads
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8084/actuator/health" ]
+      interval: 15s
+      timeout: 10s
+      retries: 10
+      start_period: 60s
+    depends_on:
+      config-service:
+        condition: service_healthy
+      postgres-dossier:
+        condition: service_started
+      rabbitmq:
+        condition: service_started
     networks:
       - app-network
 
   ia-validation-service:
     build:
       context: ./BACKEND/ia-validation-service
-      dockerfile: Dockerfile
     container_name: ia-validation-service
     ports:
-      - "8083:8080"
-    depends_on:
-      - auth-service
+      - "8085:8085"
     environment:
-      - SPRING_PROFILES_ACTIVE=dev
+      - SPRING_PROFILES_ACTIVE=docker
+      - SPRING_CONFIG_IMPORT=optional:configserver:http://config-service:8888
+    volumes:
+      - dossier-uploads:/app/uploads
+      - ./test-IA-residanat/test_ia.py:/app/scripts/test_ia.py
+      - ./test-IA-residanat/test_diplome_ia.py:/app/scripts/test_diplome_ia.py
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8085/actuator/health" ]
+      interval: 15s
+      timeout: 10s
+      retries: 10
+      start_period: 60s
+    depends_on:
+      config-service:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_started
+    networks:
+      - app-network
+
+  gateway-service:
+    build:
+      context: ./BACKEND/gateway-service-main
+    container_name: gateway-service
+    ports:
+      - "8080:8080"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - SPRING_CONFIG_IMPORT=optional:configserver:http://config-service:8888
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8080/actuator/health" ]
+      interval: 15s
+      timeout: 10s
+      retries: 10
+      start_period: 60s
+    depends_on:
+      discovery-service:
+        condition: service_healthy
+      config-service:
+        condition: service_healthy
     networks:
       - app-network
 
 networks:
   app-network:
     driver: bridge
+
+volumes:
+  dossier-uploads:

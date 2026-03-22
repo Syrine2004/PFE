@@ -86,36 +86,48 @@ def analyser_conformite(texte_extrait, infos, document_type):
     print("WEIGHTS: Number(50pts) | Birth(25pts) | Name(25pts)")
     print("-" * 60)
 
+    # 0. Safety Check: Is it really NOT a diploma?
+    print(f"\n[PILLAR 0/3] SAFETY CHECK (DOCUMENT TYPE)...")
+    if "diplome" in texte_propre.lower() or "attestation" in texte_propre.lower():
+        print(" >> WARNING: This looks like a DIPLOMA but I am running the CIN/PASS script.")
+        anomalies.append("Ce document ressemble à un Diplôme (Mauvaise catégorie).")
+
     # 1. Vérification Document (50% du score)
     print(f"\n[PILLAR 1/3] CHECKING {document_type} NUMBER...")
     num_identite = infos['cin']
     match_id = False
+    
     if document_type == 'PASSEPORT':
-        if clean_for_match(num_identite) in texte_clean:
-            print(f" >> OK: Passport {num_identite} found via exact match (+50 pts).")
+        # Passport often has letters + numbers (e.g., L123456)
+        num_clean = clean_for_match(num_identite)
+        if num_clean in texte_clean:
+            print(f" >> OK: Passport {num_identite} found (exact match) (+50 pts).")
             score += 50
             match_id = True
         else:
-            ratio = fuzz.partial_ratio(num_identite.lower(), texte_propre.lower())
-            if ratio >= 75:
-                print(f" >> OK: Passport {num_identite} matched (Fuzzy: {ratio}%) (+50 pts).")
-                score += 50
-                match_id = True
+            # Look for Alphanumeric blocks of 6-10 chars
+            potential_pass = re.findall(r'[A-Z0-9]{6,10}', texte_propre.upper().replace(' ', ''))
+            for pp in potential_pass:
+                if fuzz.ratio(num_clean.upper(), pp) >= 80:
+                    print(f" >> OK: Passport {num_identite} matched fuzzy with '{pp}' (+50 pts).")
+                    score += 50
+                    match_id = True
+                    break
     else:
+        # CIN: 8 digits
         if num_identite in texte_clean or num_identite in texte_propre.replace(' ', ''):
-            print(f" >> OK: CIN {num_identite} found via exact/space-less match (+50 pts).")
+            print(f" >> OK: CIN {num_identite} found (exact match) (+50 pts).")
             score += 50
             match_id = True
         else:
-            numbers = re.findall(r'\d+', texte_clean)
+            numbers = re.findall(r'\d{6,10}', texte_clean)
             for p in numbers:
-                if len(p) >= 7:
-                    ratio = fuzz.ratio(num_identite, p)
-                    if ratio >= 85:
-                        print(f" >> OK: CIN {num_identite} matched with '{p}' (Fuzzy: {ratio}%) (+50 pts).")
-                        score += 50
-                        match_id = True
-                        break
+                ratio = fuzz.ratio(num_identite, p)
+                if ratio >= 90:
+                    print(f" >> OK: CIN {num_identite} matched fuzzy with '{p}' ({ratio}%) (+50 pts).")
+                    score += 50
+                    match_id = True
+                    break
     
     if not match_id:
         anomalies.append(f"Numéro {num_identite} non trouvé.")
@@ -126,7 +138,23 @@ def analyser_conformite(texte_extrait, infos, document_type):
     try:
         date_str = infos.get('dateNaissance', '1970-01-01')
         annee = date_str.split('-')[0]
-        if annee in texte_clean or annee in texte_propre:
+        
+        annee_match = False
+        if annee:
+            # Check exact and fuzzy (OCR noise)
+            annee_alt = annee.replace('0', 'o').replace('1', 'l')
+            if annee in texte_clean or annee in texte_propre or annee_alt in texte_propre.lower():
+                annee_match = True
+            else:
+                # Look for 4-digit numbers and find the best match
+                potential_years = re.findall(r'\d{4}', texte_clean)
+                for py in potential_years:
+                    if fuzz.ratio(annee, py) >= 75:
+                        print(f" >> OK: Birth year {annee} matched fuzzy with '{py}'.")
+                        annee_match = True
+                        break
+
+        if annee_match:
             print(f" >> OK: Birth year validated ({annee}) (+25 pts).")
             score += 25
         else:
@@ -140,8 +168,10 @@ def analyser_conformite(texte_extrait, infos, document_type):
     nom_f = infos['nom'].lower().strip()
     prenom_f = infos['prenom'].lower().strip()
     
-    match_lat_nom = fuzz.partial_ratio(nom_f, texte_propre.lower())
-    match_lat_pre = fuzz.partial_ratio(prenom_f, texte_propre.lower())
+    # Use token_set_ratio which is better for detecting names in noise
+    match_lat_nom = max(fuzz.partial_ratio(nom_f, texte_propre.lower()), fuzz.token_set_ratio(nom_f, texte_propre.lower()))
+    match_lat_pre = max(fuzz.partial_ratio(prenom_f, texte_propre.lower()), fuzz.token_set_ratio(prenom_f, texte_propre.lower()))
+    
     match_lat = (match_lat_nom + match_lat_pre) / 2
     print(f" >> Latin match: Nom={match_lat_nom}%, Prenom={match_lat_pre}% -> Moy={match_lat}%")
     
@@ -149,8 +179,8 @@ def analyser_conformite(texte_extrait, infos, document_type):
     mots_arabes = re.findall(r'[\u0600-\u06FF]+', texte_extrait)
     if mots_arabes:
         texte_trans = transliterate_ara_to_fra(" ".join(mots_arabes))
-        match_ara_nom = fuzz.partial_ratio(nom_f, texte_trans)
-        match_ara_pre = fuzz.partial_ratio(prenom_f, texte_trans)
+        match_ara_nom = max(fuzz.partial_ratio(nom_f, texte_trans), fuzz.token_set_ratio(nom_f, texte_trans))
+        match_ara_pre = max(fuzz.partial_ratio(prenom_f, texte_trans), fuzz.token_set_ratio(prenom_f, texte_trans))
         match_ara = (match_ara_nom + match_ara_pre) / 2
         print(f" >> Arabic match (translit): Nom={match_ara_nom}%, Prenom={match_ara_pre}% -> Moy={match_ara}%")
 
@@ -167,7 +197,6 @@ def analyser_conformite(texte_extrait, infos, document_type):
     print("\n" + "#"*60 + "\n")
     return max(0, min(100, int(score))), anomalies
 
-    return max(0, min(100, int(score))), anomalies
 
 if __name__ == "__main__":
     import sys

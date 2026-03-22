@@ -5,17 +5,19 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 import java.util.Collections;
 
-@Component
 public class JwtFilter extends OncePerRequestFilter {
+
+  private static final Logger logger = LoggerFactory.getLogger(JwtFilter.class);
 
   @Autowired
   private JwtUtils jwtUtils;
@@ -33,6 +35,8 @@ public class JwtFilter extends OncePerRequestFilter {
       try {
         String email = jwtUtils.extractEmail(token);
         String role = jwtUtils.extractRole(token);
+        
+        logger.debug("🔐 Validation du token pour : {}", email);
 
         if (email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
           // 2. Si le badge est valide, on informe Spring Security que l'utilisateur est autorisé
@@ -44,7 +48,7 @@ public class JwtFilter extends OncePerRequestFilter {
           SecurityContextHolder.getContext().setAuthentication(auth);
         }
       } catch (Exception e) {
-        System.out.println("❌ Badge invalide ou expiré : " + e.getMessage());
+        logger.error("❌ Badge invalide ou expiré : {}", e.getMessage());
       }
     }
 

@@ -28,6 +28,10 @@ public class AdminInitializer implements CommandLineRunner {
     // 1. SUPPRESSION AUTOMATIQUE DE LA CONTRAINTE UNIQUE SUR L'EMAIL
     // Hibernate 'update' ne supprime pas les anciennes contraintes, on le fait à
     // la main
+    // 1. SUPPRESSION AUTOMATIQUE DE LA CONTRAINTE UNIQUE SUR L'EMAIL
+    // Hibernate 'update' ne supprime pas les anciennes contraintes, on le fait à
+    // la main
+    /*
     try {
       jdbcTemplate.execute("ALTER TABLE utilisateurs DROP CONSTRAINT IF EXISTS uk6ldvumu3hqvnmmxy1b6lsxwqy");
       System.out.println("✅ Base de données : Contrainte unique sur l'email supprimée.");
@@ -36,6 +40,7 @@ public class AdminInitializer implements CommandLineRunner {
       // juste
       System.out.println("ℹ️ Skip : Suppression contrainte email (déjà fait ou nom différent).");
     }
+    */
 
     String adminEmail = "admin@rns.tn";
 

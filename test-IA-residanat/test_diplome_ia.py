@@ -86,28 +86,42 @@ def analyser_conformite(texte_extrait, infos, document_type):
     print("WEIGHTS: ID(40) | Faculty(20) | Year(20) | Name(20)")
     print("-" * 60)
 
+    # 0. Safety Check: Is it really a diploma?
+    print(f"\n[PILLAR 0/4] SAFETY CHECK (DOCUMENT TYPE)...")
+    keywords = ["diplome", "republique", "tunisienne", "faculte", "universite", "attestation", "reussite"]
+    if not any(k in texte_propre.lower() for k in keywords):
+        print(" >> WARNING: This does NOT look like a diploma (Keywords missing).")
+        anomalies.append("Ce document ne contient pas les mots-clés d'un Diplôme.")
+
     # 1. Vérification CIN/Identité sur diplôme (40% du score)
-    print(f"\n[PILLAR 1/4] CHECKING IDENTITY NUMBER ON DIPLOMA...")
+    print(f"\n[PILLAR 1/4] CHECKING IDENTITY ON DIPLOMA...")
     num_identite = infos['cin']
     match_id = False
-    if num_identite in texte_clean or num_identite in texte_propre.replace(' ', ''):
-        print(f" >> OK: Identity number {num_identite} found (exact match) (+40 pts).")
+    
+    # Try exact match, fuzzy on numbers/alphanumeric
+    texte_no_spaces = texte_propre.replace(' ', '')
+    num_clean = clean_for_match(num_identite)
+    
+    if num_identite in texte_clean or num_identite in texte_no_spaces:
+        print(f" >> OK: Identity number {num_identite} found (+40 pts).")
         score += 40
         match_id = True
     else:
-        numbers = re.findall(r'\d+', texte_clean)
-        for p in numbers:
-            if len(p) >= 7:
-                ratio = fuzz.ratio(num_identite, p)
-                if ratio >= 85:
-                    print(f" >> OK: Identity number {num_identite} matched with '{p}' (Fuzzy: {ratio}%) (+40 pts).")
-                    score += 40
-                    match_id = True
-                    break
+        # Search for any alphanumeric block of similar length
+        # Case 1: 8 digits (CIN)
+        potential_ids = re.findall(r'\d{8}', texte_clean)
+        # Case 2: Alphanumeric (Passport) - look for blocks of 6-12 chars
+        potential_ids += re.findall(r'[A-Z0-9]{6,12}', texte_propre.upper().replace(' ', ''))
+        
+        for pi in potential_ids:
+            if fuzz.ratio(num_clean.upper(), pi.upper()) >= 90:
+                print(f" >> OK: Identity number matched fuzzy with '{pi}' (+40 pts).")
+                score += 40
+                match_id = True
+                break
     
     if not match_id:
-        anomalies.append(f"Numéro d'identité {num_identite} non trouvé.")
-        print(f" >> WARNING: ID number {num_identite} NOT found on diploma.")
+        print(f" >> NOTICE: Identity number {num_identite} NOT detected clearly. Checking Name instead.")
         
     # 2. Vérification FACULTÉ (20% du score)
     print(f"\n[PILLAR 2/4] CHECKING FACULTY...")
@@ -118,7 +132,7 @@ def analyser_conformite(texte_extrait, infos, document_type):
              if faculte_attendue.lower() in texte_propre.lower():
                  match_fac = 100
         
-        if match_fac >= 70:
+        if match_fac >= 70: 
             print(f" >> OK: Faculty '{faculte_attendue}' validated (Confidence: {match_fac}%) (+20 pts).")
             score += 20
         else:
@@ -132,9 +146,24 @@ def analyser_conformite(texte_extrait, infos, document_type):
     date_d_str = infos.get('dateDiplome', '')
     annee_d = date_d_str.split('-')[0] if date_d_str else ''
 
-    if annee_d and (annee_d in texte_clean or annee_d in texte_propre):
+    annee_match = False
+    if annee_d:
+        # Check exact and fuzzy (OCR noise)
+        annee_alt = annee_d.replace('0', 'o').replace('1', 'l')
+        if annee_d in texte_clean or annee_d in texte_propre or annee_alt in texte_propre.lower():
+            annee_match = True
+        else:
+            # Look for 4-digit numbers and find the best match
+            potential_years = re.findall(r'\d{4}', texte_clean)
+            for py in potential_years:
+                if fuzz.ratio(annee_d, py) >= 75: 
+                    print(f" >> OK: Diploma year {annee_d} matched fuzzy with '{py}'.")
+                    annee_match = True
+                    break
+
+    if annee_match:
         score += 20
-        print(f" >> OK: Diploma year {annee_d} found (+20 pts).")
+        print(f" >> OK: Diploma year {annee_d} validated (+20 pts).")
     elif annee_d:
         anomalies.append(f"Année du diplôme {annee_d} non trouvée.")
         print(f" >> WARNING: Diploma year {annee_d} NOT found.")
@@ -144,8 +173,10 @@ def analyser_conformite(texte_extrait, infos, document_type):
     nom_f = infos['nom'].lower().strip()
     prenom_f = infos['prenom'].lower().strip()
     
-    match_lat_nom = fuzz.partial_ratio(nom_f, texte_propre.lower())
-    match_lat_pre = fuzz.partial_ratio(prenom_f, texte_propre.lower())
+    # Use token_set_ratio which is better for detecting names in noise
+    match_lat_nom = max(fuzz.partial_ratio(nom_f, texte_propre.lower()), fuzz.token_set_ratio(nom_f, texte_propre.lower()))
+    match_lat_pre = max(fuzz.partial_ratio(prenom_f, texte_propre.lower()), fuzz.token_set_ratio(prenom_f, texte_propre.lower()))
+    
     match_lat = (match_lat_nom + match_lat_pre) / 2
     print(f" >> Latin match: Nom={match_lat_nom}%, Prenom={match_lat_pre}% -> Moy={match_lat}%")
     
@@ -153,8 +184,8 @@ def analyser_conformite(texte_extrait, infos, document_type):
     mots_arabes = re.findall(r'[\u0600-\u06FF]+', texte_extrait)
     if mots_arabes:
         texte_trans = transliterate_ara_to_fra(" ".join(mots_arabes))
-        match_ara_nom = fuzz.partial_ratio(nom_f, texte_trans)
-        match_ara_pre = fuzz.partial_ratio(prenom_f, texte_trans)
+        match_ara_nom = max(fuzz.partial_ratio(nom_f, texte_trans), fuzz.token_set_ratio(nom_f, texte_trans))
+        match_ara_pre = max(fuzz.partial_ratio(prenom_f, texte_trans), fuzz.token_set_ratio(prenom_f, texte_trans))
         match_ara = (match_ara_nom + match_ara_pre) / 2
         print(f" >> Arabic match (translit): Nom={match_ara_nom}%, Prenom={match_ara_pre}% -> Moy={match_ara}%")
 
@@ -172,7 +203,6 @@ def analyser_conformite(texte_extrait, infos, document_type):
     print("\n" + "*"*60 + "\n")
     return max(0, min(100, int(score))), anomalies
 
-    return max(0, min(100, int(score))), anomalies
 
 if __name__ == "__main__":
     import sys
