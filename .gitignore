@@ -1,5 +1,30 @@
+# --- Outils et Éditeurs ---
 .idea/
+.vscode/
+*.iml
+
+# --- Java / Spring Boot ---
 target/
-*.log
-__pycache__/
+*.jar
+*.war
+
+# --- Frontend (Angular / React) ---
 node_modules/
+dist/
+
+# --- Python & IA ---
+__pycache__/
+venv/
+env/
+.env
+
+# --- Logs et Erreurs ---
+*.log
+build_err*.txt
+run_err*.txt
+auth_run_log*.txt
+
+# --- Datasets et Fichiers lourds (Images, PDF) ---
+# On ignore les dossiers contenant les fausses données pour l'IA
+BACKEND/Dossier-Candidature-service/uploads/
+test-IA-residanat/Passport/
