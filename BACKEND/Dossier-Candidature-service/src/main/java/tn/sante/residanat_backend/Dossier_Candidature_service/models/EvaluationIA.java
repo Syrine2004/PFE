@@ -23,6 +23,19 @@ public class EvaluationIA {
     private Double scoreCin;
 
     private Double scoreDiplome;
+    
+    private Double scorePhoto;
+
+    private String analysisBatchId;
+
+    @Builder.Default
+    private Integer expectedChecks = 0;
+
+    @Builder.Default
+    private Integer completedChecks = 0;
+
+    @Builder.Default
+    private String analysisStatus = "IDLE";
 
     @Column(columnDefinition = "TEXT")
     private String anomalies; // Stocké en JSON ou texte simple
@@ -39,6 +52,11 @@ public class EvaluationIA {
 
     @PrePersist
     protected void onCreate() {
+        this.dateEvaluation = LocalDateTime.now();
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
         this.dateEvaluation = LocalDateTime.now();
     }
 }

@@ -42,16 +42,23 @@ export class DossierDetailComponent implements OnInit {
                         next: (dossier) => {
                             this.dossier = dossier;
                             if (dossier.evaluationIA) {
-                                const scoreId = dossier.evaluationIA.scoreCin !== null && dossier.evaluationIA.scoreCin !== undefined ? Math.round(dossier.evaluationIA.scoreCin) : null;
-                                const scoreDip = dossier.evaluationIA.scoreDiplome !== null && dossier.evaluationIA.scoreDiplome !== undefined ? Math.round(dossier.evaluationIA.scoreDiplome) : null;
+                                 const scoreId = dossier.evaluationIA.scoreCin !== null && dossier.evaluationIA.scoreCin !== undefined ? Math.round(dossier.evaluationIA.scoreCin) : null;
+                                 const scoreDip = dossier.evaluationIA.scoreDiplome !== null && dossier.evaluationIA.scoreDiplome !== undefined ? Math.round(dossier.evaluationIA.scoreDiplome) : null;
+                                 const scorePho = dossier.evaluationIA.scorePhoto !== null && dossier.evaluationIA.scorePhoto !== undefined ? Math.round(dossier.evaluationIA.scorePhoto) : null;
 
-                                if (scoreId !== null && scoreDip !== null) {
-                                    this.iaDetails = `Identité: ${scoreId}% | Diplôme: ${scoreDip}%`;
-                                } else if (scoreId !== null) {
-                                    this.iaDetails = `Identité: ${scoreId}%`;
-                                } else if (scoreDip !== null) {
-                                    this.iaDetails = `Diplôme: ${scoreDip}%`;
-                                }
+                                 const details = [];
+                                 if (scoreId !== null) details.push(`Identité: ${scoreId}%`);
+                                 if (scoreDip !== null) details.push(`Diplôme: ${scoreDip}%`);
+                                 
+                                 const photoDetail = scorePho !== null ? `Photo: ${scorePho}%` : null;
+                                 
+                                 if (details.length > 0 && photoDetail) {
+                                     this.iaDetails = details.join(' | ') + '\n' + photoDetail;
+                                 } else if (photoDetail) {
+                                     this.iaDetails = photoDetail;
+                                 } else {
+                                     this.iaDetails = details.join(' | ');
+                                 }
                             }
                             this.loading = false;
                         },
@@ -84,9 +91,8 @@ export class DossierDetailComponent implements OnInit {
 
                 this.dossierService.checkIA(this.dossier!.id, iaData).subscribe({
                     next: () => {
-                        // Recharger le dossier après l'analyse
-                        this.loadDossier(this.dossier!.candidatId);
-                        this.reanalysing = false;
+                        const oldBatchId = this.dossier?.evaluationIA?.analysisBatchId;
+                        this.pollResults(this.dossier!.candidatId, oldBatchId, 0);
                     },
                     error: (err) => {
                         console.error('Erreur lors de la ré-analyse IA', err);
@@ -99,6 +105,65 @@ export class DossierDetailComponent implements OnInit {
                 this.reanalysing = false;
             }
         });
+    }
+
+    pollResults(candidatId: number, oldBatchId: string | undefined, attempts: number) {
+        if (attempts >= 120) {
+            this.reanalysing = false;
+            this.loadDossier(candidatId);
+            return;
+        }
+
+        setTimeout(() => {
+            this.concoursService.getConcours(0, 1, undefined, undefined, 'PUBLIE').subscribe({
+                next: (resp) => {
+                    const concoursId = resp.content.length > 0 ? resp.content[0].id : null;
+                    if (concoursId) {
+                        this.dossierService.getDossierByCandidat(candidatId, concoursId).subscribe({
+                            next: (dossier) => {
+                                const evaluation = dossier.evaluationIA;
+                                const newBatchId = evaluation?.analysisBatchId;
+                                const status = evaluation?.analysisStatus;
+
+                                if (newBatchId && newBatchId !== oldBatchId && status === 'DONE') {
+                                    this.dossier = dossier;
+                                    this.updateIADetails(dossier);
+                                    this.reanalysing = false;
+                                } else if (status === 'FAILED') {
+                                    this.dossier = dossier;
+                                    this.updateIADetails(dossier);
+                                    this.reanalysing = false;
+                                } else {
+                                    this.pollResults(candidatId, oldBatchId, attempts + 1);
+                                }
+                            }
+                        });
+                    }
+                }
+            });
+        }, 2000);
+    }
+
+    private updateIADetails(dossier: any) {
+        if (dossier.evaluationIA) {
+            const scoreId = dossier.evaluationIA.scoreCin !== null && dossier.evaluationIA.scoreCin !== undefined ? Math.round(dossier.evaluationIA.scoreCin) : null;
+            const scoreDip = dossier.evaluationIA.scoreDiplome !== null && dossier.evaluationIA.scoreDiplome !== undefined ? Math.round(dossier.evaluationIA.scoreDiplome) : null;
+            const scorePho = dossier.evaluationIA.scorePhoto !== null && dossier.evaluationIA.scorePhoto !== undefined ? Math.round(dossier.evaluationIA.scorePhoto) : null;
+
+            const details = [];
+            if (scoreId !== null) details.push(`Identité: ${scoreId}%`);
+            if (scoreDip !== null) details.push(`Diplôme: ${scoreDip}%`);
+            
+            const photoDetail = scorePho !== null ? `Photo: ${scorePho}%` : null;
+            
+            if (details.length > 0 && photoDetail) {
+                this.iaDetails = details.join(' | ') + '\n' + photoDetail;
+            } else if (photoDetail) {
+                this.iaDetails = photoDetail;
+            } else {
+                this.iaDetails = details.join(' | ');
+            }
+        }
     }
 
     loadCandidateProfile(id: number) {

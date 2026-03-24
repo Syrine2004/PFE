@@ -2,6 +2,7 @@ import cv2
 import pytesseract
 import re
 import os
+import sys
 import numpy as np
 from fuzzywuzzy import fuzz
 
@@ -12,247 +13,163 @@ if platform.system() == "Windows":
     TESSERACT_PATH = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
     pytesseract.pytesseract.tesseract_cmd = TESSERACT_PATH
 else:
-    # On Linux (Docker), tesseract is in the PATH
     TESSERACT_PATH = 'tesseract'
-    # Pas besoin de spécifier tesseract_cmd s'il est dans le PATH
 
-def extraire_texte(image_path):
-    print(f"DEBUG: Tesseract PATH : {TESSERACT_PATH}")
-    # Sur Linux, on fait confiance au PATH
-    if platform.system() == "Windows" and not os.path.exists(TESSERACT_PATH):
-        print(f"ERROR: Tesseract not found at {TESSERACT_PATH}")
+def extraire_texte(image_brute, info_cible=None):
+    if image_brute is None or not isinstance(image_brute, np.ndarray):
         return ""
-    
-    print(f"DEBUG: Opening image : {image_path}")
-    if not os.path.exists(image_path):
-        print(f"ERROR: Image file does not exist : {image_path}")
-        return ""
-    
     try:
-        # Lecture robuste pour Windows (chemins avec espaces ou non-ASCII)
-        image = cv2.imdecode(np.fromfile(image_path, dtype=np.uint8), cv2.IMREAD_COLOR)
-    except Exception as e:
-        print(f"DEBUG: np.fromfile failed ({e}), trying cv2.imread")
-        image = cv2.imread(image_path)
-        
-    if image is None: 
-        print(f"ERROR: OpenCV could not read the image.")
-        return ""
-        
-    gris = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-    # Agrandissement x2
-    gris = cv2.resize(gris, None, fx=2, fy=2, interpolation=cv2.INTER_CUBIC)
-    # Contraste pour faire ressortir l'arabe
-    gris = cv2.convertScaleAbs(gris, alpha=1.7, beta=-40)
-    
-    config_custom = r'--psm 3 --oem 3' 
-    try:
-        texte = pytesseract.image_to_string(gris, lang='ara+fra', config=config_custom)
-        return texte
-    except Exception as e:
-        print(f"ERROR Tesseract : {e}")
-        return ""
-
-def transliterate_ara_to_fra(text):
-    """Simple transliteration for Tunisian names to compare with French form."""
-    if not text: return ""
-    mapping = {
-        'ا': 'a', 'ب': 'b', 'ت': 't', 'ث': 'th', 'ج': 'j', 'ح': 'h', 'خ': 'kh',
-        'د': 'd', 'ذ': 'dh', 'ر': 'r', 'ز': 'z', 'س': 's', 'ش': 'sh', 'ص': 's',
-        'ض': 'd', 'ط': 't', 'ظ': 'z', 'ع': 'a', 'غ': 'gh', 'ف': 'f', 'ق': 'q',
-        'ك': 'k', 'ل': 'l', 'م': 'm', 'ن': 'n', 'ه': 'h', 'و': 'w', 'ي': 'y',
-        'ة': 'e', 'ى': 'a', 'ئ': 'e', 'ؤ': 'o', 'إ': 'i', 'أ': 'a'
-    }
-    res = ""
-    for char in text:
-        res += mapping.get(char, char)
-    return res
+        gray = cv2.cvtColor(image_brute, cv2.COLOR_BGR2GRAY)
+        text = pytesseract.image_to_string(gray, lang='fra+ara')
+        if info_cible and (info_cible in text or info_cible.replace(' ', '') in text.replace(' ', '')):
+            return text
+        boosted = cv2.convertScaleAbs(gray, alpha=1.5, beta=0)
+        text += "\n" + pytesseract.image_to_string(boosted, lang='fra+ara')
+        if info_cible and (info_cible in text or info_cible.replace(' ', '') in text.replace(' ', '')):
+            return text
+        adaptive = cv2.adaptiveThreshold(gray, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, 11, 2)
+        text += "\n" + pytesseract.image_to_string(adaptive, lang='fra+ara')
+        return text
+    except: return ""
 
 def clean_for_match(text):
+    if not text: return ""
     return re.sub(r'[^a-zA-Z0-9]', '', text).lower()
 
-def analyser_conformite(texte_extrait, infos, document_type):
+
+def normalize_ocr_confusions(text):
+    """Normalize common OCR confusions between letters and digits."""
+    if not text:
+        return ""
+    t = re.sub(r'[^A-Z0-9]', '', text.upper())
+    replacements = {
+        'O': '0', 'Q': '0', 'D': '0',
+        'I': '1', 'L': '1',
+        'Z': '2', 'S': '5',
+        'B': '8', 'G': '6'
+    }
+    return ''.join(replacements.get(ch, ch) for ch in t)
+
+
+def has_diploma_keywords(text):
+    t = text.lower()
+    keywords = [
+        'diplome', 'diploma', 'universit', 'facult', 'doctorat',
+        'attestation', 'reussite', 'licence', 'master', 'ingenieur'
+    ]
+    return any(k in t for k in keywords)
+
+def analyser_conformite(infos, image_brute):
     anomalies = []
-    score = 0
-    
+    texte_extrait = extraire_texte(image_brute, info_cible=infos.get('cin'))
     texte_propre = texte_extrait.replace('\n', ' ')
     texte_clean = clean_for_match(texte_propre)
+    texte_upper = texte_propre.upper()
+    texte_norm = normalize_ocr_confusions(texte_upper)
     
-    print("\n" + "*"*60)
-    print(f"*** [ DIPLOMA VALIDATION CHECK ] ***")
-    print("*"*60)
-    print(f"GRADUATE: {infos['nom']} {infos['prenom']} | ID: {infos['cin']}")
-    print("-" * 60)
-    print("WEIGHTS: ID(40) | Faculty(20) | Year(20) | Name(20)")
-    print("-" * 60)
-
-    # 0. Safety Check: Is it really a diploma?
-    print(f"\n[PILLAR 0/4] SAFETY CHECK (DOCUMENT TYPE)...")
-    keywords = ["diplome", "republique", "tunisienne", "faculte", "universite", "attestation", "reussite"]
-    if not any(k in texte_propre.lower() for k in keywords):
-        print(" >> WARNING: This does NOT look like a diploma (Keywords missing).")
-        anomalies.append("Ce document ne contient pas les mots-clés d'un Diplôme.")
-
-    # 1. Vérification CIN/Identité sur diplôme (40% du score)
-    print(f"\n[PILLAR 1/4] CHECKING IDENTITY ON DIPLOMA...")
-    num_identite = infos['cin']
+    score = 0
+    num_identite = infos.get('cin', '')
     match_id = False
-    
-    # Try exact match, fuzzy on numbers/alphanumeric
-    texte_no_spaces = texte_propre.replace(' ', '')
-    num_clean = clean_for_match(num_identite)
-    
-    if num_identite in texte_clean or num_identite in texte_no_spaces:
-        print(f" >> OK: Identity number {num_identite} found (+40 pts).")
+
+    # 1) Preuve forte que c'est bien un diplôme
+    has_diploma_evidence = has_diploma_keywords(texte_propre)
+    if has_diploma_evidence:
         score += 40
-        match_id = True
     else:
-        # Search for any alphanumeric block of similar length
-        # Case 1: 8 digits (CIN)
-        potential_ids = re.findall(r'\d{8}', texte_clean)
-        # Case 2: Alphanumeric (Passport) - look for blocks of 6-12 chars
-        potential_ids += re.findall(r'[A-Z0-9]{6,12}', texte_propre.upper().replace(' ', ''))
-        
-        for pi in potential_ids:
-            if fuzz.ratio(num_clean.upper(), pi.upper()) >= 90:
-                print(f" >> OK: Identity number matched fuzzy with '{pi}' (+40 pts).")
-                score += 40
-                match_id = True
-                break
-    
-    if not match_id:
-        print(f" >> NOTICE: Identity number {num_identite} NOT detected clearly. Checking Name instead.")
-        
-    # 2. Vérification FACULTÉ (20% du score)
-    print(f"\n[PILLAR 2/4] CHECKING FACULTY...")
-    faculte_attendue = infos.get('faculte', '').strip()
-    if faculte_attendue:
-        match_fac = fuzz.partial_ratio(faculte_attendue.lower(), texte_propre.lower())
-        if match_fac < 70 and len(faculte_attendue) > 3:
-             if faculte_attendue.lower() in texte_propre.lower():
-                 match_fac = 100
-        
-        if match_fac >= 70: 
-            print(f" >> OK: Faculty '{faculte_attendue}' validated (Confidence: {match_fac}%) (+20 pts).")
+        anomalies.append("Contenu diplôme peu lisible (mots-clés académiques non détectés).")
+
+    # 2) Match numéro d'identité: bonus optionnel (ne doit pas casser un diplôme valide)
+    if num_identite:
+        target = normalize_ocr_confusions(str(num_identite).upper())
+        compact = re.sub(r'[^A-Z0-9]', '', texte_upper)
+        compact_norm = normalize_ocr_confusions(compact)
+
+        if str(num_identite).upper() in compact or target in compact_norm:
             score += 20
+            match_id = True
         else:
-            anomalies.append(f"Faculté '{faculte_attendue}' non détectée.")
-            print(f" >> WARNING: Faculty '{faculte_attendue}' NOT found clearly.")
-    else:
-        print(" >> DEBUG: No faculty specified in form.")
-
-    # 3. Vérification DATES (20% du score)
-    print(f"\n[PILLAR 3/4] CHECKING GRADUATION YEAR...")
-    date_d_str = infos.get('dateDiplome', '')
-    annee_d = date_d_str.split('-')[0] if date_d_str else ''
-
-    annee_match = False
-    if annee_d:
-        # Check exact and fuzzy (OCR noise)
-        annee_alt = annee_d.replace('0', 'o').replace('1', 'l')
-        if annee_d in texte_clean or annee_d in texte_propre or annee_alt in texte_propre.lower():
-            annee_match = True
-        else:
-            # Look for 4-digit numbers and find the best match
-            potential_years = re.findall(r'\d{4}', texte_clean)
-            for py in potential_years:
-                if fuzz.ratio(annee_d, py) >= 75: 
-                    print(f" >> OK: Diploma year {annee_d} matched fuzzy with '{py}'.")
-                    annee_match = True
+            # Fallback fuzzy sur tokens alphanumériques
+            tokens = re.findall(r'[A-Z0-9]{6,14}', compact)
+            for tok in tokens:
+                tok_norm = normalize_ocr_confusions(tok)
+                if fuzz.ratio(target, tok_norm) >= 88:
+                    score += 20
+                    match_id = True
                     break
 
-    if annee_match:
+    # Pour le diplôme, l'absence du numéro n'est pas bloquante et ne doit pas polluer l'UI.
+
+    faculte_form = infos.get('faculte', '').lower()
+    if faculte_form and faculte_form in texte_propre.lower():
         score += 20
-        print(f" >> OK: Diploma year {annee_d} validated (+20 pts).")
-    elif annee_d:
-        anomalies.append(f"Année du diplôme {annee_d} non trouvée.")
-        print(f" >> WARNING: Diploma year {annee_d} NOT found.")
-        
-    # 4. Vérification NOM & PRÉNOM (20% du score)
-    print(f"\n[PILLAR 4/4] CHECKING NAME ON DIPLOMA...")
-    nom_f = infos['nom'].lower().strip()
-    prenom_f = infos['prenom'].lower().strip()
-    
-    # Use token_set_ratio which is better for detecting names in noise
-    match_lat_nom = max(fuzz.partial_ratio(nom_f, texte_propre.lower()), fuzz.token_set_ratio(nom_f, texte_propre.lower()))
-    match_lat_pre = max(fuzz.partial_ratio(prenom_f, texte_propre.lower()), fuzz.token_set_ratio(prenom_f, texte_propre.lower()))
-    
-    match_lat = (match_lat_nom + match_lat_pre) / 2
-    print(f" >> Latin match: Nom={match_lat_nom}%, Prenom={match_lat_pre}% -> Moy={match_lat}%")
-    
-    match_ara = 0
-    mots_arabes = re.findall(r'[\u0600-\u06FF]+', texte_extrait)
-    if mots_arabes:
-        texte_trans = transliterate_ara_to_fra(" ".join(mots_arabes))
-        match_ara_nom = max(fuzz.partial_ratio(nom_f, texte_trans), fuzz.token_set_ratio(nom_f, texte_trans))
-        match_ara_pre = max(fuzz.partial_ratio(prenom_f, texte_trans), fuzz.token_set_ratio(prenom_f, texte_trans))
-        match_ara = (match_ara_nom + match_ara_pre) / 2
-        print(f" >> Arabic match (translit): Nom={match_ara_nom}%, Prenom={match_ara_pre}% -> Moy={match_ara}%")
+    elif faculte_form:
+        # Faculté reste un signal utile, mais non bloquant.
+        anomalies.append(f"Faculté {faculte_form} non détectée.")
 
-    identity_conf = max(match_lat, match_ara)
-    identity_points = 20
-    identity_score = (identity_conf / 100.0) * identity_points
-    score += identity_score
+    annee_form = infos.get('dateDiplome', '').split('-')[0]
+    annee_found = False
+    if annee_form and annee_form in texte_propre:
+        score += 20
+        annee_found = True
+    elif annee_form:
+        anomalies.append(f"Année {annee_form} non trouvée.")
+
+    # 3) Bonus nom/prénom si présents
+    nom = infos.get('nom', '').strip().lower()
+    prenom = infos.get('prenom', '').strip().lower()
+    name_hits = 0
+    if nom and nom in texte_propre.lower():
+        score += 10
+        name_hits += 1
+    if prenom and prenom in texte_propre.lower():
+        score += 10
+        name_hits += 1
+
+    # Règle de validation forte diplôme: si les éléments académiques essentiels sont là,
+    # on force 100 même sans numéro d'identité.
+    if has_diploma_evidence and annee_found and name_hits >= 1:
+        score = 100
+
+    # Clamp final 0..100
+    score = max(0, min(100, int(score)))
     
-    if identity_conf < 50:
-        anomalies.append(f"Nom/Prénom non confirmés ({identity_conf:.0f}%).")
-        print(f" >> WARNING: Identity check FAILED (Confidence: {identity_conf:.0f}%).")
-    else:
-        print(f" >> OK: Name validated (Confidence: {identity_conf:.0f}%) (+{identity_score:.1f} pts).")
-
-    print("\n" + "*"*60 + "\n")
-    return max(0, min(100, int(score))), anomalies
-
+    return score, anomalies
 
 if __name__ == "__main__":
-    import sys
-    import json
-    
-    if hasattr(sys.stdout, 'reconfigure'):
-        sys.stdout.reconfigure(encoding='utf-8')
+    if hasattr(sys.stdout, 'reconfigure'): sys.stdout.reconfigure(encoding='utf-8')
+    # La Java ProcessBuilder peut envoyer plus d'arguments que ce qui est strictement nécessaire (ex: 10).
+    # On reste flexible en vérifiant le nombre minimal requis.
+    if len(sys.argv) < 2:
+        print("Usage: python test_diplome_ia.py <image_path> [cin] [nom] [prenom] [dateNaissance] [faculte] [dateDiplome]")
+        sys.exit(1)
 
-    if len(sys.argv) > 7:
-        chemin_image = sys.argv[1]
-        donnees_formulaire = {
-            "cin": sys.argv[2],
-            "nom": sys.argv[3],
-            "prenom": sys.argv[4],
-            "dateNaissance": sys.argv[5],
-            "faculte": sys.argv[6],
-            "dateDiplome": sys.argv[7]
-        }
-        document_type = sys.argv[8] if len(sys.argv) > 8 else 'DIPLOME'
-    else:
-        chemin_image = "diplome.jpg" 
-        donnees_formulaire = {
-            "cin": "06441169", 
-            "nom": "hamrouni",  
-            "prenom": "ebtissem",
-            "dateNaissance": "1981-10-05",
-            "faculte": "sousse",
-            "dateDiplome": "2026-03-27"
-        }
-        document_type = 'DIPLOME'
-
-    print("--- START AI ANALYSIS (DIPLOMA) ---")
-    print(f"DEBUG: Document Type : {document_type}")
+    chemin_image = sys.argv[1]
     
+    # Extraction sécurisée des données du formulaire (si présentes)
+    # Mapping selon ValidationDocumentaireIAService.java: 
+    # 2:cin, 3:nom, 4:prenom, 5:dateNaissance, 6:faculte, 7:dateDiplome
+    donnees_formulaire = {
+        "cin": sys.argv[2] if len(sys.argv) > 2 else "14373619",
+        "nom": sys.argv[3] if len(sys.argv) > 3 else "Sirine",
+        "prenom": sys.argv[4] if len(sys.argv) > 4 else "Haboubi",
+        "dateNaissance": sys.argv[5] if len(sys.argv) > 5 else "2004-08-05",
+        "faculte": sys.argv[6] if len(sys.argv) > 6 else "tunis",
+        "dateDiplome": sys.argv[7] if len(sys.argv) > 7 else "2026-03-27"
+    }
+
     try:
-        texte = extraire_texte(chemin_image)
-        print(f"\n--- Read Text ---\n{texte}\n---")
-        
-        score_final, liste_anomalies = analyser_conformite(texte, donnees_formulaire, document_type)
-        
-        print("\n=== FINAL BILL ===")
-        print(f"RESULT_SCORE: {score_final}")
-        if score_final >= 70:
-            print(f"OK: DOSSIER VALIDATED (Score: {score_final}/100)")
+        if chemin_image.lower().endswith(('.png', '.jpg', '.jpeg')):
+            image_brute = cv2.imdecode(np.fromfile(chemin_image, dtype=np.uint8), cv2.IMREAD_COLOR)
         else:
-            print(f"FAILED: DOSSIER REJECTED (Score: {score_final}/100)")
-            
-        for ano in liste_anomalies:
-            print(f"WARNING: {ano}")
-                    
+            image_brute = cv2.imread(chemin_image)
+
+        if image_brute is not None:
+            score_final, liste_anomalies = analyser_conformite(donnees_formulaire, image_brute)
+        else:
+            score_final, liste_anomalies = 0, ["ERREUR: Image non chargée."]
+
+        print(f"RESULT_SCORE: {score_final}")
+        for ano in liste_anomalies: print(f"WARNING: {ano}")
     except Exception as e:
         print(f"CRITICAL_ERROR: {str(e)}")
         sys.exit(1)

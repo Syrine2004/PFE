@@ -10,3 +10,5 @@ ia:
     path: /app/scripts/test_ia.py
     diplome:
       path: /app/scripts/test_diplome_ia.py
+    photo:
+      path: /app/scripts/test_photo_ia.py

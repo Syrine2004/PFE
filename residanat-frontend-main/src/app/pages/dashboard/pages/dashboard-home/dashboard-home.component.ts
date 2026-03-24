@@ -162,12 +162,18 @@ export class DashboardHomeComponent implements OnInit {
 
     // 3. Étape 1 : Vérification IA
     if (dossier.evaluationIA) {
-      const scoreId = dossier.evaluationIA.scoreCin ? Math.round(dossier.evaluationIA.scoreCin) : null;
-      const scoreDip = dossier.evaluationIA.scoreDiplome ? Math.round(dossier.evaluationIA.scoreDiplome) : null;
-      const scoreGlobal = Math.round(dossier.evaluationIA.score);
+      const scoreId = dossier.evaluationIA.scoreCin !== null && dossier.evaluationIA.scoreCin !== undefined
+        ? Math.round(dossier.evaluationIA.scoreCin)
+        : null;
+      const scoreDip = dossier.evaluationIA.scoreDiplome !== null && dossier.evaluationIA.scoreDiplome !== undefined
+        ? Math.round(dossier.evaluationIA.scoreDiplome)
+        : null;
+      const globalScore = dossier.evaluationIA.score;
+      const hasGlobalScore = globalScore !== null && globalScore !== undefined;
+      const scoreGlobal = hasGlobalScore ? Math.round(globalScore) : 0;
 
-      this.stats[1].value = `${scoreGlobal}%`;
-      this.stats[1].progress = scoreGlobal;
+      this.stats[1].value = hasGlobalScore ? `${scoreGlobal}%` : '-';
+      this.stats[1].progress = hasGlobalScore ? scoreGlobal : 0;
 
       let details = '';
       if (scoreId !== null && scoreDip !== null) {
@@ -179,9 +185,15 @@ export class DashboardHomeComponent implements OnInit {
       }
       this.stats[1].subLabel = details;
 
-      this.progressionSteps[1].status = 'done';
-      this.progressionSteps[1].progress = 100;
-      this.progressionSteps[1].note = `Score IA : ${scoreGlobal}% (${details})`;
+      if (hasGlobalScore) {
+        this.progressionSteps[1].status = 'done';
+        this.progressionSteps[1].progress = 100;
+        this.progressionSteps[1].note = `Score IA : ${scoreGlobal}% (${details})`;
+      } else {
+        this.progressionSteps[1].status = 'current';
+        this.progressionSteps[1].progress = 50;
+        this.progressionSteps[1].note = 'Analyse IA en cours...';
+      }
     } else if (this.progressionSteps[0].status === 'done') {
       this.progressionSteps[1].status = 'current';
       this.progressionSteps[1].progress = 50;

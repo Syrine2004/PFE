@@ -262,27 +262,74 @@ export class InscriptionConcoursComponent implements OnInit {
             // On appelle le service IA via le backend
             this.dossierService.checkIA(this.dossier.id, candidateData).subscribe({
                 next: () => {
-                    this.iaCheckMessage = "Analyse des documents terminée !";
-
-                    setTimeout(() => {
-                        this.iaCheckMessage = "Score IA généré avec succès.";
-
-                        setTimeout(() => {
-                            this.isCheckingIA = false;
-                            this.executeSubmit();
-                        }, 1000);
-                    }, 1000);
+                    this.iaCheckMessage = "Analyse IA lancée. Attente du score final...";
+                    this.waitForIACompletion(0);
                 },
                 error: (err) => {
                     console.error('Erreur IA', err);
-                    this.iaCheckMessage = "Analyse IA terminée (score existant utilisé).";
-                    setTimeout(() => {
-                        this.isCheckingIA = false;
-                        this.executeSubmit();
-                    }, 1000);
+                    this.isCheckingIA = false;
+                    this.iaCheckMessage = "Erreur IA. Relancez l'analyse.";
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Analyse IA échouée',
+                        text: 'Impossible de lancer une analyse fiable. Veuillez réessayer.',
+                        confirmButtonColor: '#008fbb'
+                    });
                 }
             });
         }
+    }
+
+    private waitForIACompletion(attempt: number) {
+        if (!this.dossier) return;
+
+        const maxAttempts = 120;
+        if (attempt >= maxAttempts) {
+            this.isCheckingIA = false;
+            this.iaCheckMessage = "Temps d'attente dépassé. Vérifiez l'état IA puis réessayez.";
+            Swal.fire({
+                icon: 'warning',
+                title: 'Analyse IA en attente',
+                text: 'Le score final n\'est pas encore prêt. Merci de réessayer dans quelques instants.',
+                confirmButtonColor: '#008fbb'
+            });
+            return;
+        }
+
+        this.dossierService.getDossier(this.dossier.id).subscribe({
+            next: (updatedDossier) => {
+                this.dossier = updatedDossier;
+                const evaluation = updatedDossier.evaluationIA;
+                const status = evaluation?.analysisStatus;
+                const completed = evaluation?.completedChecks ?? 0;
+                const expected = evaluation?.expectedChecks ?? 0;
+
+                if (status === 'DONE') {
+                    this.iaCheckMessage = "Score IA final validé.";
+                    this.isCheckingIA = false;
+                    this.executeSubmit();
+                    return;
+                }
+
+                if (status === 'FAILED') {
+                    this.isCheckingIA = false;
+                    this.iaCheckMessage = "Analyse IA échouée. Corrigez les documents puis relancez.";
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Analyse IA échouée',
+                        text: 'Le score final n\'a pas pu être validé. Corrigez les documents puis réessayez.',
+                        confirmButtonColor: '#008fbb'
+                    });
+                    return;
+                }
+
+                this.iaCheckMessage = `Analyse IA en cours (${completed}/${expected})...`;
+                setTimeout(() => this.waitForIACompletion(attempt + 1), 3000);
+            },
+            error: () => {
+                setTimeout(() => this.waitForIACompletion(attempt + 1), 3000);
+            }
+        });
     }
 
     private executeSubmit() {

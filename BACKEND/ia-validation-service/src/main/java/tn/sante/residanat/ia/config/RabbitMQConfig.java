@@ -13,6 +13,18 @@ public class RabbitMQConfig {
 
     public static final String EXCHANGE_IA = "ia.exchange";
     public static final String ROUTING_KEY_RESPONSE = "ia.response";
+    public static final String QUEUE_IA_REQUEST = "q.ia.request";
+    public static final String QUEUE_IA_RESPONSE = "q.ia.response";
+
+    @Bean
+    public Queue requestQueue() {
+        return new Queue(QUEUE_IA_REQUEST, true, false, false);
+    }
+
+    @Bean
+    public Queue responseQueue() {
+        return new Queue(QUEUE_IA_RESPONSE, true, false, false);
+    }
 
     @Bean
     public MessageConverter jsonMessageConverter() {

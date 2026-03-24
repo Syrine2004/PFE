@@ -26,12 +26,17 @@ export interface Document {
 
 export interface EvaluationIA {
     id: number;
-    score: number;
+    score: number | null;
     scoreCin?: number;
     scoreDiplome?: number;
+    scorePhoto?: number;
     anomalies: string;
     verifie: boolean;
     dateEvaluation: string;
+    analysisBatchId?: string;
+    expectedChecks?: number;
+    completedChecks?: number;
+    analysisStatus?: string;
 }
 
 export interface DossierCandidature {

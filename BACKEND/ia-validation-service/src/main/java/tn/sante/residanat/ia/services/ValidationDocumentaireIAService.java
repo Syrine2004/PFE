@@ -6,15 +6,23 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Service
 public class ValidationDocumentaireIAService {
+    private static final Pattern RESULT_SCORE_PATTERN = Pattern.compile("RESULT_SCORE:\\s*([-+]?\\d+(?:[.,]\\d+)?)");
+    private static final long PYTHON_TIMEOUT_SECONDS = 45;
 
     @Value("${ia.script.path}")
     private String pythonScriptPath;
 
     @Value("${ia.script.diplome.path:/app/scripts/test_diplome_ia.py}")
     private String pythonScriptDiplomePath;
+
+    @Value("${ia.script.photo.path:/app/scripts/test_photo_ia.py}")
+    private String pythonScriptPhotoPath;
 
     public Map<String, Object> analyserDocument(Map<String, Object> data) {
         Map<String, Object> result = new HashMap<>();
@@ -31,6 +39,10 @@ public class ValidationDocumentaireIAService {
                 faculte = ""; // Pour éviter les null
             if (dateDiplome == null)
                 dateDiplome = "";
+            String photoIdentitePath = (String) data.get("photoIdentitePath");
+            if (photoIdentitePath == null)
+                photoIdentitePath = "";
+
             String type = (String) data.get("type");
             if (type == null)
                 type = "CIN";
@@ -39,7 +51,7 @@ public class ValidationDocumentaireIAService {
             ProcessBuilder pb;
             if ("DIPLOME".equalsIgnoreCase(type)) {
                 // Commande : python test_diplome_ia.py <imagePath> <cin> <nom> <prenom>
-                // <dateNaissance> <faculte>
+                // <dateNaissance> <faculte> <dateDiplome> <type> <photoIdentitePath>
                 pb = new ProcessBuilder(
                         "python",
                         pythonScriptDiplomePath,
@@ -50,10 +62,17 @@ public class ValidationDocumentaireIAService {
                         dateNaissance,
                         faculte,
                         dateDiplome,
-                        type);
+                        type,
+                        photoIdentitePath);
+            } else if ("PHOTO_IDENTITE".equalsIgnoreCase(type)) {
+                // Commande : python test_photo_ia.py <imagePath>
+                pb = new ProcessBuilder(
+                        "python",
+                        pythonScriptPhotoPath,
+                        imagePath);
             } else {
                 // Commande : python test_ia.py <imagePath> <cin> <nom> <prenom> <dateNaissance>
-                // <type>
+                // <type> <photoIdentitePath>
                 pb = new ProcessBuilder(
                         "python",
                         pythonScriptPath,
@@ -62,9 +81,12 @@ public class ValidationDocumentaireIAService {
                         nom,
                         prenom,
                         dateNaissance,
-                        type);
+                        type,
+                        photoIdentitePath);
             }
 
+            // Merge stderr into stdout to avoid blocking on unread error stream.
+            pb.redirectErrorStream(true);
             Process process = pb.start();
 
             // On lit la sortie du script
@@ -76,13 +98,23 @@ public class ValidationDocumentaireIAService {
                 output.append(line).append("\n");
             }
 
-            int exitCode = process.waitFor();
+            boolean completed = process.waitFor(PYTHON_TIMEOUT_SECONDS, TimeUnit.SECONDS);
+            if (!completed) {
+                process.destroyForcibly();
+                result.put("score", null);
+                result.put("verified", false);
+                result.put("anomalies", "Erreur IA: timeout script Python");
+                result.put("type", type);
+                return result;
+            }
+            int exitCode = process.exitValue();
 
             // On parse le résultat
             String fullOutput = output.toString();
-            Double score = 85.0; // Fallback
-            if (fullOutput.contains("RESULT_SCORE:")) {
-                String scoreStr = fullOutput.split("RESULT_SCORE:")[1].split("\n")[0].trim();
+            Double score = null;
+            Matcher scoreMatcher = RESULT_SCORE_PATTERN.matcher(fullOutput);
+            if (scoreMatcher.find()) {
+                String scoreStr = scoreMatcher.group(1).replace(',', '.');
                 score = Double.parseDouble(scoreStr);
             }
 
@@ -98,6 +130,10 @@ public class ValidationDocumentaireIAService {
             }
             String anomalies = warnings.isEmpty() ? "Aucune anomalie détectée." : String.join("\n", warnings);
 
+            if (score == null) {
+                anomalies = "Score IA introuvable dans la sortie Python. " + anomalies;
+            }
+
             System.out.println("IA Analysis Complete for " + type + ". Score: " + score);
 
             result.put("score", score);
@@ -108,7 +144,7 @@ public class ValidationDocumentaireIAService {
 
         } catch (Exception e) {
             System.err.println("IA Analysis Error: " + e.getMessage());
-            result.put("score", 0.0);
+            result.put("score", null);
             result.put("verified", false);
             result.put("anomalies", "Erreur IA: " + e.getMessage());
         }
