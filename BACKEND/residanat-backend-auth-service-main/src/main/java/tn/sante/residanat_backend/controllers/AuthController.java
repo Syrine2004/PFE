@@ -164,7 +164,6 @@ public class AuthController {
     return ResponseEntity.ok(profile);
   }
 
-  /* 
   @PutMapping("/update-profile")
   public ResponseEntity<?> updateProfile(
       @RequestHeader("Authorization") String authHeader,
@@ -214,7 +213,6 @@ public class AuthController {
     utilisateurRepository.save(user);
     return ResponseEntity.ok("Profil mis à jour avec succès.");
   }
-  */
 
   @GetMapping("/users")
   public ResponseEntity<java.util.List<Utilisateur>> getAllUsers() {
