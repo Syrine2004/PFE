@@ -1,0 +1,102 @@
+# ============================================================================
+# .gitattributes - Gestion des attributs de fichiers
+# ============================================================================
+# Normalise les fins de lignes et spécifie l'ordre de diffusion
+
+# ============================================================================
+# Fins de lignes normalisées (auto = CRLF sur Windows, LF sur Unix)
+# ============================================================================
+* text=auto
+
+# Fichiers texte - normaliser les fins de lignes
+*.md text eol=lf
+*.json text eol=lf
+*.js text eol=lf
+*.ts text eol=lf
+*.tsx text eol=lf
+*.java text eol=lf
+*.xml text eol=lf
+*.yml text eol=lf
+*.yaml text eol=lf
+*.properties text eol=lf
+*.css text eol=lf
+*.scss text eol=lf
+*.html text eol=lf
+*.sql text eol=lf
+*.sh text eol=lf eol=lf
+*.py text eol=lf
+*.txt text eol=lf
+
+# Docker
+Dockerfile text eol=lf
+.dockerignore text eol=lf
+docker-compose.yml text eol=lf
+docker-compose.override.yml.example text eol=lf
+
+# Config
+.gitignore text eol=lf
+.gitattributes text eol=lf
+.env.example text eol=lf
+
+# ============================================================================
+# Fichiers binaires - ne pas fusionner
+# ============================================================================
+*.jar binary
+*.war binary
+*.ear binary
+*.zip binary
+*.tar binary
+*.tar.gz binary
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.mov binary
+*.mp4 binary
+*.mp3 binary
+*.gz binary
+*.sqlite binary
+*.sqlite3 binary
+*.db binary
+
+# ============================================================================
+# Images
+# ============================================================================
+*.png binary diff=exif
+*.jpg binary diff=exif
+*.jpeg binary diff=exif
+*.gif binary diff=exif
+*.webp binary diff=exif
+
+# ============================================================================
+# Archives
+# ============================================================================
+*.zip binary
+*.7z binary
+*.gz binary
+*.rar binary
+*.tar binary
+
+# ============================================================================
+# IDE
+# ============================================================================
+.vscode/* text eol=lf
+.idea/** binary
+
+# ============================================================================
+# Node/pnpm lock files
+# ============================================================================
+package-lock.json binary
+pnpm-lock.yaml binary
+yarn.lock binary
+npm-shrinkwrap.json binary
+
+# ============================================================================
+# Maven & Gradle
+# ============================================================================
+.mvn/** binary
+mvnw text eol=lf
+mvnw.cmd text eol=crlf
+gradlew text eol=lf
+gradlew.bat text eol=crlf
