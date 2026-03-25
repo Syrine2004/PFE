@@ -17,6 +17,12 @@ Thumbs.db
 .env.*
 !.env.example
 
+# Documents & Reports (volumineux)
+*.pdf
+rapport*.pdf
+*.doc
+*.docx
+
 # Java / Maven / Spring
 **/target/
 **/.mvn/wrapper/maven-wrapper.jar
