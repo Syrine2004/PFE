@@ -1,6 +1,6 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
+import { RouterModule, Router } from '@angular/router';
 import { ConcoursService, Concours } from '../../../../core/services/concours.service';
 import { DossierService, DossierCandidature } from '../../../../core/services/dossier.service';
 import { AuthService } from '../../../../core/services/auth.service';
@@ -17,9 +17,11 @@ export class DashboardHomeComponent implements OnInit {
   private dossierService = inject(DossierService);
   private authService = inject(AuthService);
 
+  private router = inject(Router);
   publiesConcours: Concours[] = [];
   userName: string = '';
   hasDossier: boolean = false;
+  dossier: DossierCandidature | null = null;
 
   notifications = [
     {
@@ -113,6 +115,7 @@ export class DashboardHomeComponent implements OnInit {
       next: (dossier) => {
         if (dossier) {
           this.hasDossier = true;
+          this.dossier = dossier;
           this.updateStatsFromDossier(dossier);
         } else {
           this.hasDossier = false;
@@ -317,5 +320,29 @@ export class DashboardHomeComponent implements OnInit {
       case 'current': return 'En cours';
       default: return 'À venir';
     }
+  }
+
+  downloadConvocation(event?: Event) {
+    if (event) event.stopPropagation();
+    if (!this.dossier || !this.dossier.id) {
+      console.warn('Dossier non trouvé pour le téléchargement');
+      return;
+    }
+
+    this.dossierService.telechargerConvocationPdf(Number(this.dossier.id)).subscribe({
+      next: (blob) => {
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `convocation_${this.userName.replace(/\s+/g, '_')}.pdf`;
+        a.click();
+        window.URL.revokeObjectURL(url);
+      },
+      error: (err) => console.error('Erreur téléchargement', err)
+    });
+  }
+
+  goToConvocation() {
+    this.router.navigate(['/dashboard/convocation']);
   }
 }

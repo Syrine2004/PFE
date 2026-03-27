@@ -99,4 +99,32 @@ export class DossierService {
     getAllDossiers(): Observable<DossierCandidature[]> {
         return this.http.get<DossierCandidature[]>(this.apiUrl);
     }
+
+    /**
+     * Télécharge le PDF de convocation pour un dossier validé
+     */
+    telechargerConvocationPdf(dossierId: number): Observable<Blob> {
+        const url = `http://localhost:8080/api/convocations/telecharger/${dossierId}`;
+        return this.http.get(url, { responseType: 'blob' });
+    }
+
+    /**
+     * Récupère les informations de convocation pour l'aperçu
+     */
+    getConvocationInfo(dossierId: number): Observable<Convocation> {
+        const url = `http://localhost:8080/api/convocations/info/${dossierId}`;
+        return this.http.get<Convocation>(url);
+    }
+}
+
+export interface Convocation {
+    id?: number;
+    numeroInscription: string;
+    salle: string;
+    place: string;
+    heureAppel: string;
+    lieuExamenDetail: string;
+    dateEpreuve: string;
+    hashSecurise: string;
+    statut: string;
 }

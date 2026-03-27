@@ -1,0 +1,13 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://postgres-convocation:5432/residanat_convocation_db
+    username: postgres
+    password: system
+  rabbitmq:
+    listener:
+      simple:
+        auto-startup: false
+
+server:
+  port: 8086
+

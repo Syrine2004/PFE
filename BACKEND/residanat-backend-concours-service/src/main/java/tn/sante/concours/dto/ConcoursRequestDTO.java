@@ -25,6 +25,8 @@ public class ConcoursRequestDTO {
 
     private String dateFin;
 
+    private String lieuExamen;
+
     public ConcoursRequestDTO() {
     }
 
@@ -74,5 +76,13 @@ public class ConcoursRequestDTO {
 
     public void setDateFin(String dateFin) {
         this.dateFin = dateFin;
+    }
+
+    public String getLieuExamen() {
+        return lieuExamen;
+    }
+
+    public void setLieuExamen(String lieuExamen) {
+        this.lieuExamen = lieuExamen;
     }
 }

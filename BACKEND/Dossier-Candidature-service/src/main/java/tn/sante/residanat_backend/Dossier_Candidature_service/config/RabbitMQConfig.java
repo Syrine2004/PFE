@@ -17,6 +17,10 @@ public class RabbitMQConfig {
     public static final String ROUTING_KEY_REQUEST = "ia.request";
     public static final String ROUTING_KEY_RESPONSE = "ia.response";
 
+    public static final String QUEUE_DOSSIER_VALIDE = "q.dossier.valide";
+    public static final String EXCHANGE_DOSSIER = "dossier.exchange";
+    public static final String ROUTING_KEY_VALIDE = "dossier.valide";
+
     @Bean
     public Queue requestQueue() {
         return new Queue(QUEUE_IA_REQUEST);
@@ -43,14 +47,36 @@ public class RabbitMQConfig {
     }
 
     @Bean
+    public Queue dossierValideQueue() {
+        return new Queue(QUEUE_DOSSIER_VALIDE);
+    }
+
+    @Bean
+    public DirectExchange dossierExchange() {
+        return new DirectExchange(EXCHANGE_DOSSIER);
+    }
+
+    @Bean
+    public Binding dossierValideBinding(Queue dossierValideQueue, DirectExchange dossierExchange) {
+        return BindingBuilder.bind(dossierValideQueue).to(dossierExchange).with(ROUTING_KEY_VALIDE);
+    }
+
+    @Bean
     public MessageConverter jsonMessageConverter() {
         return new Jackson2JsonMessageConverter();
     }
 
     @Bean
     public AmqpTemplate amqpTemplate(ConnectionFactory connectionFactory) {
+        @SuppressWarnings("null")
         final RabbitTemplate rabbitTemplate = new RabbitTemplate(connectionFactory);
-        rabbitTemplate.setMessageConverter(jsonMessageConverter());
+        @SuppressWarnings("null")
+        MessageConverter messageConverter = jsonMessageConverter();
+        @SuppressWarnings("null")
+        final MessageConverter converter = messageConverter;
+        @SuppressWarnings("null")
+        MessageConverter converterToSet = converter;
+        rabbitTemplate.setMessageConverter(converterToSet);
         return rabbitTemplate;
     }
 }

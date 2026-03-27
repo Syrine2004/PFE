@@ -33,8 +33,15 @@ public class RabbitMQConfig {
 
     @Bean
     public AmqpTemplate amqpTemplate(ConnectionFactory connectionFactory) {
+        @SuppressWarnings("null")
         final RabbitTemplate rabbitTemplate = new RabbitTemplate(connectionFactory);
-        rabbitTemplate.setMessageConverter(jsonMessageConverter());
+        @SuppressWarnings("null")
+        MessageConverter messageConverter = jsonMessageConverter();
+        @SuppressWarnings("null")
+        final MessageConverter converter = messageConverter;
+        @SuppressWarnings("null")
+        MessageConverter converterToSet = converter;
+        rabbitTemplate.setMessageConverter(converterToSet);
         return rabbitTemplate;
     }
 }

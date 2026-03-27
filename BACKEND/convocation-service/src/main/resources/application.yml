@@ -1,0 +1,96 @@
+spring:
+  application:
+    name: convocation-service
+
+  # ============================================================
+  # Configuration de la base de données PostgreSQL
+  # ============================================================
+  datasource:
+    url: jdbc:postgresql://localhost:5436/residanat_convocation_db
+    username: postgres
+    password: system
+    driver-class-name: org.postgresql.Driver
+
+  # ============================================================
+  # Configuration RabbitMQ
+  # ============================================================
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: guest
+    password: guest
+    listener:
+      simple:
+        auto-startup: true
+
+  # ============================================================
+  # Configuration JPA/Hibernate
+  # ============================================================
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+        jdbc:
+          batch_size: 20
+        order_inserts: true
+        order_updates: true
+    show-sql: false
+    open-in-view: false
+
+server:
+  port: 8086
+  servlet:
+    context-path: /
+
+# ============================================================
+# Configuration Eureka Client (Service Discovery)
+# ============================================================
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+    register-with-eureka: true
+    fetch-registry: true
+  instance:
+    hostname: localhost
+    instance-id: ${spring.application.name}:${server.port}
+    prefer-ip-address: false
+
+# ============================================================
+# Configuration Feign Client
+# ============================================================
+feign:
+  compression:
+    request:
+      enabled: true
+      min-request-size: 1024
+  client:
+    config:
+      default:
+        connect-timeout: 5000
+        read-timeout: 10000
+        logger-level: full
+
+# ============================================================
+# Configuration de logging
+# ============================================================
+logging:
+  level:
+    root: INFO
+    tn.sante.residanat.convocation: DEBUG
+    org.springframework.cloud.openfeign: DEBUG
+    org.springframework.amqp: INFO
+
+# ============================================================
+# Propriétés personnalisées de l'application
+# ============================================================
+app:
+  stockage:
+    chemin: ./stockage/convocations
+
+rabbit:
+  listener:
+    enabled: true

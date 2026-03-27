@@ -48,6 +48,7 @@ public class ConcoursServiceImpl implements ConcoursService {
         concours.setAnnee(requestDTO.getAnnee());
         concours.setEtat(
                 requestDTO.getEtat() != null ? requestDTO.getEtat() : Etat.NON_PUBLIE);
+        concours.setLieuExamen(requestDTO.getLieuExamen());
 
         if (requestDTO.getDateDebut() != null && !requestDTO.getDateDebut().isEmpty()) {
             concours.setDateDebut(LocalDate.parse(requestDTO.getDateDebut().substring(0, 10)).atStartOfDay());
@@ -66,6 +67,7 @@ public class ConcoursServiceImpl implements ConcoursService {
     public ConcoursResponseDTO updateConcours(UUID id, ConcoursRequestDTO requestDTO) {
         log.info("Mise à jour du concours avec ID: {}", id);
 
+        @SuppressWarnings("null")
         Concours concours = concoursRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Concours introuvable avec l'id :: " + id));
 
@@ -80,6 +82,9 @@ public class ConcoursServiceImpl implements ConcoursService {
         concours.setAnnee(requestDTO.getAnnee());
         if (requestDTO.getEtat() != null) {
             concours.setEtat(requestDTO.getEtat());
+        }
+        if (requestDTO.getLieuExamen() != null) {
+            concours.setLieuExamen(requestDTO.getLieuExamen());
         }
 
         if (requestDTO.getDateDebut() != null && !requestDTO.getDateDebut().isEmpty()) {
@@ -98,13 +103,19 @@ public class ConcoursServiceImpl implements ConcoursService {
     @Override
     public void deleteConcours(UUID id) {
         log.info("Suppression (logique) du concours avec ID: {}", id);
+        @SuppressWarnings("null")
         Concours concours = concoursRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Concours introuvable avec l'id :: " + id));
-        concoursRepository.delete(concours);
+        @SuppressWarnings("null")
+        final Concours concoursToDelete = concours;
+        @SuppressWarnings("null")
+        Concours deletedConcours = concoursToDelete;
+        concoursRepository.delete(deletedConcours);
     }
 
     @Override
     public ConcoursResponseDTO getConcoursById(UUID id) {
+        @SuppressWarnings("null")
         Concours concours = concoursRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Concours introuvable avec l'id :: " + id));
         return mapToDTO(concours);
@@ -165,6 +176,7 @@ public class ConcoursServiceImpl implements ConcoursService {
     }
 
     private ConcoursResponseDTO changeStatut(UUID id, Etat nouveauStatut) {
+        @SuppressWarnings("null")
         Concours concours = concoursRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Concours introuvable avec l'id :: " + id));
         concours.setEtat(nouveauStatut);
@@ -197,6 +209,7 @@ public class ConcoursServiceImpl implements ConcoursService {
         dto.setDateModification(concours.getDateModification());
         dto.setCreatedBy(concours.getCreatedBy());
         dto.setUpdatedBy(concours.getUpdatedBy());
+        dto.setLieuExamen(concours.getLieuExamen());
         return dto;
     }
 }

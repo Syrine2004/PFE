@@ -3,7 +3,6 @@ package tn.sante.residanat.ia.controllers;
 import org.springframework.web.bind.annotation.*;
 import tn.sante.residanat.ia.services.ValidationDocumentaireIAService;
 
-import java.util.HashMap;
 import java.util.Map;
 
 @RestController

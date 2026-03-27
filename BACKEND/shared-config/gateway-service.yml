@@ -1,6 +1,8 @@
 spring:
   cloud:
     gateway:
+      default-filters:
+        - DeduplicateResponseHeader=Access-Control-Allow-Origin Access-Control-Allow-Credentials, RETAIN_FIRST
       routes:
         - id: auth-service
           uri: lb://auth-service
@@ -14,6 +16,10 @@ spring:
           uri: lb://dossier-service
           predicates:
             - Path=/api/dossiers/**
+        - id: convocation-service
+          uri: lb://convocation-service
+          predicates:
+            - Path=/api/convocations/**
       globalcors:
         add-to-chain: true
         cors-configurations:

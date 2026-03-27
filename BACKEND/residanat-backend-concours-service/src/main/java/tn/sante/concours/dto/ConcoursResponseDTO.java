@@ -18,6 +18,7 @@ public class ConcoursResponseDTO {
     private LocalDateTime dateModification;
     private String createdBy;
     private String updatedBy;
+    private String lieuExamen;
 
     public ConcoursResponseDTO() {
     }
@@ -108,5 +109,13 @@ public class ConcoursResponseDTO {
 
     public void setUpdatedBy(String updatedBy) {
         this.updatedBy = updatedBy;
+    }
+
+    public String getLieuExamen() {
+        return lieuExamen;
+    }
+
+    public void setLieuExamen(String lieuExamen) {
+        this.lieuExamen = lieuExamen;
     }
 }

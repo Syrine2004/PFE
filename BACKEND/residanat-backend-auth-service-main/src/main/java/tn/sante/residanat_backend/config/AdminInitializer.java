@@ -9,7 +9,6 @@ import tn.sante.residanat_backend.repositories.UtilisateurRepository;
 
 import java.util.Optional;
 import java.time.LocalDate;
-import org.springframework.jdbc.core.JdbcTemplate;
 
 @Component
 public class AdminInitializer implements CommandLineRunner {
@@ -19,9 +18,6 @@ public class AdminInitializer implements CommandLineRunner {
 
   @Autowired
   private PasswordEncoder passwordEncoder;
-
-  @Autowired
-  private JdbcTemplate jdbcTemplate;
 
   @Override
   public void run(String... args) throws Exception {

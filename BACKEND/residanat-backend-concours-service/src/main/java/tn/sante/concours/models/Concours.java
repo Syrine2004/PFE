@@ -2,7 +2,7 @@ package tn.sante.concours.models;
 
 import jakarta.persistence.*;
 import org.hibernate.annotations.SQLDelete;
-import org.hibernate.annotations.Where;
+import org.hibernate.annotations.SQLRestriction;
 import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.LastModifiedBy;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -14,7 +14,7 @@ import java.util.UUID;
 @Entity
 @Table(name = "concours")
 @SQLDelete(sql = "UPDATE concours SET deleted = true WHERE id=?")
-@Where(clause = "deleted=false") // Par defaut on ne recupere que les non supprimés (soft delete)
+@SQLRestriction("deleted = false") // Par defaut on ne recupere que les non supprimés (soft delete)
 public class Concours {
 
     @Id
@@ -49,6 +49,8 @@ public class Concours {
 
     @LastModifiedBy
     private String updatedBy;
+
+    private String lieuExamen;
 
     @Column(nullable = false)
     private boolean deleted = false;
@@ -161,5 +163,13 @@ public class Concours {
 
     public void setDeleted(boolean deleted) {
         this.deleted = deleted;
+    }
+
+    public String getLieuExamen() {
+        return lieuExamen;
+    }
+
+    public void setLieuExamen(String lieuExamen) {
+        this.lieuExamen = lieuExamen;
     }
 }

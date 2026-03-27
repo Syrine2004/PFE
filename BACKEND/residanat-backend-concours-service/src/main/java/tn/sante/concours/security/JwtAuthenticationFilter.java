@@ -64,7 +64,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         ));
       } else {
         // FIX (Secours) : Au cas où, on garde la vérification si c'était une liste ("roles")
-        List<String> roles = claims.get("roles", List.class);
+        @SuppressWarnings("unchecked")
+        List<String> roles = (List<String>) claims.get("roles");
         if (roles != null) {
           authorities = roles.stream()
             .map(r -> new SimpleGrantedAuthority(r.startsWith("ROLE_") ? r : "ROLE_" + r))

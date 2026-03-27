@@ -30,6 +30,7 @@ public class DossierCandidature {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
+    @Builder.Default
     private StatutDossier statut = StatutDossier.EN_ATTENTE;
 
     private LocalDateTime dateSoumission;
@@ -39,6 +40,7 @@ public class DossierCandidature {
 
     @JsonManagedReference
     @OneToMany(mappedBy = "dossier", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
     private List<Document> documents = new ArrayList<>();
 
     @JsonManagedReference

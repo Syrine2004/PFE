@@ -11,6 +11,7 @@ import tn.sante.residanat_backend.Dossier_Candidature_service.models.*;
 import tn.sante.residanat_backend.Dossier_Candidature_service.repositories.DocumentRepository;
 import tn.sante.residanat_backend.Dossier_Candidature_service.repositories.DossierCandidatureRepository;
 import tn.sante.residanat_backend.Dossier_Candidature_service.repositories.EvaluationIARepository;
+import tn.sante.residanat_backend.Dossier_Candidature_service.event.DossierValideEvent;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -35,19 +36,28 @@ public class DossierCandidatureService {
                             .concoursId(concoursId)
                             .statut(StatutDossier.EN_ATTENTE)
                             .build();
-                    return dossierRepository.save(dossier);
+                    @SuppressWarnings("null")
+                    final DossierCandidature dossierToSave2 = dossier;
+                    @SuppressWarnings("null")
+                    DossierCandidature savedDossier = dossierToSave2;
+                    return dossierRepository.save(savedDossier);
                 });
     }
 
     @Transactional
     public Document uploadDocument(Long dossierId, MultipartFile file, TypeDocument type) {
+        @SuppressWarnings("null")
         DossierCandidature dossier = dossierRepository.findById(dossierId)
                 .orElseThrow(() -> new RuntimeException("Dossier introuvable"));
 
         // Check if a document of the same type already exists for this dossier
         documentRepository.findByDossierIdAndType(dossierId, type).ifPresent(existingDoc -> {
             dossier.getDocuments().remove(existingDoc);
-            documentRepository.delete(existingDoc);
+            @SuppressWarnings("null")
+            final Document docToDelete2 = existingDoc;
+            @SuppressWarnings("null")
+            Document docDelete = docToDelete2;
+            documentRepository.delete(docDelete);
         });
 
         String subDir = "dossier_" + dossierId;
@@ -60,6 +70,7 @@ public class DossierCandidatureService {
                 .dossier(dossier)
                 .build();
 
+        @SuppressWarnings("null")
         Document savedDoc = documentRepository.save(document);
 
         // Déclenchement automatique de l'IA pour CIN, PASSEPORT, ou DIPLOME
@@ -327,8 +338,10 @@ public class DossierCandidatureService {
     }
 
     public DossierCandidature getDossierById(Long id) {
-        return dossierRepository.findById(id)
+        @SuppressWarnings("null")
+        DossierCandidature result = dossierRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Dossier introuvable"));
+        return result;
     }
 
     public java.util.Optional<DossierCandidature> getDossierByCandidat(Long candidatId, UUID concoursId) {
@@ -339,7 +352,24 @@ public class DossierCandidatureService {
     public DossierCandidature updateStatut(Long id, StatutDossier statut) {
         DossierCandidature dossier = getDossierById(id);
         dossier.setStatut(statut);
-        return dossierRepository.save(dossier);
+        DossierCandidature savedDossier = dossierRepository.save(dossier);
+
+        // Si le dossier est validé, on envoie l'événement pour la convocation
+        if (statut == StatutDossier.VALIDE) {
+            DossierValideEvent event = new DossierValideEvent(
+                savedDossier.getId(),
+                savedDossier.getCandidatId(),
+                savedDossier.getConcoursId()
+            );
+            System.out.println("Publishing DossierValideEvent for dossier " + id);
+            rabbitTemplate.convertAndSend(
+                RabbitMQConfig.EXCHANGE_DOSSIER,
+                RabbitMQConfig.ROUTING_KEY_VALIDE,
+                event
+            );
+        }
+
+        return savedDossier;
     }
 
     @Transactional

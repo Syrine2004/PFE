@@ -76,6 +76,10 @@ export const routes: Routes = [
       {
         path: 'dossier/:id',
         loadComponent: () => import('./pages/dashboard/pages/dossier-detail/dossier-detail.component').then(m => m.DossierDetailComponent)
+      },
+      {
+        path: 'convocation',
+        loadComponent: () => import('./pages/dashboard/pages/convocation/convocation.component').then(m => m.ConvocationComponent)
       }
     ]
   },

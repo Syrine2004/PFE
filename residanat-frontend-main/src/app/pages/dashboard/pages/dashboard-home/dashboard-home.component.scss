@@ -515,6 +515,39 @@
             border-color: #fee2e2;
         }
     }
+
+    .download-stat-btn {
+        margin-top: auto;
+        padding: 0.625rem 1rem;
+        background: linear-gradient(135deg, #2563eb, #1d4ed8);
+        color: white;
+        border: none;
+        border-radius: 12px;
+        font-size: 0.8125rem;
+        font-weight: 700;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        transition: all 0.2s;
+        box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2);
+
+        &:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(37, 99, 235, 0.3);
+            filter: brightness(1.1);
+        }
+
+        &:active {
+            transform: translateY(0);
+        }
+
+        svg {
+            width: 16px;
+            height: 16px;
+        }
+    }
 }
 
 /* Progression Journey (Premium Redesign) */

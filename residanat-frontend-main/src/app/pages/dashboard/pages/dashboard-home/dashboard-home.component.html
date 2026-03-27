@@ -107,14 +107,18 @@
             </div>
         </div>
     </section>
-
+    
     <!-- Stats Grid -->
     <section class="stats-grid">
-        <div *ngFor="let stat of stats" class="stat-card" [class.stat-card-ai]="stat.label === 'SCORE CONFORMITE'"
+        <div *ngFor="let stat of stats" class="stat-card" 
+            [class.stat-card-ai]="stat.label === 'SCORE CONFORMITE'"
+            [class.clickable-card]="stat.label === 'Convocation' && stat.status === 'success'"
+            (click)="stat.label === 'Convocation' && stat.status === 'success' ? goToConvocation() : null"
             [ngClass]="stat.theme ? 'theme-' + stat.theme : ''">
             <div class="stat-card-head">
                 <span class="stat-label">{{stat.label}}</span>
                 <div class="stat-icon-box">
+                    <!-- ... (icons) ... -->
                     <ng-container [ngSwitch]="stat.icon">
                         <svg *ngSwitchCase="'clock'" xmlns="http://www.w3.org/2000/svg" width="24" height="24"
                             viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
@@ -165,7 +169,19 @@
                 </div>
             </div>
             <p class="stat-value" [ngClass]="{'dimmed': stat.value === '-'}">{{stat.value}}</p>
-            <div *ngIf="stat.badge" class="stat-badge">{{stat.badge}}</div>
+            
+            <button *ngIf="stat.label === 'Convocation' && stat.status === 'success'" 
+                    (click)="downloadConvocation($event)" 
+                    class="download-stat-btn">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg>
+                PDF
+            </button>
+
+            <div *ngIf="stat.badge" class="stat-badge" 
+                 [class.clickable-badge]="stat.label === 'Convocation' && stat.status === 'success'"
+                 (click)="stat.label === 'Convocation' && stat.status === 'success' ? goToConvocation() : null">
+                 {{stat.badge}}
+            </div>
             <div *ngIf="stat.subLabel" class="stat-sub">{{stat.subLabel}}</div>
             <div *ngIf="stat.progress !== undefined" class="stat-progress-bar">
                 <div class="progress-fill" [style.width.%]="stat.progress"></div>

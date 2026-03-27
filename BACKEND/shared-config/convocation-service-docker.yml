@@ -1,0 +1,12 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://postgres-convocation:5432/residanat_convocation_db
+  rabbitmq:
+    host: rabbitmq
+    port: 5672
+
+server:
+  port: 8086
+
+file:
+  upload-dir: /app/stockage/convocations

@@ -210,12 +210,42 @@ public class AuthController {
       }
     }
 
-    utilisateurRepository.save(user);
+    @SuppressWarnings("null")
+    final Utilisateur userToSave2 = user;
+    @SuppressWarnings("null")
+    Utilisateur userToProcess = userToSave2;
+    utilisateurRepository.save(userToProcess);
     return ResponseEntity.ok("Profil mis à jour avec succès.");
   }
 
   @GetMapping("/users")
   public ResponseEntity<java.util.List<Utilisateur>> getAllUsers() {
     return ResponseEntity.ok(utilisateurRepository.findAll());
+  }
+
+  @GetMapping("/detail/{id}")
+  public ResponseEntity<AuthDto> getUserById(@PathVariable("id") Long id) {
+    @SuppressWarnings("null")
+    Optional<Utilisateur> optionalUser = utilisateurRepository.findById(id);
+    if (optionalUser.isEmpty()) {
+      return ResponseEntity.notFound().build();
+    }
+    Utilisateur user = optionalUser.get();
+    AuthDto profile = new AuthDto();
+    profile.setId(user.getId());
+    profile.setEmail(user.getEmail());
+    profile.setNom(user.getNom());
+    profile.setPrenom(user.getPrenom());
+    profile.setCivilite(user.getCivilite());
+    profile.setCin(user.getCin());
+    profile.setTypeDocumentIdentite(user.getTypeDocumentIdentite());
+    profile.setNationalite(user.getNationalite());
+    profile.setAdresse(user.getAdresse());
+    profile.setTelephone(user.getTelephone());
+    profile.setLieuNaissance(user.getLieuNaissance());
+    profile.setFaculte(user.getFaculte());
+    if (user.getDateNaissance() != null) profile.setDateNaissance(user.getDateNaissance().toString());
+    if (user.getDateDiplome() != null) profile.setDateDiplome(user.getDateDiplome().toString());
+    return ResponseEntity.ok(profile);
   }
 }
