@@ -8,5 +8,23 @@ spring:
 server:
   port: 8086
 
+eureka:
+  client:
+    service-url:
+      defaultZone: http://discovery-service:8761/eureka/
+    register-with-eureka: true
+    fetch-registry: true
+  instance:
+    prefer-ip-address: true
+    instance-id: ${spring.application.name}:${server.port}
+
 file:
   upload-dir: /app/stockage/convocations
+
+convocation:
+  verify:
+    base-url: ${CONVOCATION_VERIFY_BASE_URL:http://localhost:8080/api/convocations/verifier}
+
+rabbit:
+  listener:
+    enabled: true

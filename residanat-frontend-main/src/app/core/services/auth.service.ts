@@ -8,7 +8,10 @@ import { tap } from 'rxjs/operators';
 })
 export class AuthService {
   private http = inject(HttpClient);
-  private apiUrl = 'http://localhost:8080/api/auth';
+  
+  // URL dynamique pour s'adapter au déploiement (Local vs Cloudflare)
+  private baseHost = window.location.hostname === 'localhost' ? 'http://localhost:8080' : `${window.location.protocol}//${window.location.hostname}`;
+  private apiUrl = `${this.baseHost}/api/auth`;
 
   // Sujet pour suivre l'état de connexion en temps réel
   private isLoggedInSubject = new BehaviorSubject<boolean>(this.hasToken());

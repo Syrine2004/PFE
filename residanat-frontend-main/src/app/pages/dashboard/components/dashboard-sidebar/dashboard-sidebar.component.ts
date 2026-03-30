@@ -5,6 +5,8 @@ import { AuthService } from '../../../../core/services/auth.service';
 import { SidebarService } from '../../../../core/services/sidebar.service';
 import { DossierService } from '../../../../core/services/dossier.service';
 import { ConcoursService } from '../../../../core/services/concours.service';
+import { forkJoin, of } from 'rxjs';
+import { catchError, map } from 'rxjs/operators';
 import Swal from 'sweetalert2';
 
 interface NavItem {
@@ -34,6 +36,7 @@ export class DashboardSidebarComponent {
   userName: string = '';
   userEmail: string = '';
   hasDossier: boolean = false;
+  dossierStatus: string | null = null;
 
   ngOnInit() {
     this.userRole = sessionStorage.getItem('role') || '';
@@ -58,22 +61,52 @@ export class DashboardSidebarComponent {
   }
 
   private checkUserDossier(candidatId?: number) {
-    this.concoursService.getConcours(0, 1, undefined, undefined, 'PUBLIE').subscribe({
+    if (!candidatId) {
+      this.hasDossier = false;
+      this.dossierStatus = null;
+      return;
+    }
+
+    this.concoursService.getConcours(0, 100, undefined, undefined, 'PUBLIE').subscribe({
       next: (response) => {
-        if (response.content.length > 0 && response.content[0].id) {
-          const concoursId = response.content[0].id;
-          
-          if (candidatId) {
-            this.dossierService.getDossierByCandidat(candidatId, concoursId).subscribe({
-              next: (dossier) => {
-                this.hasDossier = !!dossier;
-              },
-              error: () => this.hasDossier = false
-            });
-          }
+        const concoursIds = (response.content || [])
+          .map(c => c.id)
+          .filter((id): id is string => !!id);
+
+        if (concoursIds.length === 0) {
+          this.hasDossier = false;
+          this.dossierStatus = null;
+          return;
         }
+
+        const checks = concoursIds.map(concoursId =>
+          this.dossierService.getDossierByCandidat(candidatId, concoursId).pipe(
+            catchError(() => of(null))
+          )
+        );
+
+        forkJoin(checks)
+          .pipe(
+            map(results => results.find(d => !!d) || null)
+          )
+          .subscribe(found => {
+            this.hasDossier = !!found;
+            this.dossierStatus = found?.statut || null;
+          });
+      },
+      error: () => {
+        this.hasDossier = false;
+        this.dossierStatus = null;
       }
     });
+  }
+
+  canModifyDossier(): boolean {
+    return this.dossierStatus === 'EN_ATTENTE' || this.dossierStatus === 'REJETE';
+  }
+
+  getInscriptionLabel(): string {
+    return this.hasDossier && this.canModifyDossier() ? 'Modifier dossier' : 'Inscription au concours';
   }
 
   getCandidatId() {

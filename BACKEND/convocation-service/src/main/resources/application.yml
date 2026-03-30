@@ -51,13 +51,13 @@ server:
 eureka:
   client:
     service-url:
-      defaultZone: http://localhost:8761/eureka/
+      defaultZone: ${EUREKA_CLIENT_SERVICEURL_DEFAULTZONE:http://localhost:8761/eureka/}
     register-with-eureka: true
     fetch-registry: true
   instance:
-    hostname: localhost
+    hostname: ${EUREKA_INSTANCE_HOSTNAME:localhost}
     instance-id: ${spring.application.name}:${server.port}
-    prefer-ip-address: false
+    prefer-ip-address: ${EUREKA_INSTANCE_PREFER_IP_ADDRESS:false}
 
 # ============================================================
 # Configuration Feign Client
@@ -87,9 +87,12 @@ logging:
 # ============================================================
 # Propriétés personnalisées de l'application
 # ============================================================
-app:
-  stockage:
-    chemin: ./stockage/convocations
+convocation:
+  verify:
+    # Pour le QR Code Public (Utilisez l'URL Cloudflare fournie)
+    base-url: ${CONVOCATION_VERIFY_BASE_URL:https://amenities-tub-pen-commodities.trycloudflare.com/api/convocations/verifier}
+  pdf:
+    stockage-path: ./stockage/convocations
 
 rabbit:
   listener:

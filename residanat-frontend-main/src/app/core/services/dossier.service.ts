@@ -55,7 +55,10 @@ export interface DossierCandidature {
 })
 export class DossierService {
     private http = inject(HttpClient);
-    private apiUrl = 'http://localhost:8080/api/dossiers';
+    
+    // URL dynamique pour s'adapter au déploiement (Local vs Cloudflare)
+    private baseHost = window.location.hostname === 'localhost' ? 'http://localhost:8080' : `${window.location.protocol}//${window.location.hostname}`;
+    private apiUrl = `${this.baseHost}/api/dossiers`;
 
     initDossier(candidatId: number, concoursId: string): Observable<DossierCandidature> {
         return this.http.post<DossierCandidature>(`${this.apiUrl}/init`, null, {
@@ -104,7 +107,7 @@ export class DossierService {
      * Télécharge le PDF de convocation pour un dossier validé
      */
     telechargerConvocationPdf(dossierId: number): Observable<Blob> {
-        const url = `http://localhost:8080/api/convocations/telecharger/${dossierId}`;
+        const url = `${this.baseHost}/api/convocations/telecharger/${dossierId}`;
         return this.http.get(url, { responseType: 'blob' });
     }
 
@@ -112,7 +115,7 @@ export class DossierService {
      * Récupère les informations de convocation pour l'aperçu
      */
     getConvocationInfo(dossierId: number): Observable<Convocation> {
-        const url = `http://localhost:8080/api/convocations/info/${dossierId}`;
+        const url = `${this.baseHost}/api/convocations/info/${dossierId}`;
         return this.http.get<Convocation>(url);
     }
 }

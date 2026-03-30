@@ -4,6 +4,7 @@ import { RouterModule, Router } from '@angular/router';
 import { ConcoursService, Concours } from '../../../../core/services/concours.service';
 import { DossierService, DossierCandidature } from '../../../../core/services/dossier.service';
 import { AuthService } from '../../../../core/services/auth.service';
+import { NotificationService, Notification } from '../../../../core/services/notification.service';
 
 @Component({
   selector: 'app-dashboard-home',
@@ -16,6 +17,7 @@ export class DashboardHomeComponent implements OnInit {
   private concoursService = inject(ConcoursService);
   private dossierService = inject(DossierService);
   private authService = inject(AuthService);
+  private notificationService = inject(NotificationService);
 
   private router = inject(Router);
   publiesConcours: Concours[] = [];
@@ -23,13 +25,8 @@ export class DashboardHomeComponent implements OnInit {
   hasDossier: boolean = false;
   dossier: DossierCandidature | null = null;
 
-  notifications = [
-    {
-      message: 'Bienvenue sur Residanat TN. Veuillez débuter votre inscription.',
-      time: 'À l’instant',
-      type: 'info',
-    },
-  ];
+  notifications: Notification[] = [];
+  unreadCount: number = 0;
 
   stats: any[] = [
     { label: 'Statut dossier', value: 'Non commencé', icon: 'clock', badge: 'À compléter', status: 'pending', theme: '' },
@@ -51,6 +48,71 @@ export class DashboardHomeComponent implements OnInit {
 
   toggleNotifications() {
     this.isNotificationsOpen = !this.isNotificationsOpen;
+    if (this.isNotificationsOpen && this.unreadCount > 0) {
+      this.markAllAsRead();
+    }
+  }
+
+  private loadNotifications(candidatId: number) {
+    this.notificationService.getNotifications(candidatId).subscribe({
+      next: (notifs) => {
+        this.notifications = notifs;
+      },
+      error: (err) => console.error('Erreur notifications', err)
+    });
+
+    this.notificationService.getUnreadCount(candidatId).subscribe({
+      next: (count) => {
+        this.unreadCount = count;
+      },
+      error: (err) => console.error('Erreur count', err)
+    });
+  }
+
+  markAllAsRead() {
+    const candidatId = this.getCandidatId();
+    if (candidatId) {
+      this.notificationService.markAllAsRead(Number(candidatId)).subscribe({
+        next: () => {
+          this.unreadCount = 0;
+          this.notifications.forEach(n => n.read = true);
+        }
+      });
+    }
+  }
+
+  onNotificationClick(notif: Notification) {
+    if (!notif) return;
+
+    if (!notif.read && notif.id > 0) {
+      this.notificationService.markAsRead(notif.id).subscribe({
+        next: () => {
+          notif.read = true;
+          this.unreadCount = Math.max(0, this.unreadCount - 1);
+        },
+        error: () => {
+          notif.read = true;
+          this.unreadCount = Math.max(0, this.unreadCount - 1);
+        }
+      });
+    }
+
+    this.isNotificationsOpen = false;
+    this.router.navigate(this.getNotificationRoute(notif));
+  }
+
+  private getNotificationRoute(notif: Notification): string[] {
+    const message = (notif.message || '').toLowerCase();
+
+    if (message.includes('convocation')) {
+      return ['/dashboard/convocation'];
+    }
+
+    if (notif.type === 'ERROR' || message.includes('rejet') || message.includes('refaire l\'inscription')) {
+      return ['/dashboard/creer-dossier'];
+    }
+
+    return ['/dashboard'];
   }
 
   getCandidatId() {
@@ -66,12 +128,17 @@ export class DashboardHomeComponent implements OnInit {
     return '';
   }
 
+  canModifyDossier(): boolean {
+    return this.dossier?.statut === 'EN_ATTENTE' || this.dossier?.statut === 'REJETE';
+  }
+
   ngOnInit() {
     this.authService.getProfile().subscribe({
       next: (profile) => {
         if (profile) {
           this.userName = `${profile.prenom || ''} ${profile.nom || ''}`.trim() || 'Utilisateur';
           this.fetchDashboardData(profile.id);
+          this.loadNotifications(profile.id);
         }
       },
       error: (err) => {
@@ -216,7 +283,7 @@ export class DashboardHomeComponent implements OnInit {
       this.progressionSteps[2].status = 'current';
       this.progressionSteps[2].progress = 50;
       this.progressionSteps[1].status = 'done'; // Ensure IA step is done if we are at admin stage
-      this.progressionSteps[2].note = 'Vérification administrative en cours';
+      this.progressionSteps[2].note = 'Dossier modifiable (en attente de validation administrative)';
     }
 
     // 5. Étape 3 : Convocation générée
@@ -225,8 +292,8 @@ export class DashboardHomeComponent implements OnInit {
       this.progressionSteps[3].progress = 100;
       this.progressionSteps[3].note = 'Disponible dans votre espace personnel';
 
-      this.stats[2].value = 'Générée';
-      this.stats[2].badge = 'Prêt';
+      this.stats[2].value = 'Disponible';
+      this.stats[2].badge = null; // Removing badge as per new design
       this.stats[2].status = 'success';
 
       // Activation de l'étape Concours
@@ -240,41 +307,10 @@ export class DashboardHomeComponent implements OnInit {
       this.progressionSteps[4].note = dateC.toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' });
     }
 
-    // 7. Mise à jour des notifications
-    this.notifications = [
-      {
-        message: 'Bienvenue sur Residanat TN. Veuillez débuter votre inscription.',
-        time: 'À l’inscription',
-        type: 'info',
-      }
-    ];
-
-    const now = new Date();
-    const submissionDate = dossier.dateSoumission ? new Date(dossier.dateSoumission) : now;
-    const timeLabel = this.formatRelativeTime(submissionDate);
-
-    if (dossier.statut === 'VALIDE') {
-      this.notifications.unshift({
-        message: 'Votre dossier a été validé avec succès',
-        time: timeLabel,
-        type: 'success'
-      });
-    } else if (dossier.statut === 'REJETE') {
-      this.notifications.unshift({
-        message: 'Votre dossier a été rejeté. Veuillez consulter vos emails.',
-        time: timeLabel,
-        type: 'error'
-      });
-    } else if (dossier.statut === 'EN_ATTENTE') {
-      this.notifications.unshift({
-        message: 'Votre dossier est en cours de traitement par l\'administration.',
-        time: timeLabel,
-        type: 'info'
-      });
-    }
   }
 
-  private formatRelativeTime(date: Date): string {
+  formatRelativeTime(dateInput: Date | string): string {
+    const date = typeof dateInput === 'string' ? new Date(dateInput) : dateInput;
     const diffInSeconds = Math.floor((new Date().getTime() - date.getTime()) / 1000);
 
     if (diffInSeconds < 60) return 'À l’instant';

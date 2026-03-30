@@ -32,7 +32,10 @@ export interface PageResponse<T> {
 })
 export class ConcoursService {
     private http = inject(HttpClient);
-    private apiUrl = 'http://localhost:8080/api/concours';
+    
+    // URL dynamique pour s'adapter au déploiement (Local vs Cloudflare)
+    private baseHost = window.location.hostname === 'localhost' ? 'http://localhost:8080' : `${window.location.protocol}//${window.location.hostname}`;
+    private apiUrl = `${this.baseHost}/api/concours`;
 
     // --- CRUD OPERATIONS ---
 

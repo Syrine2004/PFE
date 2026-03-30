@@ -16,7 +16,7 @@
                     <path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9" />
                     <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0" />
                 </svg>
-                <span class="notification-ping">
+                <span *ngIf="unreadCount > 0" class="notification-ping">
                     <span class="ping-animate"></span>
                     <span class="ping-dot"></span>
                 </span>
@@ -26,10 +26,13 @@
             <div *ngIf="isNotificationsOpen" class="notification-dropdown">
                 <div class="dropdown-header">
                     <h3>Notifications</h3>
-                    <span class="notif-badge">{{notifications.length}} NOUVELLES</span>
+                    <span class="notif-badge">{{notifications.length}} NOTIFICATIONS</span>
+                    <span *ngIf="unreadCount > 0" class="notif-unread-count">{{unreadCount}} NOUVELLES</span>
                 </div>
                 <div class="dropdown-content">
-                    <div *ngFor="let notif of notifications" class="notif-item">
+                    <div *ngFor="let notif of notifications" class="notif-item" role="button" tabindex="0"
+                        (click)="onNotificationClick(notif)"
+                        (keydown.enter)="onNotificationClick(notif)">
                         <div class="notif-line" [class]="'notif-' + notif.type"></div>
                         <p class="notif-msg">{{notif.message}}</p>
                         <p class="notif-time">
@@ -39,8 +42,9 @@
                                 <circle cx="12" cy="12" r="10" />
                                 <polyline points="12 6 12 12 16 14" />
                             </svg>
-                            {{notif.time}}
+                            {{formatRelativeTime(notif.createdAt)}}
                         </p>
+                        <div *ngIf="!notif.read" class="unread-dot"></div>
                     </div>
                 </div>
             </div>
@@ -95,7 +99,9 @@
         </div>
         <a *ngIf="!hasDossier" routerLink="/dashboard/creer-dossier" class="banner-btn"
             [queryParams]="{ concoursId: concours.id }">S'inscrire au concours</a>
-        <a *ngIf="hasDossier" [routerLink]="['/dashboard/dossier', getCandidatId()]"
+        <a *ngIf="hasDossier && canModifyDossier()" routerLink="/dashboard/creer-dossier" class="banner-btn secondary"
+            [queryParams]="{ concoursId: concours.id }">Modifier dossier</a>
+        <a *ngIf="hasDossier && !canModifyDossier()" [routerLink]="['/dashboard/dossier', getCandidatId()]"
             class="banner-btn secondary">Consulter mon dossier</a>
     </section>
 
@@ -174,7 +180,7 @@
                     (click)="downloadConvocation($event)" 
                     class="download-stat-btn">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg>
-                PDF
+                Telecharger
             </button>
 
             <div *ngIf="stat.badge" class="stat-badge" 

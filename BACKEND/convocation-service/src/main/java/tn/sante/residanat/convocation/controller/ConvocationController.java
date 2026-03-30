@@ -2,6 +2,7 @@ package tn.sante.residanat.convocation.controller;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -10,6 +11,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import tn.sante.residanat.convocation.client.DossierClient;
+import tn.sante.residanat.convocation.event.ConvocationReadyEvent;
 import tn.sante.residanat.convocation.dto.DossierDto;
 import tn.sante.residanat.convocation.model.Convocation;
 import tn.sante.residanat.convocation.repository.ConvocationRepository;
@@ -33,13 +35,16 @@ public class ConvocationController {
     private final ConvocationRepository convocationRepository;
     private final ConvocationService convocationService;
     private final DossierClient dossierClient;
+    private final RabbitTemplate rabbitTemplate;
 
     public ConvocationController(ConvocationRepository convocationRepository, 
                                ConvocationService convocationService,
-                               DossierClient dossierClient) {
+                               DossierClient dossierClient,
+                               RabbitTemplate rabbitTemplate) {
         this.convocationRepository = convocationRepository;
         this.convocationService = convocationService;
         this.dossierClient = dossierClient;
+        this.rabbitTemplate = rabbitTemplate;
     }
 
     /**
@@ -77,6 +82,15 @@ public class ConvocationController {
                             dossier.getCandidatId(), 
                             dossier.getConcoursId()
                         );
+                        rabbitTemplate.convertAndSend(
+                                "dossier.exchange",
+                                "convocation.ready",
+                                new ConvocationReadyEvent(
+                                        nouvelleConv.getDossierId(),
+                                        nouvelleConv.getCandidatId(),
+                                        nouvelleConv.getHashSecurise()
+                                )
+                        );
                         convocationOpt = Optional.of(nouvelleConv);
                     }
                 } catch (Exception e) {
@@ -90,6 +104,7 @@ public class ConvocationController {
             }
 
             Convocation convocation = convocationOpt.get();
+            convocation = convocationService.rafraichirConvocation(convocation);
 
             // ============================================================
             // 2. Lecture du fichier PDF depuis le disque dur
@@ -121,6 +136,9 @@ public class ConvocationController {
             return ResponseEntity.ok()
                     .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_PDF_VALUE)
                     .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"convocation.pdf\"")
+                    .header(HttpHeaders.CACHE_CONTROL, "no-store, no-cache, must-revalidate, max-age=0")
+                    .header("Pragma", "no-cache")
+                    .header("Expires", "0")
                     .body(contenuPDF);
 
         } catch (Exception e) {
@@ -156,6 +174,15 @@ public class ConvocationController {
                             dossier.getCandidatId(), 
                             dossier.getConcoursId()
                         );
+                        rabbitTemplate.convertAndSend(
+                                "dossier.exchange",
+                                "convocation.ready",
+                                new ConvocationReadyEvent(
+                                        nouvelleConv.getDossierId(),
+                                        nouvelleConv.getCandidatId(),
+                                        nouvelleConv.getHashSecurise()
+                                )
+                        );
                         convocationOpt = Optional.of(nouvelleConv);
                     }
                 } catch (Exception e) {
@@ -168,7 +195,8 @@ public class ConvocationController {
                 return ResponseEntity.notFound().build();
             }
 
-            return ResponseEntity.ok(convocationOpt.get());
+            Convocation convocation = convocationService.rafraichirConvocation(convocationOpt.get());
+            return ResponseEntity.ok(convocation);
 
         } catch (Exception e) {
             log.error("❌ Erreur lors de la récupération des infos convocation pour dossierId : {}", dossierId, e);
@@ -214,6 +242,59 @@ public class ConvocationController {
         } catch (Exception e) {
             log.error("❌ TEST ÉCHOUÉ : Erreur lors de la génération manuelle", e);
             return ResponseEntity.status(500).body(e.getMessage());
+        }
+    }
+
+    /**
+     * Vérification par hash sécurisé (utilisé dans le QR code).
+     * Retourne le PDF en affichage inline si le hash existe.
+     */
+    @GetMapping("/verifier/{hash}")
+    public ResponseEntity<byte[]> verifierConvocation(@PathVariable("hash") String hash) {
+        try {
+            Optional<Convocation> convocationOpt = convocationRepository.findByHashSecurise(hash);
+            if (convocationOpt.isEmpty()) {
+                return ResponseEntity.notFound().build();
+            }
+
+            Convocation convocation = convocationService.rafraichirConvocation(convocationOpt.get());
+            Path fichierPath = Paths.get(convocation.getCheminFichierPdf());
+            if (!Files.exists(fichierPath)) {
+                return ResponseEntity.internalServerError().build();
+            }
+
+            byte[] contenuPDF = Files.readAllBytes(fichierPath);
+            return ResponseEntity.ok()
+                    .header(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_PDF_VALUE)
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"convocation.pdf\"")
+                    .body(contenuPDF);
+        } catch (Exception e) {
+            log.error("❌ Erreur lors de la vérification de convocation par hash", e);
+            return ResponseEntity.internalServerError().build();
+        }
+    }
+
+    /**
+     * Endpoint pour récupérer directement l'image PNG du QR Code sécurisé.
+     * Utilisé par le frontend pour afficher le vrai QR code.
+     */
+    @GetMapping(value = "/qr/{hash}", produces = MediaType.IMAGE_PNG_VALUE)
+    public ResponseEntity<byte[]> obtenirQrCode(@PathVariable("hash") String hash) {
+        try {
+            Optional<Convocation> convocationOpt = convocationRepository.findByHashSecurise(hash);
+            if (convocationOpt.isEmpty()) {
+                return ResponseEntity.notFound().build();
+            }
+            byte[] qrImage = convocationService.genererImageQrCode(hash);
+            return ResponseEntity.ok()
+                    .header(HttpHeaders.CACHE_CONTROL, "no-store, no-cache, must-revalidate, max-age=0")
+                    .header("Pragma", "no-cache")
+                    .header("Expires", "0")
+                    .header(HttpHeaders.CONTENT_TYPE, MediaType.IMAGE_PNG_VALUE)
+                    .body(qrImage);
+        } catch (Exception e) {
+            log.error("❌ Erreur lors de la génération du QR code PNG", e);
+            return ResponseEntity.internalServerError().build();
         }
     }
 }

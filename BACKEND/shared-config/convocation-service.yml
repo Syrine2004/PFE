@@ -32,3 +32,12 @@ logging:
   level:
     root: INFO
     tn.sante.residanat.convocation: DEBUG
+
+convocation:
+  verify:
+    # URL de vérification - FIXÉ pour la présentation (Wi-Fi)
+    base-url: ${CONVOCATION_VERIFY_BASE_URL:http://192.168.1.13:8080/api/convocations/verifier}
+
+rabbit:
+  listener:
+    enabled: true

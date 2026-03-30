@@ -44,6 +44,17 @@ services:
     networks:
       - app-network
 
+  postgres-notification:
+    image: postgres:15
+    environment:
+      POSTGRES_DB: residanat_notification_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: system
+    ports:
+      - "5437:5432"
+    networks:
+      - app-network
+
   rabbitmq:
     image: rabbitmq:3-management
     ports:
@@ -211,10 +222,14 @@ services:
     environment:
       - SPRING_PROFILES_ACTIVE=docker
       - SPRING_CONFIG_IMPORT=optional:configserver:http://config-service:8888
+      - EUREKA_CLIENT_SERVICEURL_DEFAULTZONE=http://discovery-service:8761/eureka/
+      - EUREKA_INSTANCE_HOSTNAME=convocation-service
+      - EUREKA_INSTANCE_PREFER_IP_ADDRESS=true
       - SPRING_RABBITMQ_HOST=rabbitmq
       - SPRING_RABBITMQ_PORT=5672
       - SPRING_RABBITMQ_USERNAME=guest
       - SPRING_RABBITMQ_PASSWORD=guest
+      - CONVOCATION_VERIFY_BASE_URL=${CONVOCATION_VERIFY_BASE_URL:-http://localhost:8080/api/convocations/verifier}
     volumes:
       - ./BACKEND/convocation-service/stockage:/app/stockage
     healthcheck:
@@ -227,6 +242,33 @@ services:
       config-service:
         condition: service_healthy
       postgres-convocation:
+        condition: service_started
+      rabbitmq:
+        condition: service_healthy
+    networks:
+      - app-network
+
+  notification-service:
+    build:
+      context: ./BACKEND/notification-service
+    container_name: notification-service
+    ports:
+      - "8087:8087"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - SPRING_CONFIG_IMPORT=optional:configserver:http://config-service:8888
+      - CONFIG_SERVER_URL=http://config-service:8888
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres-notification:5432/residanat_notification_db
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=system
+      - SPRING_RABBITMQ_HOST=rabbitmq
+      - SPRING_RABBITMQ_PORT=5672
+      - SPRING_RABBITMQ_USERNAME=guest
+      - SPRING_RABBITMQ_PASSWORD=guest
+    depends_on:
+      config-service:
+        condition: service_healthy
+      postgres-notification:
         condition: service_started
       rabbitmq:
         condition: service_healthy

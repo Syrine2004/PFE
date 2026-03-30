@@ -2,7 +2,7 @@ spring:
   cloud:
     gateway:
       default-filters:
-        - DeduplicateResponseHeader=Access-Control-Allow-Origin Access-Control-Allow-Credentials, RETAIN_FIRST
+        - DedupeResponseHeader=Access-Control-Allow-Origin Access-Control-Allow-Credentials, RETAIN_FIRST
       routes:
         - id: auth-service
           uri: lb://auth-service
@@ -16,16 +16,23 @@ spring:
           uri: lb://dossier-service
           predicates:
             - Path=/api/dossiers/**
+        - id: notification-service
+          uri: http://notification-service:8087
+          predicates:
+            - Path=/api/notifications/**
         - id: convocation-service
-          uri: lb://convocation-service
+          uri: http://convocation-service:8086
           predicates:
             - Path=/api/convocations/**
       globalcors:
-        add-to-chain: true
+        add-to-simple-url-handler-mapping: true
         cors-configurations:
           '[/**]':
-            allowedOrigins: 
+            allowedOrigins:
               - "http://localhost:4200"
+              - "http://127.0.0.1:4200"
+              - "http://192.168.1.13:4200"
+              - "https://amenities-tub-pen-commodities.trycloudflare.com"
             allowedMethods: 
               - "GET"
               - "POST"

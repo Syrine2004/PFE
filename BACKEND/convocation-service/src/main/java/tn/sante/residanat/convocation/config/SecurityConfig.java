@@ -32,6 +32,9 @@ public class SecurityConfig {
                         // 🔓 ENDPOINTS DE LECTURE - Accès PUBLIC (pour TESTS uniquement - à restreindre en PRODUCTION)
                         .requestMatchers("/api/convocations/info/**").permitAll()
                         .requestMatchers("/api/convocations/telecharger/**").permitAll()
+                        .requestMatchers("/api/convocations/verifier/**").permitAll()
+                                // Allow unauthenticated access to QR endpoint
+                                .requestMatchers("/api/convocations/qr/**").permitAll()
                         // 🔓 ENDPOINT DE TEST - Accès PUBLIC (à désactiver en PRODUCTION)
                         .requestMatchers("/api/convocations/test-generation/**").permitAll()
                         // 🔓 Documentation & santé

@@ -2,8 +2,11 @@ package tn.sante.residanat.convocation.service;
 
 import com.itextpdf.io.image.ImageDataFactory;
 import com.itextpdf.kernel.colors.ColorConstants;
+import com.itextpdf.kernel.colors.DeviceRgb;
 import com.itextpdf.kernel.pdf.PdfDocument;
 import com.itextpdf.kernel.pdf.PdfWriter;
+import com.itextpdf.layout.borders.Border;
+import com.itextpdf.layout.borders.SolidBorder;
 import com.itextpdf.layout.Document;
 import com.itextpdf.layout.element.*;
 import com.itextpdf.layout.properties.TextAlignment;
@@ -14,6 +17,7 @@ import com.google.zxing.client.j2se.MatrixToImageWriter;
 import com.google.zxing.qrcode.QRCodeWriter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import tn.sante.residanat.convocation.client.ConcoursClient;
 import tn.sante.residanat.convocation.client.UtilisateurClient;
@@ -28,6 +32,8 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Locale;
 import java.util.UUID;
 
 /**
@@ -43,7 +49,10 @@ public class ConvocationService {
     private final ConcoursClient concoursClient;
 
     private static final String STORAGE_PATH = "./stockage/convocations";
-    private static final String QR_CODE_URL_BASE = "https://api.residanat.tn/verify/convocation/";
+    private static final DateTimeFormatter DATE_FORMAT_FR = DateTimeFormatter.ofPattern("EEEE dd MMMM yyyy", Locale.FRENCH);
+
+    @Value("${convocation.verify.base-url:http://localhost:8080/api/convocations/verifier}")
+    private String qrCodeVerifyBaseUrl;
 
     public ConvocationService(ConvocationRepository convocationRepository, 
                             UtilisateurClient utilisateurClient, 
@@ -100,9 +109,9 @@ public class ConvocationService {
         String place = String.valueOf(100 + dossierId % 200);
         LocalDateTime dateEpreuve = concours.getDateDebut() != null ? concours.getDateDebut() : LocalDateTime.of(2026, 12, 19, 8, 0);
         String heureAppel = "07H30";
-        String lieuExamen = concours.getLieuExamen() != null ? concours.getLieuExamen() : "Faculté de Médecine de Tunis (FMT)";
+        String lieuExamen = determinerLieuExamen(utilisateur, concours);
 
-        String qrCodeContent = QR_CODE_URL_BASE + hashSecurise;
+        String qrCodeContent = buildVerificationUrl(hashSecurise);
         byte[] qrCodeImage = genererQRCode(qrCodeContent);
 
         // Création de l'entité avec les nouvelles infos
@@ -137,6 +146,68 @@ public class ConvocationService {
     }
 
     /**
+     * Complète une convocation existante si des champs sont absents et regénère le PDF/QR.
+     */
+    public Convocation rafraichirConvocation(Convocation convocation) throws Exception {
+        if (convocation == null) {
+            return null;
+        }
+
+        UtilisateurDto utilisateur;
+        try {
+            utilisateur = utilisateurClient.getUtilisateurById(convocation.getCandidatId());
+        } catch (Exception e) {
+            log.warn("Impossible de récupérer l'utilisateur {} pendant rafraîchissement, fallback mock", convocation.getCandidatId(), e);
+            utilisateur = creerUtilisateurMock(convocation.getCandidatId());
+        }
+
+        ConcoursDto concours;
+        try {
+            concours = concoursClient.getConcoursById(UUID.fromString(convocation.getConcoursId()));
+        } catch (Exception e) {
+            log.warn("Impossible de récupérer le concours {} pendant rafraîchissement, fallback mock", convocation.getConcoursId(), e);
+            concours = creerConcoursMock(UUID.fromString(convocation.getConcoursId()));
+        }
+
+        if (convocation.getDateEpreuve() == null) {
+            convocation.setDateEpreuve(concours.getDateDebut() != null ? concours.getDateDebut() : LocalDateTime.of(2026, 12, 19, 8, 0));
+        }
+        if (isBlank(convocation.getHeureAppel())) {
+            convocation.setHeureAppel("07H30");
+        }
+        if (isBlank(convocation.getNumeroInscription())) {
+            convocation.setNumeroInscription("2026-RES-" + String.format("%04d", convocation.getDossierId()));
+        }
+        if (isBlank(convocation.getSalle())) {
+            convocation.setSalle("Amphithéâtre Ibn El Jazzar");
+        }
+        if (isBlank(convocation.getPlace())) {
+            convocation.setPlace(String.valueOf(100 + convocation.getDossierId() % 200));
+        }
+
+        // Règle métier demandée: l'affectation doit suivre la faculté du diplôme quand disponible.
+        convocation.setLieuExamenDetail(determinerLieuExamen(utilisateur, concours));
+
+        String qrCodeContent = buildVerificationUrl(convocation.getHashSecurise());
+        byte[] qrCodeImage = genererQRCode(qrCodeContent);
+        byte[] pdfBytes = genererPDF(utilisateur, convocation, concours.getLibelle(), qrCodeImage);
+
+        Path dossierStockage = Paths.get(STORAGE_PATH);
+        Files.createDirectories(dossierStockage);
+
+        Path cheminFichier;
+        if (isBlank(convocation.getCheminFichierPdf())) {
+            cheminFichier = dossierStockage.resolve("convocation_" + convocation.getHashSecurise() + ".pdf");
+            convocation.setCheminFichierPdf(cheminFichier.toAbsolutePath().toString());
+        } else {
+            cheminFichier = Paths.get(convocation.getCheminFichierPdf());
+        }
+
+        Files.write(cheminFichier, pdfBytes);
+        return convocationRepository.save(convocation);
+    }
+
+    /**
      * Génère un QR Code au format PNG transformé en tableau d'octets.
      * Encode une chaîne (URL + hash sécurisé) dans un QR Code 300x300 pixels.
      * 
@@ -151,11 +222,28 @@ public class ConvocationService {
         // Encode le contenu en QR Code (format bitmatrix 300x300)
         var bitMatrix = qrCodeWriter.encode(contenu, BarcodeFormat.QR_CODE, 300, 300);
         
-        // Convertit la matrice en image PNG et retourne les bytes
+    // Convertit la matrice en image PNG et retourne les bytes
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         MatrixToImageWriter.writeToStream(bitMatrix, "PNG", baos);
         
         return baos.toByteArray();
+    }
+
+    /**
+     * Génère une image PNG du QR Code de vérification à partir du hash sécurisé.
+     */
+    public byte[] genererQrCodePourHash(String hashSecurise) throws Exception {
+        String qrCodeContent = buildVerificationUrl(hashSecurise);
+        return genererQRCode(qrCodeContent);
+    }
+
+    /**
+     * Génère l'image PNG du QR code pour un hash spécifique.
+     * Utilisé pour afficher le vrai QR code sur le frontend.
+     */
+    public byte[] genererImageQrCode(String hashSecurise) throws Exception {
+        String qrCodeContent = buildVerificationUrl(hashSecurise);
+        return genererQRCode(qrCodeContent);
     }
 
     /**
@@ -173,85 +261,242 @@ public class ConvocationService {
      */
     private byte[] genererPDF(UtilisateurDto utilisateur, Convocation conv, String libelleConcours, byte[] qrCodeImage) 
             throws Exception {
-        
+        // Nouvelles couleurs pour correspondre au design gris/bleu
+        DeviceRgb navy = new DeviceRgb(31, 42, 68);      // #1f2a44
+        DeviceRgb navySoft = new DeviceRgb(74, 85, 111);  // #4a556f
+        DeviceRgb paperFill = new DeviceRgb(245, 245, 245); // #f5f5f5 (Gris Sidebar)
+        DeviceRgb paperEdge = new DeviceRgb(224, 228, 232); // #e0e4e8
+        DeviceRgb greyText = new DeviceRgb(128, 128, 128);
+        DeviceRgb stamp = new DeviceRgb(0, 0, 0);
+
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         PdfWriter writer = new PdfWriter(baos);
         PdfDocument pdf = new PdfDocument(writer);
         Document document = new Document(pdf);
-        document.setMargins(20, 20, 20, 20);
+        document.setMargins(24, 24, 24, 24);
 
-        // --- EN-TÊTE ---
-        Table headerTable = new Table(UnitValue.createPercentArray(new float[]{30, 40, 30})).useAllAvailableWidth();
-        headerTable.addCell(new Cell().add(new Paragraph("RÉPUBLIQUE TUNISIENNE\nMINISTÈRE DE LA SANTÉ").setBold().setFontSize(10)).setBorder(com.itextpdf.layout.borders.Border.NO_BORDER));
-        headerTable.addCell(new Cell().add(new Paragraph("MINISTÈRE DE LA SANTÉ").setTextAlignment(TextAlignment.CENTER).setBold().setFontSize(12)).setBorder(com.itextpdf.layout.borders.Border.NO_BORDER));
-        headerTable.addCell(new Cell().add(new Paragraph("Session 2026").setTextAlignment(TextAlignment.RIGHT).setBold()).setBorder(com.itextpdf.layout.borders.Border.NO_BORDER));
-        document.add(headerTable);
+        // Bandeau officiel
+        // Suppression du rectangle noir du haut (bandeau déco)
+        // document.add(new Div().setHeight(6).setBackgroundColor(stamp)...);
 
-        document.add(new Paragraph("\n"));
+        // En-tête institutionnel avec la disposition demandée
+        int sessionYear = conv.getDateEpreuve() != null ? conv.getDateEpreuve().getYear() : LocalDateTime.now().getYear();
+        Table mastheadTable = new Table(UnitValue.createPercentArray(new float[]{36, 22, 42})).useAllAvailableWidth();
+        mastheadTable.setMarginBottom(6);
 
-        // --- TITRE ---
-        document.add(new Paragraph("CONVOCATION AU CONCOURS DE RÉSIDANAT EN MÉDECINE")
-                .setTextAlignment(TextAlignment.CENTER)
-                .setBold()
-                .setFontSize(16)
-                .setMarginBottom(20));
+        String dateHeader = (conv.getLieuExamenDetail() != null ? conv.getLieuExamenDetail() : "Tunis") 
+                          + ", le " + LocalDateTime.now().format(DateTimeFormatter.ofPattern("d MMMM yyyy", Locale.FRENCH));
 
-        // --- TABLEAU DES DONNÉES CANDIDAT ---
-        Table infoTable = new Table(UnitValue.createPercentArray(new float[]{30, 70})).useAllAvailableWidth();
+        Cell leftDateCell = new Cell()
+            .add(new Paragraph(dateHeader).setFontSize(8).setBold().setFontColor(navy))
+            .setTextAlignment(TextAlignment.LEFT)
+            .setVerticalAlignment(com.itextpdf.layout.properties.VerticalAlignment.BOTTOM)
+            .setBorder(Border.NO_BORDER)
+            .setPaddingTop(26);
+        mastheadTable.addCell(leftDateCell);
+
+        Cell centerSealCell = new Cell().setBorder(Border.NO_BORDER);
+        try {
+            // Tentative de chargement via le classpath (Jar)
+            var resource = getClass().getResource("/tunisie-logo.png");
+            Image logoImg = null;
+            if (resource != null) {
+                try {
+                    logoImg = new Image(ImageDataFactory.create(resource));
+                } catch (Exception e) {
+                    log.warn("ImageDataFactory a échoué pour la ressource classpath");
+                }
+            }
+            
+            if (logoImg == null) {
+                // Fallback : recherche directe dans le dossier de travail (Docker)
+                try {
+                    logoImg = new Image(ImageDataFactory.create("/app/resources/tunisie-logo.png"));
+                } catch (Exception e) {
+                    log.warn("ImageDataFactory a échoué pour le fallback /app/resources");
+                }
+            }
+
+            if (logoImg != null) {
+                logoImg.scaleToFit(55, 55).setHorizontalAlignment(com.itextpdf.layout.properties.HorizontalAlignment.CENTER);
+                centerSealCell.add(logoImg);
+            } else {
+                centerSealCell.add(new Paragraph("RÉPUBLIQUE TUNISIENNE").setFontSize(8).setBold());
+            }
+        } catch (Exception e) {
+            log.error("❌ Échec critique du chargement du logo : {}", e.getMessage());
+            centerSealCell.add(new Paragraph("RÉPUBLIQUE TUNISIENNE").setFontSize(8).setBold());
+        }
+        centerSealCell.setTextAlignment(TextAlignment.CENTER)
+            .setVerticalAlignment(com.itextpdf.layout.properties.VerticalAlignment.MIDDLE);
+        mastheadTable.addCell(centerSealCell);
+
+        Div rightBlock = new Div().setTextAlignment(TextAlignment.RIGHT);
+        rightBlock.add(new Paragraph("RÉPUBLIQUE TUNISIENNE").setBold().setFontSize(9).setFontColor(navy));
+        rightBlock.add(new Paragraph("MINISTÈRE DE LA SANTÉ").setBold().setFontSize(8).setFontColor(navy));
+        rightBlock.add(new Paragraph("DIRECTION DES CONCOURS MÉDICAUX").setBold().setFontSize(8).setFontColor(navy));
         
-        addInfoRow(infoTable, "Nom:", utilisateur.getNom());
-        addInfoRow(infoTable, "Prénom:", utilisateur.getPrenom());
-        addInfoRow(infoTable, "N° CIN:", utilisateur.getCin());
-        addInfoRow(infoTable, "N° Inscription:", conv.getNumeroInscription());
-        addInfoRow(infoTable, "Date épreuve:", "SAMEDI 19 DÉCEMBRE 2026");
-        addInfoRow(infoTable, "Heure d'appel:", conv.getHeureAppel());
-        addInfoRow(infoTable, "Lieu d'examen:", conv.getLieuExamenDetail());
-        addInfoRow(infoTable, "Salle:", conv.getSalle());
-        addInfoRow(infoTable, "Place:", conv.getPlace());
+        String lieu = conv.getLieuExamenDetail() != null ? conv.getLieuExamenDetail().toUpperCase() : "TUNIS";
+        rightBlock.add(new Paragraph("FACULTÉ : " + lieu)
+            .setBold()
+            .setFontSize(8)
+            .setFontColor(navy)
+            .setMarginTop(2));
+            
+        rightBlock.add(new Paragraph("SESSION " + sessionYear)
+            .setBold()
+            .setFontSize(8)
+            .setFontColor(navy)
+            .setMarginTop(2));
+        Cell rightCell = new Cell().add(rightBlock).setBorder(Border.NO_BORDER);
+        mastheadTable.addCell(rightCell);
 
-        document.add(infoTable);
+        document.add(mastheadTable);
 
-        document.add(new Paragraph("\n"));
+        document.add(new Paragraph("CONVOCATION AU CONCOURS DE RÉSIDANAT EN MÉDECINE")
+            .setTextAlignment(TextAlignment.CENTER)
+            .setBold()
+            .setFontColor(navy)
+            .setFontSize(14)
+            .setMarginTop(12)
+            .setMarginBottom(10));
 
-        // --- CONSIGNES ---
+        Table metaTable = new Table(UnitValue.createPercentArray(new float[]{60, 40})).useAllAvailableWidth();
+        metaTable.setBackgroundColor(paperFill).setBorder(new SolidBorder(paperEdge, 1));
+        metaTable.addCell(new Cell().add(new Paragraph("Référence : " + conv.getNumeroInscription()).setFontSize(9).setFontColor(navy).setBold()).setBorder(Border.NO_BORDER));
+        metaTable.addCell(new Cell().add(new Paragraph("Statut : Générée").setTextAlignment(TextAlignment.RIGHT).setFontSize(9).setFontColor(navySoft)).setBorder(Border.NO_BORDER));
+        document.add(metaTable);
+
+        document.add(new Paragraph("Informations du candidat")
+            .setFontSize(10)
+            .setFontColor(navySoft)
+            .setBold()
+            .setMarginTop(10)
+            .setMarginBottom(4));
+        Table candidatTable = new Table(UnitValue.createPercentArray(new float[]{34, 66})).useAllAvailableWidth();
+        addInfoRow(candidatTable, "Identité", (utilisateur.getPrenom() + " " + utilisateur.getNom()).trim(), paperFill, paperEdge, navy, navySoft, false);
+        addInfoRow(candidatTable, "N° CIN", utilisateur.getCin(), paperFill, paperEdge, navy, navySoft, false);
+        addInfoRow(candidatTable, "N° Inscription", conv.getNumeroInscription(), paperFill, paperEdge, navy, navySoft, true);
+        document.add(candidatTable);
+
+        document.add(new Paragraph("Informations de l'épreuve")
+            .setFontSize(10)
+            .setFontColor(navySoft)
+            .setBold()
+            .setMarginTop(10)
+            .setMarginBottom(4));
+        Table epreuveTable = new Table(UnitValue.createPercentArray(new float[]{34, 66})).useAllAvailableWidth();
+        addInfoRow(epreuveTable, "Date de l'épreuve", formatDateEpreuve(conv.getDateEpreuve()), paperFill, paperEdge, navy, navySoft, false);
+        addInfoRow(epreuveTable, "Heure d'appel", conv.getHeureAppel(), paperFill, paperEdge, navy, navySoft, false);
+        addInfoRow(epreuveTable, "Centre d'examen", conv.getLieuExamenDetail(), paperFill, paperEdge, navy, navySoft, false);
+        addInfoRow(epreuveTable, "Salle / Place", conv.getSalle() + " / N° " + conv.getPlace(), paperFill, paperEdge, navy, navySoft, true);
+        document.add(epreuveTable);
+
         Div consignesBox = new Div()
-                .setBorder(new com.itextpdf.layout.borders.SolidBorder(1))
-                .setBackgroundColor(ColorConstants.LIGHT_GRAY, 0.2f)
-                .setPadding(10);
-        consignesBox.add(new Paragraph("Consignes Importantes").setBold().setTextAlignment(TextAlignment.CENTER));
+            .setBorder(new SolidBorder(paperEdge, 1))
+            .setBackgroundColor(new DeviceRgb(248, 248, 248))
+            .setPadding(10)
+            .setMarginTop(10);
+        consignesBox.add(new Paragraph("Consignes importantes")
+            .setBold()
+            .setFontSize(10)
+            .setFontColor(navySoft)
+            .setMarginBottom(4));
         com.itextpdf.layout.element.List list = new com.itextpdf.layout.element.List()
-                .add(new ListItem("Présentation CIN obligatoire."))
-                .add(new ListItem("Téléphone portable interdit."))
-                .add(new ListItem("Respect des horaires d'appel."))
-                .add(new ListItem("Tout retard entraîne l'exclusion de l'épreuve."));
+            .setFontSize(9)
+            .setFontColor(navy)
+            .add(new ListItem("Présentation de la carte d'identité nationale obligatoire."))
+            .add(new ListItem("Téléphone portable et objets connectés interdits en salle."))
+            .add(new ListItem("Tout retard après l'heure d'appel entraîne l'exclusion de l'épreuve."));
         consignesBox.add(list);
         document.add(consignesBox);
 
-        document.add(new Paragraph("\n"));
+        Table footerTable = new Table(UnitValue.createPercentArray(new float[]{58, 42})).useAllAvailableWidth();
+        Cell signatureCell = new Cell().setTextAlignment(TextAlignment.LEFT).setVerticalAlignment(com.itextpdf.layout.properties.VerticalAlignment.TOP);
+        signatureCell.add(new Paragraph("Cachet et signature de l'administration")
+                .setBold()
+                .setFontSize(8)
+                .setFontColor(navy));
+        signatureCell.add(new Paragraph("\n\n.........................................................................")
+                .setFontSize(8)
+                .setFontColor(navySoft));
+        signatureCell.setBorder(Border.NO_BORDER);
+        footerTable.addCell(signatureCell);
 
-        // --- SIGNATURE ET QR CODE ---
-        Table footerTable = new Table(UnitValue.createPercentArray(new float[]{50, 50})).useAllAvailableWidth();
+        Cell qrCell = new Cell().setTextAlignment(TextAlignment.CENTER).setBorder(Border.NO_BORDER);
+        Image qrImg = new Image(ImageDataFactory.create(qrCodeImage)).setWidth(75).setHeight(75);
+        qrImg.setHorizontalAlignment(com.itextpdf.layout.properties.HorizontalAlignment.CENTER);
+        qrCell.add(qrImg);
         
-        Cell signatureCell = new Cell().add(new Paragraph("Signature administrative\n« Pour raison officielle »").setItalic().setFontSize(9));
-        // On pourrait ajouter une image de signature ici si dispo
-        footerTable.addCell(signatureCell.setBorder(com.itextpdf.layout.borders.Border.NO_BORDER));
+        // Label sur deux lignes, bien centré
+        qrCell.add(new Paragraph("VÉRIFICATION\nEN LIGNE")
+                .setBold()
+                .setFontSize(7)
+                .setFixedLeading(8)
+                .setTextAlignment(TextAlignment.CENTER)
+                .setFontColor(navy)
+                .setMarginTop(3));
+                
 
-        Cell qrCell = new Cell().setTextAlignment(TextAlignment.RIGHT);
-        qrCell.add(new Paragraph("CODE DE VÉRIFICATION SÉCURISÉ").setFontSize(8).setBold());
-        Image qrImage = new Image(ImageDataFactory.create(qrCodeImage)).setWidth(80).setHeight(80);
-        qrCell.add(qrImage);
-        qrCell.add(new Paragraph("Hash: #" + conv.getHashSecurise().substring(0, 8)).setFontSize(7));
-        footerTable.addCell(qrCell.setBorder(com.itextpdf.layout.borders.Border.NO_BORDER));
-
-        document.add(footerTable);
+        footerTable.addCell(qrCell);
+        
+        document.add(footerTable.setMarginTop(15));
 
         document.close();
         return baos.toByteArray();
     }
 
-    private void addInfoRow(Table table, String label, String value) {
-        table.addCell(new Cell().add(new Paragraph(label).setBold()).setBackgroundColor(ColorConstants.WHITE));
-        table.addCell(new Cell().add(new Paragraph(value != null ? value : "N/A")));
+        private void addInfoRow(Table table,
+                    String label,
+                    String value,
+                    DeviceRgb labelBackground,
+                    DeviceRgb borderColor,
+                    DeviceRgb valueColor,
+                    DeviceRgb labelColor,
+                    boolean emphasized) {
+        table.addCell(new Cell()
+            .add(new Paragraph(label).setBold().setFontSize(9).setFontColor(labelColor))
+            .setBackgroundColor(labelBackground)
+            .setBorder(new SolidBorder(borderColor, 1))
+            .setPadding(7));
+        Paragraph valueParagraph = new Paragraph(value != null ? value : "N/A")
+            .setFontSize(9)
+            .setFontColor(emphasized ? new DeviceRgb(0, 0, 0) : valueColor)
+            .setBold();
+        table.addCell(new Cell()
+            .add(valueParagraph)
+            .setBorder(new SolidBorder(borderColor, 1))
+            .setPadding(7));
+    }
+
+    private String formatDateEpreuve(LocalDateTime dateEpreuve) {
+        if (dateEpreuve == null) {
+            return "N/A";
+        }
+        return DATE_FORMAT_FR.format(dateEpreuve).toUpperCase(Locale.ROOT);
+    }
+
+    private String determinerLieuExamen(UtilisateurDto utilisateur, ConcoursDto concours) {
+        if (utilisateur != null && !isBlank(utilisateur.getFaculte())) {
+            // Afficher exactement la faculté saisie par l'utilisateur
+            return utilisateur.getFaculte().trim();
+        }
+        if (concours != null && !isBlank(concours.getLieuExamen())) {
+            return concours.getLieuExamen();
+        }
+        return "Faculté de Médecine de Tunis (FMT)";
+    }
+
+    private String buildVerificationUrl(String hashSecurise) {
+        String base = qrCodeVerifyBaseUrl == null ? "" : qrCodeVerifyBaseUrl.trim();
+        if (base.endsWith("/")) {
+            return base + hashSecurise;
+        }
+        return base + "/" + hashSecurise;
+    }
+
+    private boolean isBlank(String value) {
+        return value == null || value.trim().isEmpty();
     }
 
     /**

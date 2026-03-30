@@ -1,5 +1,6 @@
 package tn.sante.residanat.convocation.config;
 
+import org.springframework.amqp.core.DirectExchange;
 import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
 import org.springframework.amqp.support.converter.MessageConverter;
 import org.springframework.context.annotation.Bean;
@@ -17,6 +18,18 @@ import org.springframework.context.annotation.Configuration;
  */
 @Configuration
 public class RabbitMQConfig {
+
+    public static final String EXCHANGE_DOSSIER = "dossier.exchange";
+
+    /**
+     * Définit l'échange "dossier.exchange" pour qu'il soit créé s'il n'existe pas encore.
+     * 
+     * @return un DirectExchange nommé dossier.exchange
+     */
+    @Bean
+    public DirectExchange dossierExchange() {
+        return new DirectExchange(EXCHANGE_DOSSIER);
+    }
 
     /**
      * Fournit un convertisseur de messages qui utilise Jackson pour la sérialisation/désérialisation.

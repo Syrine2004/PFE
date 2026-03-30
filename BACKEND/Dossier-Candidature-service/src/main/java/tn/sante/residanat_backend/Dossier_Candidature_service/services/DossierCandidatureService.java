@@ -12,6 +12,8 @@ import tn.sante.residanat_backend.Dossier_Candidature_service.repositories.Docum
 import tn.sante.residanat_backend.Dossier_Candidature_service.repositories.DossierCandidatureRepository;
 import tn.sante.residanat_backend.Dossier_Candidature_service.repositories.EvaluationIARepository;
 import tn.sante.residanat_backend.Dossier_Candidature_service.event.DossierValideEvent;
+import tn.sante.residanat_backend.Dossier_Candidature_service.event.DossierRejeteEvent;
+import tn.sante.residanat_backend.Dossier_Candidature_service.event.ConvocationReadyEvent;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -367,9 +369,28 @@ public class DossierCandidatureService {
                 RabbitMQConfig.ROUTING_KEY_VALIDE,
                 event
             );
+        } else if (statut == StatutDossier.REJETE) {
+            // Publish Rejection Event for Notification Service
+            DossierRejeteEvent event = new DossierRejeteEvent(
+                savedDossier.getId(),
+                savedDossier.getCandidatId(),
+                "Dossier rejeté par l'administration"
+            );
+            System.out.println("Publishing DossierRejeteEvent for dossier " + id);
+            rabbitTemplate.convertAndSend(
+                RabbitMQConfig.EXCHANGE_DOSSIER,
+                RabbitMQConfig.ROUTING_KEY_REJETE,
+                event
+            );
         }
 
         return savedDossier;
+    }
+
+    @RabbitListener(queues = RabbitMQConfig.QUEUE_CONVOCATION_READY)
+    @Transactional
+    public void handleConvocationReady(ConvocationReadyEvent event) {
+        System.out.println("RECEIVED ConvocationReadyEvent: " + event + " - Handled by standalone Notification Service");
     }
 
     @Transactional

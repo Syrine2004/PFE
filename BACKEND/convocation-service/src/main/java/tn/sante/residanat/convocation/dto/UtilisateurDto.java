@@ -14,6 +14,8 @@ public class UtilisateurDto {
     private String prenom;
     private String cin;
     private String email;
+    private String faculte;
+    private String dateDiplome;
 
     // Constructeurs
     public UtilisateurDto() {}
@@ -32,6 +34,8 @@ public class UtilisateurDto {
     public String getPrenom() { return prenom; }
     public String getCin() { return cin; }
     public String getEmail() { return email; }
+    public String getFaculte() { return faculte; }
+    public String getDateDiplome() { return dateDiplome; }
 
     // Setters
     public void setId(Long id) { this.id = id; }
@@ -39,4 +43,6 @@ public class UtilisateurDto {
     public void setPrenom(String prenom) { this.prenom = prenom; }
     public void setCin(String cin) { this.cin = cin; }
     public void setEmail(String email) { this.email = email; }
+    public void setFaculte(String faculte) { this.faculte = faculte; }
+    public void setDateDiplome(String dateDiplome) { this.dateDiplome = dateDiplome; }
 }

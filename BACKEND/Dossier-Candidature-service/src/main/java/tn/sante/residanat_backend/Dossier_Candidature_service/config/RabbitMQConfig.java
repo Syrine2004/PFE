@@ -21,6 +21,10 @@ public class RabbitMQConfig {
     public static final String EXCHANGE_DOSSIER = "dossier.exchange";
     public static final String ROUTING_KEY_VALIDE = "dossier.valide";
 
+    public static final String QUEUE_CONVOCATION_READY = "q.convocation.ready";
+    public static final String ROUTING_KEY_READY = "convocation.ready";
+    public static final String ROUTING_KEY_REJETE = "dossier.rejete";
+
     @Bean
     public Queue requestQueue() {
         return new Queue(QUEUE_IA_REQUEST);
@@ -59,6 +63,16 @@ public class RabbitMQConfig {
     @Bean
     public Binding dossierValideBinding(Queue dossierValideQueue, DirectExchange dossierExchange) {
         return BindingBuilder.bind(dossierValideQueue).to(dossierExchange).with(ROUTING_KEY_VALIDE);
+    }
+
+    @Bean
+    public Queue convocationReadyQueue() {
+        return new Queue(QUEUE_CONVOCATION_READY);
+    }
+
+    @Bean
+    public Binding convocationReadyBinding(Queue convocationReadyQueue, DirectExchange dossierExchange) {
+        return BindingBuilder.bind(convocationReadyQueue).to(dossierExchange).with(ROUTING_KEY_READY);
     }
 
     @Bean

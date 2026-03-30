@@ -65,7 +65,11 @@ export class InscriptionConcoursComponent implements OnInit {
     }
 
     get isDossierLocked(): boolean {
-        return this.dossier?.statut === 'VALIDE' || this.dossier?.statut === 'REJETE';
+        return this.dossier?.statut === 'VALIDE';
+    }
+
+    get isEditingMode(): boolean {
+        return this.dossier?.statut === 'EN_ATTENTE' || this.dossier?.statut === 'REJETE';
     }
 
     onFaculteChange(event: Event) {

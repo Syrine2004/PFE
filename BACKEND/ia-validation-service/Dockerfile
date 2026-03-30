@@ -22,7 +22,7 @@ RUN apt-get update && apt-get install -y \
 
 WORKDIR /app
 COPY requirements.txt .
-RUN pip3 install --no-cache-dir -r requirements.txt
+RUN pip3 install --no-cache-dir --default-timeout=300 --retries 10 -r requirements.txt
 
 # Create the scripts folder
 RUN mkdir -p /app/scripts

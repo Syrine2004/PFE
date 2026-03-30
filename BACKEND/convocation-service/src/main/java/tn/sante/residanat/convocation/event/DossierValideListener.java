@@ -7,8 +7,8 @@ import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.amqp.rabbit.annotation.QueueBinding;
 import org.springframework.amqp.rabbit.annotation.Queue;
 import org.springframework.amqp.rabbit.annotation.Exchange;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import tn.sante.residanat.convocation.service.ConvocationService;
 
 import java.io.IOException;
@@ -19,14 +19,15 @@ import java.io.IOException;
  * Architecture asynchrone : découplage du dossier-service et du convocation-service.
  */
 @Component
-@ConditionalOnProperty(name = "rabbit.listener.enabled", havingValue = "true", matchIfMissing = false)
 public class DossierValideListener {
 
     private static final Logger log = LoggerFactory.getLogger(DossierValideListener.class);
     private final ConvocationService convocationService;
+    private final RabbitTemplate rabbitTemplate;
 
-    public DossierValideListener(ConvocationService convocationService) {
+    public DossierValideListener(ConvocationService convocationService, RabbitTemplate rabbitTemplate) {
         this.convocationService = convocationService;
+        this.rabbitTemplate = rabbitTemplate;
     }
 
     /**
@@ -38,7 +39,7 @@ public class DossierValideListener {
      */
     @RabbitListener(bindings = @QueueBinding(
             value = @Queue(value = "q.dossier.valide", durable = "true"),
-            exchange = @Exchange(value = "dossier.events.exchange"),
+            exchange = @Exchange(value = "dossier.exchange"),
             key = "dossier.valide"
     ))
     public void traiterDossierValide(DossierValideEvent event) {
@@ -55,6 +56,16 @@ public class DossierValideListener {
 
             log.info("✅ Convocation générée avec succès : id={}, hash={}, path={}",
                     convocation.getId(), convocation.getHashSecurise(), convocation.getCheminFichierPdf());
+
+            // Notification du candidat via le dossier-service
+            ConvocationReadyEvent readyEvent = new ConvocationReadyEvent(
+                event.getDossierId(),
+                event.getCandidatId(),
+                convocation.getHashSecurise()
+            );
+            
+            log.info("📤 Envoi de l'événement ConvocationReadyEvent pour le candidat {}", event.getCandidatId());
+            rabbitTemplate.convertAndSend("dossier.exchange", "convocation.ready", readyEvent);
 
         } catch (WriterException e) {
             // Erreur lors de la génération du QR Code
