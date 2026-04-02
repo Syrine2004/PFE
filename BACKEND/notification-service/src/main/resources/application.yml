@@ -6,3 +6,7 @@ spring:
 
 server:
   port: 8087
+
+app:
+  auth-service-url: ${AUTH_SERVICE_URL:http://localhost:8081}
+  n8n-webhook-url: ${N8N_WEBHOOK_URL:http://localhost:5678/webhook/dossier-status}

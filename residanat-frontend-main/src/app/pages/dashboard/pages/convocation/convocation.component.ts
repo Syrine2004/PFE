@@ -27,6 +27,31 @@ export class ConvocationComponent implements OnInit {
   today: Date = new Date();
   userCin: string = '';
   sessionYear: number = 2026;
+  private readonly convocationMaxRetries = 4;
+  private readonly convocationRetryDelayMs = 1500;
+
+  getFaculteNomComplet(lieuExamenDetail?: string): string {
+    const raw = (lieuExamenDetail || '').trim();
+    if (!raw) {
+      return 'Faculté non spécifiée';
+    }
+
+    const normalized = raw.toLowerCase();
+
+    // Keep existing full names returned by backend untouched.
+    if (normalized.includes('facult')) {
+      return raw;
+    }
+
+    const mapping: Record<string, string> = {
+      tunis: 'Faculté de Médecine de Tunis',
+      sfax: 'Faculté de Médecine de Sfax',
+      sousse: 'Faculté de Médecine de Sousse',
+      monastir: 'Faculté de Médecine de Monastir'
+    };
+
+    return mapping[normalized] || raw;
+  }
 
   imprimer() {
     window.print();
@@ -72,7 +97,7 @@ export class ConvocationComponent implements OnInit {
     });
   }
 
-  loadConvocationInfo(dossierId: number) {
+  loadConvocationInfo(dossierId: number, attempt: number = 1) {
     // Safety timeout to prevent infinite loading
     const timeout = setTimeout(() => {
       if (this.loading) {
@@ -112,7 +137,19 @@ export class ConvocationComponent implements OnInit {
       },
       error: (err: any) => {
         clearTimeout(timeout);
-        console.warn("Convocation non générée ou erreur API.", err);
+        // Gateway can briefly return 5xx while services are restarting; retry a few times.
+        const isTransient = [500, 502, 503, 504, 0].includes(err?.status);
+        if (isTransient && attempt < this.convocationMaxRetries) {
+          const nextAttempt = attempt + 1;
+          setTimeout(() => this.loadConvocationInfo(dossierId, nextAttempt), this.convocationRetryDelayMs);
+          return;
+        }
+
+        if (err.status === 403) {
+          this.error = "Vous n'avez pas le droit de passer le concours: votre CIN ne figure pas dans la liste officielle du Ministère.";
+        } else {
+          console.warn("Convocation non générée ou erreur API.", err);
+        }
         this.loading = false;
       }
     });

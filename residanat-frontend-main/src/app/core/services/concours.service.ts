@@ -43,7 +43,7 @@ export class ConcoursService {
         let params: any = { page, size };
         if (annee) params['annee'] = annee;
         if (typeConcours) params['typeConcours'] = typeConcours;
-        if (statutResultat) params['statutResultat'] = statutResultat;
+        if (statutResultat) params['etat'] = statutResultat;
 
         return this.http.get<PageResponse<Concours>>(this.apiUrl, { params: params });
     }

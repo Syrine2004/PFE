@@ -32,6 +32,7 @@ export class AdminSidebarComponent {
         { label: 'Accueil Site', icon: 'home', href: '/', disabled: false },
         { label: 'Concours', icon: 'award', href: '/admin/concours', disabled: false },
         { label: 'Candidats', icon: 'users', href: '/admin/candidats', disabled: false },
+        { label: 'Affectations (Ministère)', icon: 'file-import', href: '/admin/import-ministere', disabled: false },
         { label: 'Résultats', icon: 'bar-chart-3', href: '/admin/resultats', disabled: true },
         { label: 'Réclamations', icon: 'message-circle', href: '/admin/reclamations', disabled: true },
         { label: 'Paramètres', icon: 'settings', href: '/admin/parametres', disabled: true },

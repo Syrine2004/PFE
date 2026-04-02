@@ -20,6 +20,7 @@ import org.springframework.context.annotation.Configuration;
 public class RabbitMQConfig {
 
     public static final String EXCHANGE_DOSSIER = "dossier.exchange";
+    public static final String ROUTING_KEY_ELIGIBILITY_FAILED = "eligibility.failed";
 
     /**
      * Définit l'échange "dossier.exchange" pour qu'il soit créé s'il n'existe pas encore.

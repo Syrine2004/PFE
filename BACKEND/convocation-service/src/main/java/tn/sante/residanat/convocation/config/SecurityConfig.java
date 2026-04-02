@@ -40,8 +40,8 @@ public class SecurityConfig {
                         // 🔓 Documentation & santé
                         .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
                         .requestMatchers("/actuator/**").permitAll()
-                        // 🔒 Tous les autres endpoints sécurisés
-                        .anyRequest().authenticated()
+                        // 🔒 Autoriser tout : la Gateway gère la sécurité
+                        .anyRequest().permitAll()
                 )
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)

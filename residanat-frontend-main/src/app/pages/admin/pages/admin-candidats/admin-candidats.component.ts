@@ -6,6 +6,9 @@ import { AuthService } from '../../../../core/services/auth.service';
 import { DossierService } from '../../../../core/services/dossier.service';
 import { ConcoursService, Concours } from '../../../../core/services/concours.service';
 import Swal from 'sweetalert2';
+import { forkJoin, of } from 'rxjs';
+import { catchError, map } from 'rxjs/operators';
+import * as XLSX from 'xlsx';
 
 @Component({
     selector: 'app-admin-candidats',
@@ -29,6 +32,8 @@ export class AdminCandidatsComponent implements OnInit {
     openDropdownId: string | null = null;
     isFilterDropdownOpen: boolean = false;
     isConcoursDropdownOpen: boolean = false;
+    selectedCandidateIds = new Set<number>();
+    isBulkValidating = false;
 
     // Modal state
     showModal = false;
@@ -100,6 +105,7 @@ export class AdminCandidatsComponent implements OnInit {
 
         this.calculateStats();
         this.applyFilters();
+        this.pruneSelection();
 
         // Refresh selected candidate if modal is open
         if (this.showModal && this.selectedCandidat) {
@@ -133,6 +139,132 @@ export class AdminCandidatsComponent implements OnInit {
             return matchSearch && matchStatus && matchConcours;
         });
         this.calculateStats();
+    }
+
+    private pruneSelection() {
+        const validIds = new Set(
+            this.allCandidats
+                .filter(c => this.canSelectCandidate(c))
+                .map(c => c.realId)
+        );
+
+        this.selectedCandidateIds = new Set(
+            Array.from(this.selectedCandidateIds).filter(id => validIds.has(id))
+        );
+    }
+
+    private getBulkEligibleCandidates(): any[] {
+        return this.filteredCandidats.filter(c =>
+            Number(c.scoreIA || 0) === 100 &&
+            this.canSelectCandidate(c)
+        );
+    }
+
+    getBulkEligibleCount(): number {
+        return this.getBulkEligibleCandidates().length;
+    }
+
+    canSelectCandidate(candidat: any): boolean {
+        return candidat?.statut === 'EN_ATTENTE' && !!candidat?.dossierId;
+    }
+
+    getSelectionHint(candidat: any): string {
+        if (!candidat?.dossierId) return 'Sans dossier';
+        if (candidat?.statut === 'VALIDE') return 'Déjà validé';
+        if (candidat?.statut === 'REJETE') return 'Rejeté';
+        return 'Non sélectionnable';
+    }
+
+    getSelectedCount(): number {
+        return this.selectedCandidateIds.size;
+    }
+
+    isSelected(candidat: any): boolean {
+        return this.selectedCandidateIds.has(candidat.realId);
+    }
+
+    toggleCandidateSelection(candidat: any, event: Event) {
+        if (!this.canSelectCandidate(candidat)) return;
+        const input = event.target as HTMLInputElement;
+        if (!input) return;
+
+        if (input.checked) {
+            this.selectedCandidateIds.add(candidat.realId);
+        } else {
+            this.selectedCandidateIds.delete(candidat.realId);
+        }
+    }
+
+    selectScore100Candidates() {
+        const eligible = this.getBulkEligibleCandidates();
+        this.selectedCandidateIds = new Set(eligible.map(c => c.realId));
+
+        if (eligible.length === 0) {
+            Swal.fire('Info', 'Aucun candidat à 100% en attente à sélectionner.', 'info');
+        }
+    }
+
+    clearSelection() {
+        this.selectedCandidateIds.clear();
+    }
+
+    bulkValidateSelected() {
+        if (this.isBulkValidating) {
+            return;
+        }
+
+        const targets = this.allCandidats.filter(c =>
+            this.selectedCandidateIds.has(c.realId) &&
+            this.canSelectCandidate(c)
+        );
+
+        if (targets.length === 0) {
+            Swal.fire('Info', 'Aucun dossier valide à traiter dans la sélection.', 'info');
+            return;
+        }
+
+        Swal.fire({
+            title: 'Valider la sélection ?',
+            text: `${targets.length} dossier(s) seront validés.`,
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonText: 'Oui, valider',
+            cancelButtonText: 'Annuler',
+            confirmButtonColor: '#00b64f'
+        }).then(result => {
+            if (!result.isConfirmed) return;
+
+            this.isBulkValidating = true;
+            const requests = targets.map(c =>
+                this.dossierService.updateStatut(c.dossierId, 'VALIDE' as any).pipe(
+                    map(() => ({ ok: true, id: c.realId })),
+                    catchError(() => of({ ok: false, id: c.realId }))
+                )
+            );
+
+            forkJoin(requests).subscribe({
+                next: (results) => {
+                    const successCount = results.filter(r => r.ok).length;
+                    const failedCount = results.length - successCount;
+
+                    this.isBulkValidating = false;
+                    this.clearSelection();
+
+                    Swal.fire({
+                        title: 'Traitement terminé',
+                        text: `${successCount} validé(s), ${failedCount} échec(s).`,
+                        icon: failedCount > 0 ? 'warning' : 'success',
+                        confirmButtonColor: '#00b64f'
+                    });
+
+                    this.loadData();
+                },
+                error: () => {
+                    this.isBulkValidating = false;
+                    Swal.fire('Erreur', 'Impossible de valider la sélection.', 'error');
+                }
+            });
+        });
     }
 
     updateStatut(candidat: any, nouveauStatut: string) {
@@ -256,44 +388,42 @@ export class AdminCandidatsComponent implements OnInit {
             return;
         }
 
-        // CSV Header
-        const headers = ['ID', 'Nom', 'Prénom', 'Concours', 'Email', 'CIN', 'Téléphone', 'Nationalité', 'Faculté', 'Statut', 'Score IA %'];
+        const data = this.filteredCandidats.map(c => ({
+            'ID': c.id,
+            'Nom': c.nom,
+            'Prénom': c.prenom,
+            'Concours': this.getConcoursName(c.concoursId),
+            'Email': c.email,
+            'CIN': c.cin,
+            'Téléphone': c.telephone,
+            'Nationalité': c.nationalite,
+            'Faculté': c.faculte,
+            'Statut': this.getStatutLabel(c.statut),
+            'Score IA %': c.scoreIA
+        }));
 
-        // CSV Rows
-        const rows = this.filteredCandidats.map(c => [
-            c.id,
-            c.nom,
-            c.prenom,
-            this.getConcoursName(c.concoursId),
-            c.email,
-            c.cin,
-            c.telephone,
-            c.nationalite,
-            c.faculte,
-            this.getStatutLabel(c.statut),
-            c.scoreIA
-        ]);
+        const worksheet = XLSX.utils.json_to_sheet(data);
+        worksheet['!cols'] = [
+            { wch: 12 },
+            { wch: 18 },
+            { wch: 18 },
+            { wch: 24 },
+            { wch: 30 },
+            { wch: 16 },
+            { wch: 18 },
+            { wch: 16 },
+            { wch: 22 },
+            { wch: 14 },
+            { wch: 12 }
+        ];
 
-        // Join with semicolon for Excel French/International compatibility
-        const csvContent = [
-            headers.join(';'),
-            ...rows.map(row => row.join(';'))
-        ].join('\n');
-
-        // Add BOM for UTF-8 (Excel requires this for accents)
-        const blob = new Blob(['\uFEFF' + csvContent], { type: 'text/csv;charset=utf-8;' });
-        const url = URL.createObjectURL(blob);
-        const link = document.createElement('a');
+        const workbook = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(workbook, worksheet, 'Candidats');
 
         const fileName = this.selectedConcoursId === 'all'
-            ? 'liste_candidats_tous.csv'
-            : `liste_candidats_${this.getConcoursName(this.selectedConcoursId).replace(/\s+/g, '_').toLowerCase()}.csv`;
+            ? 'liste_candidats_tous.xlsx'
+            : `liste_candidats_${this.getConcoursName(this.selectedConcoursId).replace(/\s+/g, '_').toLowerCase()}.xlsx`;
 
-        link.setAttribute('href', url);
-        link.setAttribute('download', fileName);
-        link.style.visibility = 'hidden';
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
+        XLSX.writeFile(workbook, fileName);
     }
 }

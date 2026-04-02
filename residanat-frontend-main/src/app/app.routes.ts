@@ -3,6 +3,7 @@ import { HomeComponent } from './pages/home/home.component';
 import { MainLayoutComponent } from './layouts/main-layout/main-layout.component';
 import { AdminLayoutComponent } from './pages/admin/admin-layout.component';
 import { AdminConcoursComponent } from './pages/admin/pages/admin-concours/admin-concours.component';
+import { ImportMinistereComponent } from './pages/admin/pages/import-ministere/import-ministere.component';
 
 // Importation des deux Guards
 import { authGuard } from './core/guards/auth.guard';
@@ -100,6 +101,10 @@ export const routes: Routes = [
       {
         path: 'candidats',
         loadComponent: () => import('./pages/admin/pages/admin-candidats/admin-candidats.component').then(m => m.AdminCandidatsComponent)
+      },
+      {
+        path: 'import-ministere',
+        component: ImportMinistereComponent
       }
     ]
   },

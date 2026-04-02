@@ -77,11 +77,6 @@ public class Convocation {
     @Column(name = "nombre_telechargements")
     private Integer nombreTelechargements = 0;
 
-    /**
-     * Note ou commentaire sur la convocation (optionnel)
-     */
-    @Column(name = "notes", columnDefinition = "TEXT")
-    private String notes;
 
     /**
      * Timestamp de création
@@ -103,11 +98,6 @@ public class Convocation {
     @Column(name = "date_expiration")
     private LocalDateTime dateExpiration;
 
-    /**
-     * Adresse IP lors de la génération (pour audit)
-     */
-    @Column(name = "adresse_ip")
-    private String adresseIp;
 
     /**
      * Numéro d'inscription unique du candidat (ex: 2026-RES-0142)
@@ -145,11 +135,6 @@ public class Convocation {
     @Column(name = "lieu_examen_detail", length = 255)
     private String lieuExamenDetail;
 
-    /**
-     * User-Agent du navigateur lors de la génération (optionnel)
-     */
-    @Column(name = "user_agent")
-    private String userAgent;
 
     // Constructeurs
     public Convocation() {}
@@ -174,12 +159,9 @@ public class Convocation {
     public String getCheminFichierPdf() { return cheminFichierPdf; }
     public StatutConvocation getStatut() { return statut; }
     public Integer getNombreTelechargements() { return nombreTelechargements; }
-    public String getNotes() { return notes; }
     public LocalDateTime getDateGeneration() { return dateGeneration; }
     public LocalDateTime getDateModification() { return dateModification; }
     public LocalDateTime getDateExpiration() { return dateExpiration; }
-    public String getAdresseIp() { return adresseIp; }
-    public String getUserAgent() { return userAgent; }
 
     // Setters
     public void setId(Long id) { this.id = id; }
@@ -190,12 +172,9 @@ public class Convocation {
     public void setCheminFichierPdf(String cheminFichierPdf) { this.cheminFichierPdf = cheminFichierPdf; }
     public void setStatut(StatutConvocation statut) { this.statut = statut; }
     public void setNombreTelechargements(Integer nombreTelechargements) { this.nombreTelechargements = nombreTelechargements; }
-    public void setNotes(String notes) { this.notes = notes; }
     public void setDateGeneration(LocalDateTime dateGeneration) { this.dateGeneration = dateGeneration; }
     public void setDateModification(LocalDateTime dateModification) { this.dateModification = dateModification; }
     public void setDateExpiration(LocalDateTime dateExpiration) { this.dateExpiration = dateExpiration; }
-    public void setAdresseIp(String adresseIp) { this.adresseIp = adresseIp; }
-    public void setUserAgent(String userAgent) { this.userAgent = userAgent; }
 
     public String getNumeroInscription() { return numeroInscription; }
     public void setNumeroInscription(String numeroInscription) { this.numeroInscription = numeroInscription; }

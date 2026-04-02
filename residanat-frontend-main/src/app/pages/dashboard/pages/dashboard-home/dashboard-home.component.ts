@@ -286,19 +286,28 @@ export class DashboardHomeComponent implements OnInit {
       this.progressionSteps[2].note = 'Dossier modifiable (en attente de validation administrative)';
     }
 
-    // 5. Étape 3 : Convocation générée
-    if (dossier.statut === 'VALIDE') {
-      this.progressionSteps[3].status = 'done';
-      this.progressionSteps[3].progress = 100;
-      this.progressionSteps[3].note = 'Disponible dans votre espace personnel';
+    // 5. Étape 3 : Convocation (vérification réelle côté API)
+    if (dossier.statut === 'VALIDE' && dossier.id) {
+      this.progressionSteps[3].status = 'current';
+      this.progressionSteps[3].progress = 40;
+      this.progressionSteps[3].note = 'Vérification d\'éligibilité en cours...';
 
-      this.stats[2].value = 'Disponible';
-      this.stats[2].badge = null; // Removing badge as per new design
-      this.stats[2].status = 'success';
+      this.stats[2].value = 'Vérification...';
+      this.stats[2].badge = 'Contrôle en cours';
+      this.stats[2].status = 'pending';
+      this.stats[2].icon = 'clock';
+      this.stats[2].theme = 'attente';
 
-      // Activation de l'étape Concours
-      this.progressionSteps[4].status = 'current';
-      this.progressionSteps[4].progress = 10;
+      this.progressionSteps[4].status = 'pending';
+      this.progressionSteps[4].progress = 0;
+
+      this.refreshConvocationState(Number(dossier.id));
+    } else {
+      this.stats[2].value = 'Non générée';
+      this.stats[2].badge = 'Après validation admin';
+      this.stats[2].status = 'pending';
+      this.stats[2].icon = 'file-text';
+      this.stats[2].theme = '';
     }
 
     // 6. Mise à jour de la date du concours si dispo
@@ -309,9 +318,31 @@ export class DashboardHomeComponent implements OnInit {
 
   }
 
+  private parseNotificationDate(dateInput: Date | string): Date {
+    if (dateInput instanceof Date) {
+      return dateInput;
+    }
+
+    const raw = (dateInput || '').trim();
+    if (!raw) {
+      return new Date();
+    }
+
+    // Backend sends LocalDateTime without offset; anchor it to Tunis time to avoid drift.
+    const hasOffset = /([zZ]|[+-]\d{2}:\d{2})$/.test(raw);
+    const normalized = hasOffset ? raw : `${raw}+01:00`;
+    const parsed = new Date(normalized);
+    if (!Number.isNaN(parsed.getTime())) {
+      return parsed;
+    }
+
+    const fallback = new Date(raw.replace(' ', 'T'));
+    return Number.isNaN(fallback.getTime()) ? new Date() : fallback;
+  }
+
   formatRelativeTime(dateInput: Date | string): string {
-    const date = typeof dateInput === 'string' ? new Date(dateInput) : dateInput;
-    const diffInSeconds = Math.floor((new Date().getTime() - date.getTime()) / 1000);
+    const date = this.parseNotificationDate(dateInput);
+    const diffInSeconds = Math.max(0, Math.floor((new Date().getTime() - date.getTime()) / 1000));
 
     if (diffInSeconds < 60) return 'À l’instant';
     if (diffInSeconds < 3600) return `Il y a ${Math.floor(diffInSeconds / 60)} min`;
@@ -346,6 +377,7 @@ export class DashboardHomeComponent implements OnInit {
     switch (status) {
       case 'done': return 'badge-done';
       case 'current': return 'badge-current';
+      case 'blocked': return 'badge-blocked';
       default: return 'badge-pending';
     }
   }
@@ -354,6 +386,7 @@ export class DashboardHomeComponent implements OnInit {
     switch (status) {
       case 'done': return 'Terminé';
       case 'current': return 'En cours';
+      case 'blocked': return 'Bloqué';
       default: return 'À venir';
     }
   }
@@ -378,7 +411,59 @@ export class DashboardHomeComponent implements OnInit {
     });
   }
 
+  private refreshConvocationState(dossierId: number): void {
+    this.dossierService.getConvocationInfo(dossierId).subscribe({
+      next: (convocation) => {
+        if (convocation) {
+          this.progressionSteps[3].status = 'done';
+          this.progressionSteps[3].progress = 100;
+          this.progressionSteps[3].note = 'Disponible dans votre espace personnel';
+
+          this.stats[2].value = 'Disponible';
+          this.stats[2].badge = null;
+          this.stats[2].status = 'success';
+          this.stats[2].icon = 'file-text';
+          this.stats[2].theme = '';
+
+          this.progressionSteps[4].status = 'current';
+          this.progressionSteps[4].progress = 10;
+        }
+      },
+      error: (err) => {
+        if (err?.status === 403) {
+          this.progressionSteps[3].status = 'blocked';
+          this.progressionSteps[3].progress = 0;
+          this.progressionSteps[3].note = 'Processus arrêté: dossier non éligible selon la liste du Ministère.';
+
+          this.stats[2].value = 'Non éligible';
+          this.stats[2].badge = 'Accès refusé';
+          this.stats[2].status = 'error';
+          this.stats[2].icon = 'x-circle';
+          this.stats[2].theme = 'rejete';
+
+          this.progressionSteps[4].status = 'pending';
+          this.progressionSteps[4].progress = 0;
+          return;
+        }
+
+        this.progressionSteps[3].status = 'current';
+        this.progressionSteps[3].progress = 50;
+        this.progressionSteps[3].note = 'Convocation en préparation';
+
+        this.stats[2].value = 'En préparation';
+        this.stats[2].badge = 'Réessayez plus tard';
+        this.stats[2].status = 'pending';
+        this.stats[2].icon = 'clock';
+        this.stats[2].theme = 'attente';
+      }
+    });
+  }
+
   goToConvocation() {
     this.router.navigate(['/dashboard/convocation']);
+  }
+
+  canOpenConvocation(stat: any): boolean {
+    return stat?.label === 'Convocation' && (stat?.status === 'success' || stat?.status === 'error');
   }
 }

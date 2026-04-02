@@ -73,6 +73,28 @@
         </div>
     </div>
 
+    <div class="bulk-panel">
+        <div class="bulk-panel-head">
+            <h3 class="bulk-title">Validation rapide</h3>
+            <span class="bulk-selection-pill">{{ getSelectedCount() }} sélectionné(s)</span>
+        </div>
+
+        <div class="bulk-actions-row">
+            <button class="bulk-btn secondary" (click)="selectScore100Candidates()">
+                Sélectionner score 100%
+            </button>
+
+            <button class="bulk-btn ghost" (click)="clearSelection()" [disabled]="getSelectedCount() === 0">
+                Vider sélection
+            </button>
+
+            <button class="bulk-btn primary" (click)="bulkValidateSelected()"
+                [disabled]="getSelectedCount() === 0 || isBulkValidating">
+                {{ isBulkValidating ? 'Validation en cours...' : 'Valider la sélection' }}
+            </button>
+        </div>
+    </div>
+
     <!-- Quick Stats Cards -->
     <div class="stats-grid">
         <div class="stat-card total">
@@ -138,6 +160,7 @@
             <table class="candidats-table">
                 <thead>
                     <tr>
+                        <th class="checkbox-col"></th>
                         <th>ID</th>
                         <th>Nom</th>
                         <th>Prénom</th>
@@ -150,7 +173,12 @@
                 </thead>
                 <tbody>
                     <tr *ngFor="let c of filteredCandidats">
-                        <td class="id-cell">{{c.id}}</td>
+                        <td class="checkbox-col">
+                            <input class="row-select-checkbox" type="checkbox" [checked]="isSelected(c)"
+                                [disabled]="!canSelectCandidate(c)" [title]="canSelectCandidate(c) ? 'Sélectionner' : getSelectionHint(c)"
+                                (change)="toggleCandidateSelection(c, $event)" />
+                        </td>
+                        <td class="id-col"><span class="id-badge">{{c.id}}</span></td>
                         <td class="name-cell">{{c.nom}}</td>
                         <td>{{c.prenom}}</td>
                         <td>{{ getConcoursName(c.concoursId) }}</td>
@@ -219,7 +247,7 @@
                         </td>
                     </tr>
                     <tr *ngIf="filteredCandidats.length === 0">
-                        <td colspan="7" class="empty-state">
+                        <td colspan="9" class="empty-state">
                             Aucun candidat trouvé.
                         </td>
                     </tr>

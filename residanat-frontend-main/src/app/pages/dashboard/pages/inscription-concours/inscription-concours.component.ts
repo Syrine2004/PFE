@@ -151,17 +151,29 @@ export class InscriptionConcoursComponent implements OnInit {
             const concoursId = params['concoursId'];
             if (concoursId) {
                 this.concoursService.getConcoursById(concoursId).subscribe({
-                    next: (res) => this.concours = res,
-                    error: (err) => console.error(err)
+                    next: (res) => {
+                        if (res?.etat === 'PUBLIE') {
+                            this.concours = res;
+                        } else {
+                            this.loadFirstPublishedConcours();
+                        }
+                    },
+                    error: () => this.loadFirstPublishedConcours()
                 });
             } else {
-                this.concoursService.getConcours(0, 1, undefined, undefined, 'PUBLIE').subscribe({
-                    next: (res) => {
-                        if (res.content.length > 0) this.concours = res.content[0];
-                    },
-                    error: (err) => console.error(err)
-                });
+                this.loadFirstPublishedConcours();
             }
+        });
+    }
+
+    private loadFirstPublishedConcours() {
+        this.concoursService.getConcours(0, 1, undefined, undefined, 'PUBLIE').subscribe({
+            next: (res) => {
+                if (res.content.length > 0) {
+                    this.concours = res.content[0];
+                }
+            },
+            error: (err) => console.error(err)
         });
     }
 

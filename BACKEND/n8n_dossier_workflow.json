@@ -1,0 +1,116 @@
+{
+  "name": "Dossier Status Notification",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "dossier-status",
+        "options": {}
+      },
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [
+        100,
+        300
+      ],
+      "webhookId": "dossier-status-webhook"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{$node[\"Webhook\"].json[\"body\"][\"status\"]}}",
+              "value2": "ACCEPTED"
+            }
+          ]
+        }
+      },
+      "name": "Is Accepted?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [
+        350,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "fromEmail": "admin@residanat.tn",
+        "toEmail": "={{$node[\"Webhook\"].json[\"body\"][\"email\"]}}",
+        "subject": "Félicitations ! Votre dossier de candidature a été validé.",
+        "html": "<html>\n<body>\n  <h2>Bonjour {{$node[\"Webhook\"].json[\"body\"][\"nom\"]}} {{$node[\"Webhook\"].json[\"body\"][\"prenom\"]}},</h2>\n  <p>Nous avons le plaisir de vous informer que votre dossier de candidature (ID: {{$node[\"Webhook\"].json[\"body\"][\"dossierId\"]}}) a été <b>accepté</b> par l'administration.</p>\n  <p>Vous pouvez maintenant télécharger votre convocation depuis votre espace personnel.</p>\n  <p>Cordialement,<br>L'équipe Residanat.</p>\n</body>\n</html>",
+        "options": {}
+      },
+      "name": "Send Accept Email",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 1,
+      "position": [
+        600,
+        200
+      ],
+      "credentials": {
+        "smtp": {
+          "id": "placeholder-smtp-creds",
+          "name": "SMTP Account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "fromEmail": "admin@residanat.tn",
+        "toEmail": "={{$node[\"Webhook\"].json[\"body\"][\"email\"]}}",
+        "subject": "Mise à jour concernant votre dossier de candidature",
+        "html": "<html>\n<body>\n  <h2>Bonjour {{$node[\"Webhook\"].json[\"body\"][\"nom\"]}} {{$node[\"Webhook\"].json[\"body\"][\"prenom\"]}},</h2>\n  <p>Votre dossier de candidature (ID: {{$node[\"Webhook\"].json[\"body\"][\"dossierId\"]}}) a été <b>rejeté</b> pour le moment.</p>\n  <p>Veuillez consulter votre espace candidat pour voir les motifs du rejet et corriger vos documents afin de soumettre à nouveau votre candidature.</p>\n  <p>Cordialement,<br>L'équipe Residanat.</p>\n</body>\n</html>",
+        "options": {}
+      },
+      "name": "Send Reject Email",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 1,
+      "position": [
+        600,
+        400
+      ],
+      "credentials": {
+        "smtp": {
+          "id": "placeholder-smtp-creds",
+          "name": "SMTP Account"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Is Accepted?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Is Accepted?": {
+      "main": [
+        [
+          {
+            "node": "Send Accept Email",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Send Reject Email",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {}
+}

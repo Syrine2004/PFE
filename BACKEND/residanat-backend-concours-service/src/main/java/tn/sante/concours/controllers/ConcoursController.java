@@ -65,9 +65,11 @@ public class ConcoursController {
             @RequestParam(required = false) Integer annee,
             @RequestParam(required = false) String typeConcours,
             @RequestParam(required = false) Etat etat,
+            @RequestParam(required = false, name = "statutResultat") Etat statutResultat,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
-        return ResponseEntity.ok(concoursService.getConcours(annee, typeConcours, etat, page, size));
+        Etat effectiveEtat = etat != null ? etat : statutResultat;
+        return ResponseEntity.ok(concoursService.getConcours(annee, typeConcours, effectiveEtat, page, size));
     }
 
     @PatchMapping("/{id}/publish")

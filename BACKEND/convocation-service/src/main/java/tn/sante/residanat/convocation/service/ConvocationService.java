@@ -25,6 +25,11 @@ import tn.sante.residanat.convocation.dto.ConcoursDto;
 import tn.sante.residanat.convocation.dto.UtilisateurDto;
 import tn.sante.residanat.convocation.model.Convocation;
 import tn.sante.residanat.convocation.repository.ConvocationRepository;
+import tn.sante.residanat.convocation.repository.AffectationCandidatRepository;
+import tn.sante.residanat.convocation.exception.EligibilityException;
+import tn.sante.residanat.convocation.event.EligibilityFailedEvent;
+import tn.sante.residanat.convocation.config.RabbitMQConfig;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -45,8 +50,10 @@ public class ConvocationService {
 
     private static final Logger log = LoggerFactory.getLogger(ConvocationService.class);
     private final ConvocationRepository convocationRepository;
+    private final AffectationCandidatRepository affectationRepository;
     private final UtilisateurClient utilisateurClient;
     private final ConcoursClient concoursClient;
+    private final RabbitTemplate rabbitTemplate;
 
     private static final String STORAGE_PATH = "./stockage/convocations";
     private static final DateTimeFormatter DATE_FORMAT_FR = DateTimeFormatter.ofPattern("EEEE dd MMMM yyyy", Locale.FRENCH);
@@ -55,11 +62,15 @@ public class ConvocationService {
     private String qrCodeVerifyBaseUrl;
 
     public ConvocationService(ConvocationRepository convocationRepository, 
-                            UtilisateurClient utilisateurClient, 
-                            ConcoursClient concoursClient) {
+                             AffectationCandidatRepository affectationRepository,
+                             UtilisateurClient utilisateurClient, 
+                             ConcoursClient concoursClient,
+                             RabbitTemplate rabbitTemplate) {
         this.convocationRepository = convocationRepository;
+        this.affectationRepository = affectationRepository;
         this.utilisateurClient = utilisateurClient;
         this.concoursClient = concoursClient;
+        this.rabbitTemplate = rabbitTemplate;
     }
 
     /**
@@ -76,6 +87,13 @@ public class ConvocationService {
             throws Exception {
         
         log.info("Génération d'une nouvelle convocation pour le dossier {} et le candidat {}", dossierId, candidatId);
+
+        // Anti-duplication: une seule convocation par dossier.
+        var existingConvocation = convocationRepository.findByDossierId(dossierId);
+        if (existingConvocation.isPresent()) {
+            log.warn("Convocation déjà existante pour dossier {}. Retour de la convocation existante.", dossierId);
+            return rafraichirConvocation(existingConvocation.get());
+        }
 
         // ============================================================
         // Récupération des données utilisateur - RÉSILIENCE AUX ERREURS
@@ -101,15 +119,45 @@ public class ConvocationService {
             concours = creerConcoursMock(concoursId);
         }
 
+
+
+        // ============================================================
+        // VÉRIFICATION ÉLIGIBILITÉ (WHITELIST MINISTÈRE)
+        // ============================================================
+        String cin = normalizeCin(utilisateur.getCin());
+        if (isBlank(cin)) {
+            log.error("❌ Candidat {} sans CIN exploitable, convocation refusée", candidatId);
+            rabbitTemplate.convertAndSend(RabbitMQConfig.EXCHANGE_DOSSIER,
+                RabbitMQConfig.ROUTING_KEY_ELIGIBILITY_FAILED,
+                new EligibilityFailedEvent(candidatId, dossierId, "CIN manquant ou invalide"));
+            throw new EligibilityException("Votre CIN est invalide. Merci de vérifier votre profil.");
+        }
+
+        String concoursKey = concoursId.toString();
+        var affectationOpt = affectationRepository.findByCinAndConcoursId(cin, concoursKey);
+        if (affectationOpt.isEmpty()) {
+            log.error("❌ Candidat {} (CIN: {}) non trouvé dans la liste ministérielle pour concoursId={}", candidatId, cin, concoursKey);
+            
+            // Notification déportée via RabbitMQ
+            rabbitTemplate.convertAndSend(RabbitMQConfig.EXCHANGE_DOSSIER, 
+                RabbitMQConfig.ROUTING_KEY_ELIGIBILITY_FAILED,
+                new EligibilityFailedEvent(candidatId, dossierId, "Non inscrit sur la liste ministérielle pour ce concours"));
+            
+            throw new EligibilityException("Désolé, votre dossier n'a pas été retenu dans la liste d'affectation du Ministère.");
+        }
+        var affectation = affectationOpt.get();
+
         String hashSecurise = UUID.randomUUID().toString();
 
-        // Données d'épreuve (Mocks pour la démo / PFE)
-        String numInscriptions = "2026-RES-" + String.format("%04d", dossierId);
-        String salle = "Amphithéâtre Ibn El Jazzar";
-        String place = String.valueOf(100 + dossierId % 200);
+        // Données d'épreuve - UTILISATION DES DONNÉES RÉELLES DE L'EXCEL
+        String salle = affectation.getSalle() != null ? affectation.getSalle() : "Amphithéâtre Ibn El Jazzar";
+        String place = affectation.getNPlace() != null ? String.valueOf(affectation.getNPlace()) : String.valueOf(100 + dossierId % 200);
         LocalDateTime dateEpreuve = concours.getDateDebut() != null ? concours.getDateDebut() : LocalDateTime.of(2026, 12, 19, 8, 0);
+        String numInscriptions = buildNumeroInscription(dossierId, dateEpreuve);
         String heureAppel = "07H30";
-        String lieuExamen = determinerLieuExamen(utilisateur, concours);
+        
+        // On utilise la faculté de l'affectation si dispo
+        String lieuExamen = affectation.getFac() != null ? affectation.getFac() : determinerLieuExamen(utilisateur, concours);
 
         String qrCodeContent = buildVerificationUrl(hashSecurise);
         byte[] qrCodeImage = genererQRCode(qrCodeContent);
@@ -172,11 +220,30 @@ public class ConvocationService {
         if (convocation.getDateEpreuve() == null) {
             convocation.setDateEpreuve(concours.getDateDebut() != null ? concours.getDateDebut() : LocalDateTime.of(2026, 12, 19, 8, 0));
         }
+
+        String cin = normalizeCin(utilisateur.getCin());
+        var affectationOpt = !isBlank(cin)
+            ? affectationRepository.findByCinAndConcoursId(cin, convocation.getConcoursId())
+            : java.util.Optional.<tn.sante.residanat.convocation.model.AffectationCandidat>empty();
+
+        if (affectationOpt.isPresent()) {
+            var affectation = affectationOpt.get();
+
+            if (isBlank(convocation.getSalle()) && !isBlank(affectation.getSalle())) {
+                convocation.setSalle(affectation.getSalle());
+            }
+
+            if (isBlank(convocation.getPlace()) && affectation.getNPlace() != null) {
+                convocation.setPlace(String.valueOf(affectation.getNPlace()));
+            }
+        }
+
+        if (isBlank(convocation.getNumeroInscription())) {
+            convocation.setNumeroInscription(buildNumeroInscription(convocation.getDossierId(), convocation.getDateEpreuve()));
+        }
+
         if (isBlank(convocation.getHeureAppel())) {
             convocation.setHeureAppel("07H30");
-        }
-        if (isBlank(convocation.getNumeroInscription())) {
-            convocation.setNumeroInscription("2026-RES-" + String.format("%04d", convocation.getDossierId()));
         }
         if (isBlank(convocation.getSalle())) {
             convocation.setSalle("Amphithéâtre Ibn El Jazzar");
@@ -336,8 +403,8 @@ public class ConvocationService {
         rightBlock.add(new Paragraph("MINISTÈRE DE LA SANTÉ").setBold().setFontSize(8).setFontColor(navy));
         rightBlock.add(new Paragraph("DIRECTION DES CONCOURS MÉDICAUX").setBold().setFontSize(8).setFontColor(navy));
         
-        String lieu = conv.getLieuExamenDetail() != null ? conv.getLieuExamenDetail().toUpperCase() : "TUNIS";
-        rightBlock.add(new Paragraph("FACULTÉ : " + lieu)
+        String faculteNomComplet = resolveFaculteDisplayName(conv.getLieuExamenDetail());
+        rightBlock.add(new Paragraph("FACULTÉ : " + faculteNomComplet.toUpperCase(Locale.ROOT))
             .setBold()
             .setFontSize(8)
             .setFontColor(navy)
@@ -388,8 +455,9 @@ public class ConvocationService {
         Table epreuveTable = new Table(UnitValue.createPercentArray(new float[]{34, 66})).useAllAvailableWidth();
         addInfoRow(epreuveTable, "Date de l'épreuve", formatDateEpreuve(conv.getDateEpreuve()), paperFill, paperEdge, navy, navySoft, false);
         addInfoRow(epreuveTable, "Heure d'appel", conv.getHeureAppel(), paperFill, paperEdge, navy, navySoft, false);
-        addInfoRow(epreuveTable, "Centre d'examen", conv.getLieuExamenDetail(), paperFill, paperEdge, navy, navySoft, false);
-        addInfoRow(epreuveTable, "Salle / Place", conv.getSalle() + " / N° " + conv.getPlace(), paperFill, paperEdge, navy, navySoft, true);
+        addInfoRow(epreuveTable, "Faculté", faculteNomComplet, paperFill, paperEdge, navy, navySoft, false);
+        addInfoRow(epreuveTable, "Salle", conv.getSalle(), paperFill, paperEdge, navy, navySoft, true);
+        addInfoRow(epreuveTable, "Place", "N° " + conv.getPlace(), paperFill, paperEdge, navy, navySoft, true);
         document.add(epreuveTable);
 
         Div consignesBox = new Div()
@@ -411,17 +479,7 @@ public class ConvocationService {
         consignesBox.add(list);
         document.add(consignesBox);
 
-        Table footerTable = new Table(UnitValue.createPercentArray(new float[]{58, 42})).useAllAvailableWidth();
-        Cell signatureCell = new Cell().setTextAlignment(TextAlignment.LEFT).setVerticalAlignment(com.itextpdf.layout.properties.VerticalAlignment.TOP);
-        signatureCell.add(new Paragraph("Cachet et signature de l'administration")
-                .setBold()
-                .setFontSize(8)
-                .setFontColor(navy));
-        signatureCell.add(new Paragraph("\n\n.........................................................................")
-                .setFontSize(8)
-                .setFontColor(navySoft));
-        signatureCell.setBorder(Border.NO_BORDER);
-        footerTable.addCell(signatureCell);
+        Table footerTable = new Table(UnitValue.createPercentArray(new float[]{100})).useAllAvailableWidth();
 
         Cell qrCell = new Cell().setTextAlignment(TextAlignment.CENTER).setBorder(Border.NO_BORDER);
         Image qrImg = new Image(ImageDataFactory.create(qrCodeImage)).setWidth(75).setHeight(75);
@@ -433,7 +491,7 @@ public class ConvocationService {
                 .setBold()
                 .setFontSize(7)
                 .setFixedLeading(8)
-                .setTextAlignment(TextAlignment.CENTER)
+            .setTextAlignment(TextAlignment.CENTER)
                 .setFontColor(navy)
                 .setMarginTop(3));
                 
@@ -476,6 +534,33 @@ public class ConvocationService {
         return DATE_FORMAT_FR.format(dateEpreuve).toUpperCase(Locale.ROOT);
     }
 
+    private String buildNumeroInscription(Long dossierId, LocalDateTime dateEpreuve) {
+        int year = dateEpreuve != null ? dateEpreuve.getYear() : LocalDateTime.now().getYear();
+        return year + "-RES-" + String.format("%04d", dossierId);
+    }
+
+    private String resolveFaculteDisplayName(String lieuExamenDetail) {
+        if (isBlank(lieuExamenDetail)) {
+            return "Faculté non spécifiée";
+        }
+
+        String raw = lieuExamenDetail.trim();
+        String normalized = raw.toLowerCase(Locale.ROOT);
+
+        // Keep backend-provided full faculty names unchanged.
+        if (normalized.contains("facult")) {
+            return raw;
+        }
+
+        return switch (normalized) {
+            case "tunis" -> "Faculté de Médecine de Tunis";
+            case "sfax" -> "Faculté de Médecine de Sfax";
+            case "sousse" -> "Faculté de Médecine de Sousse";
+            case "monastir" -> "Faculté de Médecine de Monastir";
+            default -> raw;
+        };
+    }
+
     private String determinerLieuExamen(UtilisateurDto utilisateur, ConcoursDto concours) {
         if (utilisateur != null && !isBlank(utilisateur.getFaculte())) {
             // Afficher exactement la faculté saisie par l'utilisateur
@@ -497,6 +582,13 @@ public class ConvocationService {
 
     private boolean isBlank(String value) {
         return value == null || value.trim().isEmpty();
+    }
+
+    private String normalizeCin(String cin) {
+        if (cin == null) {
+            return null;
+        }
+        return cin.trim().replace(" ", "");
     }
 
     /**

@@ -133,6 +133,18 @@
         background: var(--warn-bg);
         border-color: var(--warn-border);
     }
+
+    &.danger {
+        background: #fff9ea;
+        border-color: #e2c56b;
+        color: #5b4a20;
+
+        h3,
+        p,
+        .small {
+            color: #5b4a20;
+        }
+    }
 }
 
 .official-preview-card {
@@ -285,23 +297,10 @@
 
 .doc-footer {
     display: flex;
-    justify-content: space-between;
+    justify-content: center;
     align-items: flex-end;
     margin-top: 1.5rem;
     padding-top: 1rem;
-
-    .signature-column {
-        .sig-label {
-            font-size: 0.85rem;
-            font-weight: 700;
-            color: #374151;
-            margin-bottom: 2.5rem;
-        }
-        .sig-placeholder {
-            color: #94a3b8;
-            letter-spacing: 1px;
-        }
-    }
 
     .qr-column {
         text-align: center;

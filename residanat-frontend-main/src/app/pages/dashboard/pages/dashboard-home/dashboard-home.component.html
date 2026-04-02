@@ -118,8 +118,8 @@
     <section class="stats-grid">
         <div *ngFor="let stat of stats" class="stat-card" 
             [class.stat-card-ai]="stat.label === 'SCORE CONFORMITE'"
-            [class.clickable-card]="stat.label === 'Convocation' && stat.status === 'success'"
-            (click)="stat.label === 'Convocation' && stat.status === 'success' ? goToConvocation() : null"
+            [class.clickable-card]="canOpenConvocation(stat)"
+            (click)="canOpenConvocation(stat) ? goToConvocation() : null"
             [ngClass]="stat.theme ? 'theme-' + stat.theme : ''">
             <div class="stat-card-head">
                 <span class="stat-label">{{stat.label}}</span>
@@ -184,8 +184,8 @@
             </button>
 
             <div *ngIf="stat.badge" class="stat-badge" 
-                 [class.clickable-badge]="stat.label === 'Convocation' && stat.status === 'success'"
-                 (click)="stat.label === 'Convocation' && stat.status === 'success' ? goToConvocation() : null">
+                  [class.clickable-badge]="canOpenConvocation(stat)"
+                  (click)="canOpenConvocation(stat) ? goToConvocation() : null">
                  {{stat.badge}}
             </div>
             <div *ngIf="stat.subLabel" class="stat-sub">{{stat.subLabel}}</div>
@@ -206,7 +206,8 @@
                 <div class="liquid-line-fill" [style.height.%]="getJourneyProgress()"></div>
             </div>
 
-            <div *ngFor="let step of progressionSteps; let i = index; let last = last" class="step-item group">
+            <div *ngFor="let step of progressionSteps; let i = index; let last = last" class="step-item group"
+                [class.step-blocked]="step.status === 'blocked'">
                 <!-- Step Indicator -->
                 <div class="step-indicator" [ngClass]="step.status">
                     <div *ngIf="step.status === 'current'" class="indicator-aura"></div>
@@ -215,6 +216,13 @@
                             viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
                             stroke-linecap="round" stroke-linejoin="round">
                             <polyline points="20 6 9 17 4 12" />
+                        </svg>
+                        <svg *ngSwitchCase="'blocked'" xmlns="http://www.w3.org/2000/svg" width="20" height="20"
+                            viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="10" />
+                            <line x1="15" y1="9" x2="9" y2="15" />
+                            <line x1="9" y1="9" x2="15" y2="15" />
                         </svg>
                         <svg *ngSwitchCase="'current'" xmlns="http://www.w3.org/2000/svg" width="20" height="20"
                             viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
@@ -234,7 +242,8 @@
                         </span>
                     </div>
 
-                    <p class="step-note" [class.current-note]="step.status === 'current'">
+                    <p class="step-note" [class.current-note]="step.status === 'current'"
+                        [class.blocked-note]="step.status === 'blocked'">
                         {{step.note}}
                     </p>
 

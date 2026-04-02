@@ -564,6 +564,13 @@
             }
         }
     }
+
+    &.clickable-card.theme-rejete {
+        .stat-icon-box {
+            background: #ef4444;
+            box-shadow: 0 10px 15px -3px rgba(239, 68, 68, 0.35);
+        }
+    }
 }
 
 /* Progression Journey (Premium Redesign) */
@@ -648,6 +655,20 @@
     padding-bottom: 3rem;
     z-index: 5;
 
+    &.step-blocked {
+        .step-content {
+            background: transparent;
+            border: none;
+            border-radius: 0;
+            padding: 0.5rem 0 0 0;
+            box-shadow: none;
+        }
+
+        .step-content:hover {
+            transform: translateX(8px);
+        }
+    }
+
     &:last-child {
         padding-bottom: 0;
     }
@@ -697,6 +718,14 @@
             background: #f8fafc;
         }
 
+        &.blocked {
+            opacity: 1;
+            background: #fef2f2;
+            color: #dc2626;
+            border: 2px solid #ef4444;
+            box-shadow: 0 10px 22px -14px rgba(239, 68, 68, 0.5);
+        }
+
         svg {
             width: 22px;
             height: 22px;
@@ -743,6 +772,11 @@
             &.done {
                 color: #334155;
             }
+
+            &.blocked {
+                color: #64748b;
+                font-weight: 700;
+            }
         }
 
         .step-badge {
@@ -767,6 +801,12 @@
                 background: #f8fafc;
                 color: #94a3b8;
             }
+
+            &.badge-blocked {
+                background: #fef2f2;
+                color: #b91c1c;
+                border: none;
+            }
         }
     }
 
@@ -778,6 +818,11 @@
 
         &.current-note {
             color: #475569;
+            font-weight: 500;
+        }
+
+        &.blocked-note {
+            color: #94a3b8;
             font-weight: 500;
         }
     }

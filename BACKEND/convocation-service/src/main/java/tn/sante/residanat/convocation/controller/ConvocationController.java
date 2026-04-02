@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 import tn.sante.residanat.convocation.client.DossierClient;
 import tn.sante.residanat.convocation.event.ConvocationReadyEvent;
 import tn.sante.residanat.convocation.dto.DossierDto;
+import tn.sante.residanat.convocation.exception.EligibilityException;
 import tn.sante.residanat.convocation.model.Convocation;
 import tn.sante.residanat.convocation.repository.ConvocationRepository;
 import tn.sante.residanat.convocation.service.ConvocationService;
@@ -93,6 +94,8 @@ public class ConvocationController {
                         );
                         convocationOpt = Optional.of(nouvelleConv);
                     }
+                } catch (EligibilityException e) {
+                    throw e;
                 } catch (Exception e) {
                     log.error("❌ Échec de la génération automatique pour le dossier {}", dossierId, e);
                 }
@@ -141,7 +144,14 @@ public class ConvocationController {
                     .header("Expires", "0")
                     .body(contenuPDF);
 
+        } catch (EligibilityException e) {
+            log.warn("⛔ Accès convocation refusé (éligibilité): dossierId={}, reason={}", dossierId, e.getMessage());
+            return ResponseEntity.status(403).build();
         } catch (Exception e) {
+            if (isEligibilityFailure(e)) {
+                log.warn("⛔ Accès convocation refusé (éligibilité encapsulée): dossierId={}, reason={}", dossierId, extractEligibilityMessage(e));
+                return ResponseEntity.status(403).build();
+            }
             log.error("❌ Erreur lors du téléchargement de la convocation pour dossierId : {}", dossierId, e);
             return ResponseEntity.internalServerError().build();
         }
@@ -185,6 +195,8 @@ public class ConvocationController {
                         );
                         convocationOpt = Optional.of(nouvelleConv);
                     }
+                } catch (EligibilityException e) {
+                    throw e;
                 } catch (Exception e) {
                     log.error("❌ Échec de la génération automatique pour le dossier {}", dossierId, e);
                 }
@@ -198,7 +210,14 @@ public class ConvocationController {
             Convocation convocation = convocationService.rafraichirConvocation(convocationOpt.get());
             return ResponseEntity.ok(convocation);
 
+        } catch (EligibilityException e) {
+            log.warn("⛔ Infos convocation refusées (éligibilité): dossierId={}, reason={}", dossierId, e.getMessage());
+            return ResponseEntity.status(403).build();
         } catch (Exception e) {
+            if (isEligibilityFailure(e)) {
+                log.warn("⛔ Infos convocation refusées (éligibilité encapsulée): dossierId={}, reason={}", dossierId, extractEligibilityMessage(e));
+                return ResponseEntity.status(403).build();
+            }
             log.error("❌ Erreur lors de la récupération des infos convocation pour dossierId : {}", dossierId, e);
             return ResponseEntity.internalServerError().build();
         }
@@ -239,10 +258,42 @@ public class ConvocationController {
 
             return ResponseEntity.ok("Convocation générée avec succès ! Hash : " + convocation.getHashSecurise());
 
+        } catch (EligibilityException e) {
+            log.warn("⛔ TEST REFUSÉ (éligibilité): dossierId={}, candidatId={}, reason={}",
+                    dossierId, candidatId, e.getMessage());
+            return ResponseEntity.status(403).body(e.getMessage());
         } catch (Exception e) {
+            if (isEligibilityFailure(e)) {
+                String reason = extractEligibilityMessage(e);
+                log.warn("⛔ TEST REFUSÉ (éligibilité encapsulée): dossierId={}, candidatId={}, reason={}",
+                        dossierId, candidatId, reason);
+                return ResponseEntity.status(403).body(reason);
+            }
             log.error("❌ TEST ÉCHOUÉ : Erreur lors de la génération manuelle", e);
             return ResponseEntity.status(500).body(e.getMessage());
         }
+    }
+
+    private boolean isEligibilityFailure(Throwable throwable) {
+        Throwable current = throwable;
+        while (current != null) {
+            if (current instanceof EligibilityException) {
+                return true;
+            }
+            current = current.getCause();
+        }
+        return false;
+    }
+
+    private String extractEligibilityMessage(Throwable throwable) {
+        Throwable current = throwable;
+        while (current != null) {
+            if (current instanceof EligibilityException && current.getMessage() != null) {
+                return current.getMessage();
+            }
+            current = current.getCause();
+        }
+        return "Accès refusé: candidat non éligible selon la liste du Ministère.";
     }
 
     /**
