@@ -8,5 +8,5 @@ server:
   port: 8087
 
 app:
-  auth-service-url: ${AUTH_SERVICE_URL:http://localhost:8081}
-  n8n-webhook-url: ${N8N_WEBHOOK_URL:http://localhost:5678/webhook/dossier-status}
+  auth-service-url: ${AUTH_SERVICE_URL:http://auth-service:8081}
+  n8n-webhook-url: ${N8N_WEBHOOK_URL:http://192.168.1.13:5678/webhook/dossier-status}

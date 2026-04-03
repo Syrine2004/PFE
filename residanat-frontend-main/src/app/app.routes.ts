@@ -81,6 +81,10 @@ export const routes: Routes = [
       {
         path: 'convocation',
         loadComponent: () => import('./pages/dashboard/pages/convocation/convocation.component').then(m => m.ConvocationComponent)
+      },
+      {
+        path: 'centre-3d',
+        loadComponent: () => import('./pages/dashboard/pages/centre-3d/centre-3d.component').then(m => m.Centre3dComponent)
       }
     ]
   },

@@ -45,6 +45,8 @@ export class AuthService {
     return this.http.put(`${this.apiUrl}/update-profile`, profileData, { responseType: 'text' });
   }
 
+  // --- PASSWORD RESET ---
+
   // --- LOGOUT (VERSION SÉCURISÉE) ---
   logout(): void {
     // 1. Nettoyage radical de toutes les clés de session

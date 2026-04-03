@@ -1,3 +1,6 @@
 spring:
   datasource:
     url: jdbc:postgresql://postgres-concours:5432/residanat_concours_db
+    username: postgres
+    password: system
+    driver-class-name: org.postgresql.Driver

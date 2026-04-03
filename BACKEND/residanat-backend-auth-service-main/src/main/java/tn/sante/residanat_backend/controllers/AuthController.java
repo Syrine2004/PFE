@@ -11,7 +11,13 @@ import tn.sante.residanat_backend.dto.AuthDto;
 import tn.sante.residanat_backend.security.JwtUtils;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Optional;
+import java.util.Random;
+import java.util.Map;
+import java.util.HashMap;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.web.client.RestTemplate;
 
 @RestController
 @RequestMapping("/api/auth")

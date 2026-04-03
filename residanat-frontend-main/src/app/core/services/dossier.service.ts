@@ -1,6 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, Subject } from 'rxjs';
 
 export enum StatutDossier {
     EN_ATTENTE = 'EN_ATTENTE',
@@ -55,6 +55,14 @@ export interface DossierCandidature {
 })
 export class DossierService {
     private http = inject(HttpClient);
+    
+    // Sujet pour notifier les autres composants (ex: sidebar) d'un changement de dossier
+    private dossierUpdatedSource = new Subject<void>();
+    dossierUpdated$ = this.dossierUpdatedSource.asObservable();
+
+    notifyDossierUpdate(): void {
+        this.dossierUpdatedSource.next();
+    }
     
     // URL dynamique pour s'adapter au déploiement (Local vs Cloudflare)
     private baseHost = window.location.hostname === 'localhost' ? 'http://localhost:8080' : `${window.location.protocol}//${window.location.hostname}`;

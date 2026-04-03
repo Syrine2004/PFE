@@ -15,6 +15,8 @@ public interface UtilisateurRepository extends JpaRepository<Utilisateur, Long> 
   // Chercher par CIN pour la connexion
   Optional<Utilisateur> findByCin(String cin);
 
+
+
   // Cette ligne servira plus tard pour vérifier si un email est déjà utilisé lors
   // de l'inscription
   boolean existsByEmail(String email);

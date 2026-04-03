@@ -59,4 +59,5 @@ public class IntegrationService {
             log.error("Failed to send n8n notification for candidat {}: {}", candidatId, e.getMessage());
         }
     }
+
 }

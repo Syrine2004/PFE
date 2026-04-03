@@ -360,6 +360,7 @@ export class InscriptionConcoursComponent implements OnInit {
                     confirmButtonColor: '#008fbb',
                     confirmButtonText: 'Retour au tableau de bord'
                 }).then(() => {
+                    this.dossierService.notifyDossierUpdate();
                     this.router.navigate(['/dashboard']);
                 });
             },

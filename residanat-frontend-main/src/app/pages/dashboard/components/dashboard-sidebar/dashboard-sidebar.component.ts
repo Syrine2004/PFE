@@ -6,7 +6,8 @@ import { SidebarService } from '../../../../core/services/sidebar.service';
 import { DossierService } from '../../../../core/services/dossier.service';
 import { ConcoursService } from '../../../../core/services/concours.service';
 import { forkJoin, of } from 'rxjs';
-import { catchError, map } from 'rxjs/operators';
+import { catchError, map, takeUntil } from 'rxjs/operators';
+import { Subject } from 'rxjs';
 import Swal from 'sweetalert2';
 
 interface NavItem {
@@ -37,6 +38,9 @@ export class DashboardSidebarComponent {
   userEmail: string = '';
   hasDossier: boolean = false;
   dossierStatus: string | null = null;
+  
+  private destroy$ = new Subject<void>();
+  private currentCandidatId: number | null = null;
 
   ngOnInit() {
     this.userRole = sessionStorage.getItem('role') || '';
@@ -47,6 +51,7 @@ export class DashboardSidebarComponent {
         if (profile) {
           this.userName = `${profile.prenom || ''} ${profile.nom || ''}`.trim() || 'Utilisateur';
           this.userEmail = profile.email || '';
+          this.currentCandidatId = profile.id;
           
           if (this.userRole !== 'ADMIN') {
             this.checkUserDossier(profile.id);
@@ -58,6 +63,15 @@ export class DashboardSidebarComponent {
         this.userName = 'Utilisateur';
       }
     });
+
+    // Écouter les mises à jour réactives du dossier
+    this.dossierService.dossierUpdated$
+      .pipe(takeUntil(this.destroy$))
+      .subscribe(() => {
+        if (this.currentCandidatId && this.userRole !== 'ADMIN') {
+          this.checkUserDossier(this.currentCandidatId);
+        }
+      });
   }
 
   private checkUserDossier(candidatId?: number) {
@@ -129,8 +143,7 @@ export class DashboardSidebarComponent {
     { href: '/dashboard/creer-dossier', label: 'Inscription au concours', icon: 'file-plus' },
     { href: '/dashboard/dossier', label: 'Consulter mon dossier', icon: 'folder-open' },
     // Section SERVICES
-    { href: '/dashboard/specialites', label: 'Spécialités', icon: 'stethoscope' },
-    { href: '/dashboard/centre-3d', label: 'Visualisation 3D', icon: 'map-pin' },
+    { href: '/dashboard/centre-3d', label: 'Plan d\'accès', icon: 'map-pin' },
     { href: '/dashboard/convocation', label: 'Convocation', icon: 'file-text' },
     { href: '/dashboard/resultat', label: 'Résultats', icon: 'bar-chart-3' },
     { href: '/dashboard/reclamation', label: 'Réclamation', icon: 'message-circle' },
@@ -141,7 +154,6 @@ export class DashboardSidebarComponent {
     { href: '/', label: 'Accueil Site', icon: 'home' },
     { href: '/dashboard/home', label: 'Tableau de bord', icon: 'layout-dashboard' },
     { href: '/dashboard/candidats', label: 'Candidats', icon: 'users' },
-    { href: '/dashboard/specialites', label: 'Spécialités', icon: 'stethoscope' },
     { href: '/dashboard/parametres', label: 'Paramètres', icon: 'settings' },
   ];
 
@@ -159,6 +171,11 @@ export class DashboardSidebarComponent {
 
   closeMobile() {
     this.mobileOpen = false;
+  }
+
+  ngOnDestroy() {
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   onMockClick(event: Event, label: string) {

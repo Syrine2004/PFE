@@ -2,6 +2,7 @@ package tn.sante.residanat_backend.models;
 
 import jakarta.persistence.*;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "utilisateurs")
@@ -191,5 +192,21 @@ public class Utilisateur {
 
   public void setTypeDocumentIdentite(String typeDocumentIdentite) {
     this.typeDocumentIdentite = typeDocumentIdentite;
+  }
+
+  public String getResetCode() {
+    return resetCode;
+  }
+
+  public void setResetCode(String resetCode) {
+    this.resetCode = resetCode;
+  }
+
+  public LocalDateTime getResetCodeExpiration() {
+    return resetCodeExpiration;
+  }
+
+  public void setResetCodeExpiration(LocalDateTime resetCodeExpiration) {
+    this.resetCodeExpiration = resetCodeExpiration;
   }
 }

@@ -74,4 +74,9 @@ export class ConnexionComponent {
       }
     });
   }
+
+  // --- MOT DE PASSE OUBLIÉ (WIZARD MULTI-ÉTAPES) ---
+  forgotPassword() {
+    // Cette fonction est vide à la demande de l'utilisateur pour garder uniquement le design
+  }
 }
