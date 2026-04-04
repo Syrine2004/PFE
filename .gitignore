@@ -56,3 +56,7 @@ BACKEND/**/run_err*.txt
 BACKEND/**/build_err*.txt
 BACKEND/**/auth_run_log*.txt
 residanat-frontend-main/build_*.txt
+
+# Executables et gros fichiers binaires
+*.exe
+cloudflared.exe
