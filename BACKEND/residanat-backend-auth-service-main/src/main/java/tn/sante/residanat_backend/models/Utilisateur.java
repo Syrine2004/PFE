@@ -40,6 +40,10 @@ public class Utilisateur {
   private String faculte;
   private LocalDate dateDiplome;
 
+  // Champs pour la réinitialisation de mot de passe
+  private String resetCode;
+  private LocalDateTime resetCodeExpiration;
+
   // 1. Constructeur vide (Obligatoire pour JPA)
   public Utilisateur() {
   }

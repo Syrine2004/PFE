@@ -19,7 +19,7 @@ if (Test-Path $errLogPath) {
     Remove-Item $errLogPath -Force
 }
 
-$proc = Start-Process -FilePath 'cloudflared' `
+$proc = Start-Process -FilePath "$repoRoot\cloudflared.exe" `
     -ArgumentList 'tunnel --url http://localhost:8080 --no-autoupdate' `
     -WorkingDirectory $repoRoot `
     -RedirectStandardOutput $logPath `
@@ -102,7 +102,7 @@ if (-not $healthy) {
 }
 
 Write-Host '==> Refreshing existing convocations so old PDFs get new QR links...'
-$dossierIds = docker exec -i pfe-postgres-convocation-1 psql -U postgres -d residanat_convocation_db -At -c "select dossier_id from convocations order by dossier_id" 2>$null
+$dossierIds = docker exec -i pfe_version-postgres-convocation-1 psql -U postgres -d residanat_convocation_db -At -c "select dossier_id from convocations order by dossier_id" 2>$null
 
 if ($LASTEXITCODE -eq 0 -and $dossierIds) {
     foreach ($id in $dossierIds) {
