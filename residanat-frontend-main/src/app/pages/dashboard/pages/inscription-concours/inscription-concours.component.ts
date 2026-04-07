@@ -210,6 +210,52 @@ export class InscriptionConcoursComponent implements OnInit {
         const file = event.target.files[0];
         if (!file || !this.dossier) return;
 
+        // ✅ Validation du format et de la taille
+        const filename = file.name.toLowerCase();
+        const fileSizeMb = file.size / (1024 * 1024);
+
+        if (type === 'PHOTO_IDENTITE') {
+            const allowed = ['.jpg', '.jpeg', '.png'];
+            if (!allowed.some(ext => filename.endsWith(ext))) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Format invalide',
+                    text: 'La photo d\'identité doit être au format JPG ou PNG.',
+                    confirmButtonColor: '#008fbb'
+                });
+                return;
+            }
+            if (fileSizeMb > 2) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Fichier trop volumineux',
+                    text: 'La photo d\'identité ne doit pas dépasser 2 Mo.',
+                    confirmButtonColor: '#008fbb'
+                });
+                return;
+            }
+        } else {
+            const allowed = ['.pdf', '.jpg', '.jpeg', '.png'];
+            if (!allowed.some(ext => filename.endsWith(ext))) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Format invalide',
+                    text: 'Le document doit être au format PDF, JPG ou PNG.',
+                    confirmButtonColor: '#008fbb'
+                });
+                return;
+            }
+            if (fileSizeMb > 5) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Fichier trop volumineux',
+                    text: 'Le document ne doit pas dépasser 5 Mo.',
+                    confirmButtonColor: '#008fbb'
+                });
+                return;
+            }
+        }
+
         // If the type passed is the hardcoded 'CIN' from HTML, use the dynamically determined documentType instead
         const actualType = type === 'CIN' ? this.documentType : type;
 
@@ -247,11 +293,24 @@ export class InscriptionConcoursComponent implements OnInit {
                 return;
             }
 
-            // Save dateDiplome to dossier in DB when advancing from step 1
+            // Save dateDiplome and all candidat info to dossier in DB when advancing from step 1
             const dateDiplome = this.inscriptionForm.get('dateDiplome')?.value;
             if (this.dossier && dateDiplome) {
                 this.dossierService.saveDataDiplome(this.dossier.id, dateDiplome).subscribe({
                     error: (err) => console.warn('Sauvegarde dateDiplome ignorée:', err)
+                });
+            }
+
+            // Sauvegarder toutes les infos personnelles modifiées
+            if (this.dossier) {
+                const candidateData = this.getMergedCandidateData();
+                this.dossierService.updateCandidatInfo(this.dossier.id, candidateData).subscribe({
+                    next: () => {
+                        console.log('Infos candidat mises à jour avec succès');
+                    },
+                    error: (err) => {
+                        console.warn('Erreur mise à jour infos candidat:', err);
+                    }
                 });
             }
         }
@@ -273,26 +332,38 @@ export class InscriptionConcoursComponent implements OnInit {
             this.isCheckingIA = true;
             this.iaCheckMessage = "Initialisation de l'analyse IA...";
 
-            const candidateData = this.inscriptionForm.value;
+            const candidateData = this.getMergedCandidateData();
 
-            // On appelle le service IA via le backend
-            this.dossierService.checkIA(this.dossier.id, candidateData).subscribe({
+            // D'abord, mettre à jour les infos personnelles du candidat dans la table utilisateur (non-blocking)
+            this.dossierService.updateCandidatInfo(this.dossier.id, candidateData).subscribe({
                 next: () => {
-                    this.iaCheckMessage = "Analyse IA lancée. Attente du score final...";
-                    this.waitForIACompletion(0);
+                    console.log('Infos candidat mises à jour avec succès');
                 },
                 error: (err) => {
-                    console.error('Erreur IA', err);
-                    this.isCheckingIA = false;
-                    this.iaCheckMessage = "Erreur IA. Relancez l'analyse.";
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Analyse IA échouée',
-                        text: 'Impossible de lancer une analyse fiable. Veuillez réessayer.',
-                        confirmButtonColor: '#008fbb'
-                    });
+                    console.warn('Erreur mise à jour infos candidat (non-bloquant):', err);
                 }
             });
+
+            // Ensuite, lancer l'analyse IA immédiatement
+            setTimeout(() => {
+                this.dossierService.checkIA(this.dossier!.id, candidateData).subscribe({
+                    next: () => {
+                        this.iaCheckMessage = "Analyse IA lancée. Attente du score final...";
+                        this.waitForIACompletion(0);
+                    },
+                    error: (err) => {
+                        console.error('Erreur IA', err);
+                        this.isCheckingIA = false;
+                        this.iaCheckMessage = "Erreur IA. Relancez l'analyse.";
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Analyse IA échouée',
+                            text: 'Impossible de lancer une analyse fiable. Veuillez réessayer.',
+                            confirmButtonColor: '#008fbb'
+                        });
+                    }
+                });
+            }, 500);
         }
     }
 
@@ -373,5 +444,14 @@ export class InscriptionConcoursComponent implements OnInit {
                 });
             }
         });
+    }
+
+    private getMergedCandidateData(): any {
+        const data = { ...this.inscriptionForm.value };
+        if (data.faculte === 'autre' && data.autreFaculte) {
+            data.faculte = data.autreFaculte;
+        }
+        delete data.autreFaculte;
+        return data;
     }
 }

@@ -126,7 +126,7 @@ export class Centre3dComponent implements OnInit, OnDestroy {
 
   private loadRealCandidateAssignment(): void {
     this.authService.getProfile().pipe(
-      filter(profile => !!profile?.id),
+      filter((profile: any) => !!profile?.id),
       switchMap(profile =>
         this.concoursService.getConcours(0, 1, undefined, undefined, 'PUBLIE').pipe(
           map(response => ({
@@ -135,9 +135,9 @@ export class Centre3dComponent implements OnInit, OnDestroy {
           }))
         )
       ),
-      filter(data => !!data.concoursId),
+      filter((data: any) => !!data.concoursId),
       switchMap(data => this.dossierService.getDossierByCandidat(data.candidatId, data.concoursId as string)),
-      filter(dossier => !!dossier?.id),
+      filter((dossier: any) => !!dossier?.id),
       switchMap(dossier => this.dossierService.getConvocationInfo(dossier.id)),
       catchError(err => {
         console.warn('Could not fetch real convocation info, staying empty.', err);

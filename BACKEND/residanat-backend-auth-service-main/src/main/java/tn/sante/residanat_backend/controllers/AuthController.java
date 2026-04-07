@@ -254,4 +254,69 @@ public class AuthController {
     if (user.getDateDiplome() != null) profile.setDateDiplome(user.getDateDiplome().toString());
     return ResponseEntity.ok(profile);
   }
+
+  @PutMapping("/utilisateurs/{id}")
+  public ResponseEntity<?> updateUtilisateurById(
+      @PathVariable("id") Long id,
+      @RequestBody Map<String, Object> data) {
+
+    System.out.println("🔄 REQUÊTE DE MISE À JOUR UTILISATEUR [ID=" + id + "]");
+    System.out.println("Données reçues : " + data);
+
+    @SuppressWarnings("null")
+    Optional<Utilisateur> optionalUser = utilisateurRepository.findById(id);
+    if (optionalUser.isEmpty()) {
+      System.out.println("❌ ÉCHEC : Utilisateur " + id + " introuvable.");
+      return ResponseEntity.status(org.springframework.http.HttpStatus.NOT_FOUND).body("Utilisateur introuvable");
+    }
+
+    Utilisateur user = optionalUser.get();
+    System.out.println("Utilisateur trouvé : " + user.getEmail());
+
+    if (data.containsKey("nom") && data.get("nom") != null) {
+      user.setNom((String) data.get("nom"));
+    }
+    if (data.containsKey("prenom") && data.get("prenom") != null) {
+      user.setPrenom((String) data.get("prenom"));
+    }
+    if (data.containsKey("cin") && data.get("cin") != null) {
+      user.setCin((String) data.get("cin"));
+    }
+    if (data.containsKey("nationalite") && data.get("nationalite") != null) {
+      user.setNationalite((String) data.get("nationalite"));
+    }
+    if (data.containsKey("faculte") && data.get("faculte") != null) {
+      user.setFaculte((String) data.get("faculte"));
+    }
+    if (data.containsKey("telephone") && data.get("telephone") != null) {
+      user.setTelephone((String) data.get("telephone"));
+    }
+    if (data.containsKey("adresse") && data.get("adresse") != null) {
+      user.setAdresse((String) data.get("adresse"));
+    }
+    if (data.containsKey("lieuNaissance") && data.get("lieuNaissance") != null) {
+      user.setLieuNaissance((String) data.get("lieuNaissance"));
+    }
+    if (data.containsKey("dateNaissance") && data.get("dateNaissance") != null && !((String) data.get("dateNaissance")).isEmpty()) {
+      try {
+        user.setDateNaissance(LocalDate.parse((String) data.get("dateNaissance")));
+      } catch (Exception e) {
+        System.err.println("Erreur format dateNaissance : " + e.getMessage());
+      }
+    }
+    if (data.containsKey("dateDiplome") && data.get("dateDiplome") != null && !((String) data.get("dateDiplome")).isEmpty()) {
+      try {
+        user.setDateDiplome(LocalDate.parse((String) data.get("dateDiplome")));
+      } catch (Exception e) {
+        System.err.println("Erreur format dateDiplome : " + e.getMessage());
+      }
+    }
+
+    @SuppressWarnings("null")
+    final Utilisateur userToSave = user;
+    utilisateurRepository.save(userToSave);
+    System.out.println("✅ SUCCÈS : Utilisateur [ID=" + id + "] mis à jour.");
+
+    return ResponseEntity.ok("Utilisateur mis à jour avec succès");
+  }
 }

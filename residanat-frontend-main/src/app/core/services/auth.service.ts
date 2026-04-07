@@ -15,7 +15,7 @@ export class AuthService {
 
   // Sujet pour suivre l'état de connexion en temps réel
   private isLoggedInSubject = new BehaviorSubject<boolean>(this.hasToken());
-  isLoggedIn$ = this.isLoggedInSubject.asObservable();
+  isLoggedIn$: Observable<boolean> = this.isLoggedInSubject;
 
   // --- LOGIN ---
   login(credentials: { email: string; motDePasse: string }): Observable<any> {

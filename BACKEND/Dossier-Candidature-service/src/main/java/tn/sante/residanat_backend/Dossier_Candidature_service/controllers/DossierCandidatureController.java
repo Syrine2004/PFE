@@ -64,6 +64,12 @@ public class DossierCandidatureController {
         return ResponseEntity.ok().build();
     }
 
+    @PostMapping("/{id}/update-candidat-info")
+    public ResponseEntity<Void> updateCandidatInfo(@PathVariable Long id, @RequestBody java.util.Map<String, Object> data) {
+        dossierService.updateCandidatInfo(id, data);
+        return ResponseEntity.ok().build();
+    }
+
     @PatchMapping("/{id}/date-diplome")
     public ResponseEntity<DossierCandidature> updateDateDiplome(
             @PathVariable Long id,

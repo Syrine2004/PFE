@@ -101,6 +101,10 @@ export class DossierService {
         return this.http.post<void>(`${this.apiUrl}/${id}/check-ia`, data);
     }
 
+    updateCandidatInfo(id: number, data: any): Observable<void> {
+        return this.http.post<void>(`${this.apiUrl}/${id}/update-candidat-info`, data);
+    }
+
     saveDataDiplome(dossierId: number, dateDiplome: string): Observable<DossierCandidature> {
         return this.http.patch<DossierCandidature>(`${this.apiUrl}/${dossierId}/date-diplome`, null, {
             params: { dateDiplome }

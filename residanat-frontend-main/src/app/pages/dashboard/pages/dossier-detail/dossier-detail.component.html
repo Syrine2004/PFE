@@ -146,7 +146,7 @@
                         </span>
                     </div>
 
-                    <div class="observations-section">
+                    <div class="observations-section" *ngIf="(dossier?.evaluationIA?.score || 0) < 100">
                         <div class="obs-header">
                             <span class="dot"></span>
                             <span>Points de vigilance IA</span>

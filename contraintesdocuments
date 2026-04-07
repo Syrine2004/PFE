@@ -1,0 +1,43 @@
+# Mise en place des contraintes sur les documents uploadés
+
+Les documents déposés par les candidats lors de l'inscription (CIN, Diplôme, Photo) sont désormais soumis à des validations de format et de taille pour garantir la qualité des données et la sécurité du serveur.
+
+## Changements effectués
+
+### 🛡️ Backend (Dossier-Candidature-service)
+- **Validation stricte** : La méthode `uploadDocument` vérifie maintenant :
+    - L'extension du fichier (insensible à la casse).
+    - La taille réelle du fichier.
+- **Réponses HTTP 400** : En cas de non-respect, le serveur retourne une erreur `400 Bad Request` avec un message explicite au lieu d'une erreur générique 500.
+
+### 🎨 Frontend (Angular)
+- **Validation préventive** : Avant même d'envoyer le fichier au serveur, le composant `InscriptionConcours` effectue les mêmes vérifications.
+- **Alertes utilisateur** : En cas de fichier invalide (trop gros ou mauvais format), une popup informative (`SweetAlert2`) s'affiche pour guider l'utilisateur.
+- **Filtrage natif** : L'attribut `accept` a été ajouté aux sélecteurs de fichiers pour masquer par défaut les formats non autorisés dans l'explorateur du candidat.
+
+## Contraintes appliquées
+
+| Type de Document | Formats autorisés | Taille Max |
+| :--- | :--- | :--- |
+| **CIN / Passeport** | `.pdf`, `.jpg`, `.jpeg`, `.png` | **5 Mo** |
+| **Diplôme** | `.pdf`, `.jpg`, `.jpeg`, `.png` | **5 Mo** |
+| **Photo d'identité** | `.jpg`, `.jpeg`, `.png` | **2 Mo** |
+
+> [!NOTE]
+> Le format PDF est **volontairement exclu** pour la photo d'identité afin de permettre le traitement futur par les services d'IA (reconnaissance faciale).
+
+## Vérifications effectuées
+
+### ✅ Validation API (curl)
+Une tentative d'upload d'un fichier `.pdf` pour une photo d'identité a été rejetée avec succès :
+```json
+{
+  "status": 400,
+  "error": "Bad Request",
+  "message": "La photo d'identité doit être au format JPG ou PNG."
+}
+```
+
+### ✅ Validation UI
+- Le sélecteur de fichiers pour la photo ne propose que les images.
+- Un message d'erreur s'affiche si on force un fichier de 6 Mo.

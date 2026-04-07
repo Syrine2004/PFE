@@ -7,6 +7,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import tn.sante.residanat_backend.Dossier_Candidature_service.config.RabbitMQConfig;
+import tn.sante.residanat_backend.Dossier_Candidature_service.client.UtilisateurClient;
 import tn.sante.residanat_backend.Dossier_Candidature_service.models.*;
 import tn.sante.residanat_backend.Dossier_Candidature_service.repositories.DocumentRepository;
 import tn.sante.residanat_backend.Dossier_Candidature_service.repositories.DossierCandidatureRepository;
@@ -28,6 +29,7 @@ public class DossierCandidatureService {
     private final EvaluationIARepository evaluationRepository;
     private final FileStorageService fileStorageService;
     private final RabbitTemplate rabbitTemplate;
+    private final UtilisateurClient utilisateurClient;
 
     @Transactional
     public DossierCandidature createOrGetDossier(Long candidatId, UUID concoursId) {
@@ -48,9 +50,34 @@ public class DossierCandidatureService {
 
     @Transactional
     public Document uploadDocument(Long dossierId, MultipartFile file, TypeDocument type) {
-        @SuppressWarnings("null")
         DossierCandidature dossier = dossierRepository.findById(dossierId)
                 .orElseThrow(() -> new RuntimeException("Dossier introuvable"));
+
+        // ✅ Validation du format et de la taille
+        String originalFilename = file.getOriginalFilename();
+        String extension = "";
+        if (originalFilename != null && originalFilename.contains(".")) {
+            extension = originalFilename.substring(originalFilename.lastIndexOf(".")).toLowerCase();
+        }
+        long sizeInBytes = file.getSize();
+        long max5Mb = 5 * 1024 * 1024;
+        long max2Mb = 2 * 1024 * 1024;
+
+        if (type == TypeDocument.PHOTO_IDENTITE) {
+            if (!extension.matches("\\.(jpg|jpeg|png)")) {
+                throw new org.springframework.web.server.ResponseStatusException(org.springframework.http.HttpStatus.BAD_REQUEST, "La photo d'identité doit être au format JPG ou PNG.");
+            }
+            if (sizeInBytes > max2Mb) {
+                throw new org.springframework.web.server.ResponseStatusException(org.springframework.http.HttpStatus.BAD_REQUEST, "La photo d'identité ne doit pas dépasser 2 Mo.");
+            }
+        } else {
+            if (!extension.matches("\\.(pdf|jpg|jpeg|png)")) {
+                throw new org.springframework.web.server.ResponseStatusException(org.springframework.http.HttpStatus.BAD_REQUEST, "Le document doit être au format PDF, JPG ou PNG.");
+            }
+            if (sizeInBytes > max5Mb) {
+                throw new org.springframework.web.server.ResponseStatusException(org.springframework.http.HttpStatus.BAD_REQUEST, "Le document ne doit pas dépasser 5 Mo.");
+            }
+        }
 
         // Check if a document of the same type already exists for this dossier
         documentRepository.findByDossierIdAndType(dossierId, type).ifPresent(existingDoc -> {
@@ -296,8 +323,8 @@ public class DossierCandidatureService {
                 }
             }
 
-            // Ajout des nouvelles anomalies si présentes
-            if (newAnomaliesStr != null && !newAnomaliesStr.isBlank() && !newAnomaliesStr.equals("Aucune anomalie détectée.")) {
+            // Ajout des nouvelles anomalies si présentes ET score < 100%
+            if (newScore < 100.0 && newAnomaliesStr != null && !newAnomaliesStr.isBlank() && !newAnomaliesStr.equals("Aucune anomalie détectée.")) {
                 for (String line : newAnomaliesStr.split("\n")) {
                     String cleanLine = line.trim();
                     if (!cleanLine.isEmpty()) {
@@ -306,7 +333,12 @@ public class DossierCandidatureService {
                 }
             }
             
-            evaluation.setAnomalies(String.join("\n", anomalyLines));
+            // Si score = 100%, afficher "Aucune anomalie"
+            if (newScore == 100.0 && anomalyLines.isEmpty()) {
+                evaluation.setAnomalies("Aucune anomalie");
+            } else {
+                evaluation.setAnomalies(anomalyLines.isEmpty() ? "Aucune anomalie" : String.join("\n", anomalyLines));
+            }
             evaluation.setDateEvaluation(LocalDateTime.now());
 
             boolean currentVerified = Boolean.TRUE.equals(iaResponse.get("verified"));
@@ -398,5 +430,26 @@ public class DossierCandidatureService {
         DossierCandidature dossier = getDossierById(id);
         dossier.setDateDiplome(dateDiplome);
         return dossierRepository.save(dossier);
+    }
+
+    @Transactional
+    public void updateCandidatInfo(Long dossierId, java.util.Map<String, Object> candidatData) {
+        DossierCandidature dossier = getDossierById(dossierId);
+        Long candidatId = dossier.getCandidatId();
+
+        try {
+            utilisateurClient.updateUtilisateur(candidatId, candidatData);
+
+            // Synchronisation de dateDiplome localement dans le dossier si présent
+            if (candidatData.containsKey("dateDiplome") && candidatData.get("dateDiplome") != null) {
+                dossier.setDateDiplome((String) candidatData.get("dateDiplome"));
+                dossierRepository.save(dossier);
+            }
+
+            System.out.println("Candidat info updated successfully for candidat " + candidatId);
+        } catch (Exception e) {
+            System.err.println("Error updating candidat info for candidat " + candidatId + ": " + e.getMessage());
+            throw new RuntimeException("Impossible de mettre à jour les informations du candidat: " + e.getMessage());
+        }
     }
 }

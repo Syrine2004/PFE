@@ -210,7 +210,7 @@
                     </div>
                     <label class="upload-btn" *ngIf="!isDossierLocked">
                         {{ uploadedDocs.has(documentType) ? 'Modifier' : 'Choisir' }}
-                        <input type="file" (change)="onFileUpload($event, documentType)" hidden accept=".pdf,.jpg,.png">
+                        <input type="file" (change)="onFileUpload($event, documentType)" hidden accept=".pdf,.jpg,.jpeg,.png">
                     </label>
                     <span *ngIf="fileNames.get(documentType)" class="file-name">📎 {{ fileNames.get(documentType) }}</span>
                 </div>
@@ -231,7 +231,7 @@
                     </div>
                     <label class="upload-btn" *ngIf="!isDossierLocked">
                         {{ uploadedDocs.has('DIPLOME') ? 'Modifier' : 'Choisir' }}
-                        <input type="file" (change)="onFileUpload($event, 'DIPLOME')" hidden accept=".pdf,.jpg,.png">
+                        <input type="file" (change)="onFileUpload($event, 'DIPLOME')" hidden accept=".pdf,.jpg,.jpeg,.png">
                     </label>
                     <span *ngIf="fileNames.get('DIPLOME')" class="file-name">📎 {{ fileNames.get('DIPLOME') }}</span>
                 </div>
@@ -254,7 +254,7 @@
                     <label class="upload-btn" *ngIf="!isDossierLocked">
                         {{ uploadedDocs.has('PHOTO_IDENTITE') ? 'Modifier' : 'Choisir' }}
                         <input type="file" (change)="onFileUpload($event, 'PHOTO_IDENTITE')" hidden
-                            accept=".pdf,.jpg,.png">
+                            accept=".jpg,.jpeg,.png">
                     </label>
                     <span *ngIf="fileNames.get('PHOTO_IDENTITE')" class="file-name">📎 {{
                         fileNames.get('PHOTO_IDENTITE') }}</span>
