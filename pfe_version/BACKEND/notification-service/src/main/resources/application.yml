@@ -1,0 +1,12 @@
+spring:
+  application:
+    name: notification-service
+  config:
+    import: "optional:configserver:${CONFIG_SERVER_URL:http://config-service:8888}"
+
+server:
+  port: 8087
+
+app:
+  auth-service-url: ${AUTH_SERVICE_URL:http://auth-service:8081}
+  n8n-webhook-url: ${N8N_WEBHOOK_URL:http://n8n:5678/webhook/residanat-notifications}

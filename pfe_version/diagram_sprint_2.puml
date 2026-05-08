@@ -1,0 +1,166 @@
+@startuml
+skinparam classAttributeIconSize 0
+skinparam class {
+    BackgroundColor White
+    ArrowColor Black
+    BorderColor #1A4E8A
+}
+
+class Utilisateur {
+  - Long : id
+  - String : email
+  - String : motDePasse
+  - String : role
+  - String : civilite
+  - String : nom
+  - String : prenom
+  - LocalDate : dateNaissance
+  - String : lieuNaissance
+  - String : nationalite
+  - String : adresse
+  - String : telephone
+  + authentifier()
+}
+
+class Candidat {
+  - String : cin_passport
+  - String : typeDocumentIdentite
+  - String : faculte
+  - LocalDate : dateDiplome
+  + sInscrireAuConcours()
+  + consulterDossier()
+}
+
+class Administrateur {
+  + importerListeMinistere()
+  + genererConvocations()
+}
+
+Utilisateur <|-- Candidat
+Utilisateur <|-- Administrateur
+
+class Concours {
+  - UUID : SessionID
+  - String : typeConcours
+  - String : libelle
+  - Date : annee
+  - StatutConcours : etat
+  - LocalDateTime : dateFin
+  - LocalDateTime : dateCreation
+  - String : createdBy
+  + creerConcours(Concours)
+  + publier()
+  + modifierDetails()
+  + estOuvert()
+}
+
+class DossierCandidature {
+  - Long : id
+  - StatutDossier : statut
+  - LocalDateTime : dateSoumission
+  - String : dateDiplome
+  + changerStatut(StatutDossier)
+  + triggerIAAnalysis()
+  + validerDossier(DossierCandidature)
+}
+
+class Document {
+  - String : nom
+  - TypeDocument : type
+  - String : cheminFichier
+  - LocalDateTime : dateCreation
+  + getCheminAbsolu()
+  + analyserDocument()
+}
+
+class EvaluationDossierIA {
+  - Double : score
+  - Double : scoreCin
+  - Double : scoreDiplome
+  - String : anomalies
+  - boolean : verifie
+  - LocalDateTime : dateEvaluation
+  + calculerScoreGlobal()
+  + extraireAnomalies()
+}
+
+Candidat "1" -- "1" DossierCandidature : Dépose >
+Concours "1" -- "0..*" DossierCandidature
+DossierCandidature "1" *-- "3" Document
+DossierCandidature "1" -- "0..1" EvaluationDossierIA
+
+class AffectationCandidat #e8f5e9 {
+  - Long : id
+  - String : numMinistere
+  - String : cin
+  - String : nom
+  - String : prenom
+  - String : faculte
+  - String : salle
+  - Integer : nPlace
+  - Integer : anneeConcours
+  + verifierDoublon()
+}
+
+class Convocation #e8f5e9 {
+  - Long : id
+  - String : hashSecurise
+  - String : cheminFichierPdf
+  - StatutConvocation : statut
+  - Integer : nombreTelechargements
+  - String : numeroInscription
+  - String : salle
+  - String : place
+  - LocalDateTime : dateEpreuve
+  - String : heureAppel
+  - String : lieuExamenDetail
+  - LocalDateTime : dateGeneration
+  - LocalDateTime : dateExpiration
+  + verifierValidite(hash)
+  + telechargerPDF()
+}
+
+class Notification #e8f5e9 {
+  - Long : id
+  - String : titre
+  - String : message
+  - boolean : estLu
+  - LocalDateTime : dateEnvoi
+  + marquerCommeLu()
+  + envoyerEmail()
+}
+
+Concours "1" -- "0..*" AffectationCandidat : Contient listes du Ministère >
+AffectationCandidat "1" -- "0..1" DossierCandidature : Filtre l'éligibilité de >
+
+DossierCandidature "1" -- "0..1" Convocation : Donne lieu à >
+Convocation "0..*" -- "1" Concours
+
+Utilisateur "1" -- "0..*" Notification : < Reçoit
+
+enum StatutDossier {
+  EN_ATTENTE
+  VALIDE
+  REJETE
+  INCOMPLET
+}
+enum StatutConcours {
+  PUBLIE
+  NON_PUBLIE
+}
+enum TypeDocument {
+  CIN
+  PASSEPORT
+  DIPLOME
+  PHOTO_IDENTITE
+}
+enum StatutConvocation #e8f5e9 {
+  GENEREE
+  ENVOYEE
+  TELECHARGER
+  CONSULTEE
+  EXPIREE
+  ANNULEE
+}
+
+@enduml

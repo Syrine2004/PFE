@@ -1,0 +1,14 @@
+NAME                         IMAGE                       COMMAND                  SERVICE                 CREATED              STATUS                            PORTS
+auth-service                 pfe-auth-service            "java -jar app.jar"      auth-service            About a minute ago   Up 6 seconds (health: starting)   0.0.0.0:8081->8081/tcp, [::]:8081->8081/tcp
+concours-service             pfe-concours-service        "java -jar app.jar"      concours-service        About a minute ago   Up 6 seconds (health: starting)   0.0.0.0:8082->8082/tcp, [::]:8082->8082/tcp
+convocation-service          pfe-convocation-service     "java -jar app.jar"      convocation-service     About a minute ago   Up 6 seconds (health: starting)   0.0.0.0:8086->8086/tcp, [::]:8086->8086/tcp
+dossier-service              pfe-dossier-service         "java -jar app.jar"      dossier-service         About a minute ago   Up 5 seconds (health: starting)   0.0.0.0:8084->8084/tcp, [::]:8084->8084/tcp
+gateway-service              pfe-gateway-service         "java -jar app.jar"      gateway-service         About a minute ago   Up 6 seconds (health: starting)   0.0.0.0:8080->8080/tcp, [::]:8080->8080/tcp
+ia-validation-service        pfe-ia-validation-service   "java -jar app.jar"      ia-validation-service   About a minute ago   Up 6 seconds (health: starting)   0.0.0.0:8085->8085/tcp, [::]:8085->8085/tcp
+pfe-config-service-1         pfe-config-service          "java -jar app.jar"      config-service          About a minute ago   Up 28 seconds (healthy)           0.0.0.0:8888->8888/tcp, [::]:8888->8888/tcp
+pfe-discovery-service-1      pfe-discovery-service       "java -jar app.jar"      discovery-service       About a minute ago   Up 51 seconds (healthy)           0.0.0.0:8761->8761/tcp, [::]:8761->8761/tcp
+pfe-postgres-auth-1          postgres:15                 "docker-entrypoint.s…"   postgres-auth           3 days ago           Up 13 minutes                     0.0.0.0:5433->5432/tcp, [::]:5433->5432/tcp
+pfe-postgres-concours-1      postgres:15                 "docker-entrypoint.s…"   postgres-concours       3 days ago           Up 13 minutes                     0.0.0.0:5434->5432/tcp, [::]:5434->5432/tcp
+pfe-postgres-convocation-1   postgres:15                 "docker-entrypoint.s…"   postgres-convocation    13 minutes ago       Up 13 minutes                     0.0.0.0:5436->5432/tcp, [::]:5436->5432/tcp
+pfe-postgres-dossier-1       postgres:15                 "docker-entrypoint.s…"   postgres-dossier        3 days ago           Up 13 minutes                     0.0.0.0:5435->5432/tcp, [::]:5435->5432/tcp
+pfe-rabbitmq-1               rabbitmq:3-management       "docker-entrypoint.s…"   rabbitmq                2 days ago           Up 13 minutes (healthy)           0.0.0.0:5672->5672/tcp, [::]:5672->5672/tcp, 0.0.0.0:15672->15672/tcp, [::]:15672->15672/tcp

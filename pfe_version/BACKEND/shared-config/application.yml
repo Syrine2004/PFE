@@ -1,0 +1,20 @@
+# Shared Configuration for all services
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://discovery-service:8761/eureka/
+  instance:
+    prefer-ip-address: true
+
+# Common JWT Config
+jwt:
+  secret: CeciEstUneCleSecreteTresLonguePourResidanatTN2026!
+  expiration: 86400000
+
+# RabbitMQ Config
+spring:
+  rabbitmq:
+    host: rabbitmq
+    port: 5672
+    username: guest
+    password: guest

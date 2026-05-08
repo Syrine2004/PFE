@@ -1,0 +1,190 @@
+<div class="app-container">
+  <div class="header-glass">
+    <h1 class="page-title">{{ 'IMPORT.RESULTATS.TITLE' | translate }}</h1>
+    <p class="page-subtitle">{{ 'IMPORT.RESULTATS.SUBTITLE' | translate }}</p>
+  </div>
+
+  <div class="glass-card">
+    
+    <div class="config-section">
+      <div class="form-group">
+        <label class="floating-label">{{ 'IMPORT.SELECT_CONCOURS' | translate }}</label>
+        <div class="custom-select-wrapper" (click)="toggleDropdown($event)">
+          <div class="custom-select-trigger" [class.open]="isDropdownOpen">
+            <span>{{ selectedConcoursLabel }}</span>
+            <div class="arrow" [class.open]="isDropdownOpen">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+            </div>
+          </div>
+          <div class="custom-options" *ngIf="isDropdownOpen" (click)="$event.stopPropagation()">
+            <div class="custom-option" [class.selected]="!selectedConcoursId" (click)="selectConcours('')">
+               {{ 'IMPORT.SELECT_CONCOURS' | translate }}
+            </div>
+            <div class="custom-option" *ngFor="let c of concoursOptions" [class.selected]="selectedConcoursId === c.id" (click)="selectConcours(c.id || '')">
+              {{ c.libelle || c.titre }} - {{ c.annee }}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="lock-alert" *ngIf="selectedConcoursId && totalResultats > 0">
+        <div class="lock-icon-bg">
+           <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#b45309" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+        </div>
+        <div class="lock-content">
+          <h4>{{ 'IMPORT.ALERTS.LOCKED_ERROR' | translate }}</h4>
+          <p>{{ 'IMPORT.ALERTS.CLEAR_CONFIRM' | translate }} ({{ totalResultats }} {{ 'IMPORT.HISTORY.COUNT' | translate }})</p>
+          <div class="alert-actions-row">
+            <label class="modern-toggle">
+               <input type="checkbox" [(ngModel)]="correctionMode">
+               <div class="toggle-track">
+                  <div class="toggle-thumb"></div>
+               </div>
+               <span>{{ 'IMPORT.OPTIONS.CORRECTION_MODE' | translate }}</span>
+            </label>
+            <button class="btn-clean-danger" (click)="onViderResultats()">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" x2="10" y1="11" y2="17"/><line x1="14" x2="14" y1="11" y2="17"/></svg>
+              {{ 'IMPORT.BTN.CLEAR' | translate }}
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="stats-wrapper">
+      <div class="stat-box">
+        <div class="stat-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
+        <div class="stat-data">
+          <span class="stat-val">{{ totalResultats }}</span>
+          <span class="stat-name">{{ 'IMPORT.STATS.TOTAL_RECORDS' | translate }}</span>
+        </div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><path d="M12 18v-6"/><path d="m9 15 3 3 3-3"/></svg></div>
+        <div class="stat-data">
+          <span class="stat-val">{{ totalImports }}</span>
+          <span class="stat-name">{{ 'IMPORT.STATS.TOTAL_IMPORTS' | translate }}</span>
+        </div>
+      </div>
+      <div class="stat-box active" (click)="showResultsModal = true">
+         <div class="stat-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
+          <div class="stat-data latest-data">
+            <span class="stat-name">{{ 'IMPORT.STATS.LATEST_TITLE' | translate }}</span>
+            <span class="stat-val small-val" *ngIf="latestImportDetails">{{ latestImportDetails.fileName }}</span>
+            <span class="stat-sub" *ngIf="latestImportDetails">{{ formatDate(latestImportDetails.importedAt) }}</span>
+            <span class="stat-val small-val" *ngIf="!latestImportDetails">{{ 'COMMON.NONE' | translate }}</span>
+          </div>
+      </div>
+    </div>
+
+    <div class="dropzone" [class.active]="selectedFile" [class.uploading]="isUploading" (click)="fileInput.click()">
+      <input type="file" #fileInput hidden (change)="onFileSelected($event)" accept=".xlsx, .xls">
+      
+      <div class="upload-content" *ngIf="!selectedFile">
+        <div class="icon-pulse">
+          <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="url(#grad1)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><defs><linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" stop-color="#0284c7" /><stop offset="100%" stop-color="#0ea5e9" /></linearGradient></defs><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" x2="12" y1="3" y2="15"/></svg>
+        </div>
+        <h3>{{ 'IMPORT.DROPZONE.PROMPT' | translate }}</h3>
+        <p>{{ 'IMPORT.DROPZONE.SUBPROMPT' | translate }}</p>
+      </div>
+
+      <div class="upload-content has-file" *ngIf="selectedFile">
+         <div class="success-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><path d="m9 15 2 2 4-4"/></svg>
+         </div>
+         <h3>{{ selectedFile.name }}</h3>
+         <p class="file-ready">{{ (selectedFile.size / 1024).toFixed(2) }} KB • Prêt à l'import</p>
+      </div>
+
+      <div class="progress-overlay" *ngIf="isUploading" (click)="$event.stopPropagation()">
+         <div class="progress-header">
+           <span>{{ 'COMMON.LOADING' | translate }}...</span>
+           <span class="progress-percentage">{{ uploadProgress }}%</span>
+         </div>
+         <div class="progress-track">
+           <div class="progress-fill" [style.width.%]="uploadProgress"></div>
+         </div>
+      </div>
+    </div>
+
+    <div class="action-panel">
+      <button class="btn-modern btn-ghost" (click)="resetFile()" [disabled]="isUploading || !selectedFile">
+        {{ 'COMMON.CANCEL' | translate }}
+      </button>
+      
+      <div class="dual-actions">
+        <button class="btn-modern btn-accent" *ngIf="selectedConcoursId" (click)="publierResultats()" [disabled]="isUploading">
+           <span>{{ 'IMPORT.BTN.PUBLISH' | translate }}</span>
+           <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/></svg>
+        </button>
+
+        <button class="btn-modern btn-gradient" (click)="uploadFile()" 
+                [disabled]="isUploading || !selectedFile || !selectedConcoursId || (totalResultats > 0 && !correctionMode)">
+          <span>{{ 'IMPORT.BTN.UPLOAD' | translate }}</span>
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+        </button>
+      </div>
+    </div>
+
+  </div>
+
+
+</div>
+
+<!-- Results Preview Modal -->
+<div class="modal-overlay" *ngIf="showResultsModal" (click)="showResultsModal = false">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <div class="header-main-alt">
+        <h2>{{ 'IMPORT.BTN.PREVIEW' | translate }}</h2>
+        <p class="modal-subtitle" *ngIf="latestImportDetails">{{ latestImportDetails.fileName }} • {{ 'SIDEBAR.RESULTATS' | translate }}</p>
+      </div>
+      <button class="btn-close-alt" (click)="showResultsModal = false">
+        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+      </button>
+    </div>
+
+    <div class="modal-body">
+      <div class="table-scroll">
+        <table class="modern-table">
+          <thead>
+            <tr>
+              <th>{{ 'AUTH.CIN' | translate }}</th>
+              <th>{{ 'ADMIN_CANDIDATS.TABLE.NAME' | translate }}</th>
+              <th class="text-center">{{ 'RESULTATS.EP1' | translate }}</th>
+              <th class="text-center">{{ 'RESULTATS.EP2' | translate }}</th>
+              <th class="text-center">{{ 'RESULTATS.MOYENNE' | translate }}</th>
+              <th class="text-center">{{ 'RESULTATS.RANG' | translate }}</th>
+              <th class="text-right">{{ 'ADMIN_CANDIDATS.TABLE.STATUS' | translate }}</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let res of resultsList">
+              <td class="font-mono">#{{ res.cin }}</td>
+              <td class="font-bold">{{ res.nomPrenom }}</td>
+              <td class="text-center">{{ res.noteEpreuve1 | number:'1.2-2' }}</td>
+              <td class="text-center">{{ res.noteEpreuve2 | number:'1.2-2' }}</td>
+              <td class="text-center">
+                <span class="score-pill">{{ res.moyenneGenerale | number:'1.3-3' }}</span>
+              </td>
+              <td class="text-center">
+                <div class="rank-circle" [class.top-rank]="res.rang <= 10">#{{ res.rang }}</div>
+              </td>
+              <td class="text-right">
+                <span class="status-tag" [class.admis]="res.statut?.includes('ADMIS')" [class.refus]="res.statut?.includes('REFU')">
+                  {{ res.statut }}
+                </span>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="pagination-footer modal-pagination" *ngIf="totalPages > 1">
+         <button class="page-nav" [disabled]="currentPage === 0" (click)="onPageChange(currentPage - 1)">{{ 'COMMON.PREVIOUS' | translate }}</button>
+         <span class="page-info">{{ 'COMMON.PAGE' | translate }} <b>{{ currentPage + 1 }}</b> {{ 'ADMIN_CANDIDATS.TABLE.FOOTER_ON' | translate }} <b>{{ totalPages }}</b></span>
+         <button class="page-nav" [disabled]="currentPage === totalPages - 1" (click)="onPageChange(currentPage + 1)">{{ 'COMMON.NEXT' | translate }}</button>
+      </div>
+    </div>
+  </div>
+</div>

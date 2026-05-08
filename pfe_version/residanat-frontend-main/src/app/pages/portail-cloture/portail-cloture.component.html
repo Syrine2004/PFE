@@ -1,0 +1,133 @@
+<div class="closure-page">
+
+  <!-- Decorative background -->
+  <div class="bg-decoration">
+    <div class="orb orb-1"></div>
+    <div class="orb orb-2"></div>
+    <div class="orb orb-3"></div>
+  </div>
+
+  <!-- Top brand bar -->
+  <div class="top-bar">
+    <div class="top-bar-inner">
+      <div class="brand-logo">
+        <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none"
+          stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10"/>
+        </svg>
+        <span>Portail National du Résidanat</span>
+      </div>
+      <div class="brand-right">Ministère de la Santé — Tunisie</div>
+    </div>
+  </div>
+
+  <!-- Main content -->
+  <div class="closure-container">
+
+    <!-- Left: Illustration area -->
+    <div class="closure-visual">
+      <div class="visual-icon-wrap">
+        <div class="icon-bg-ring"></div>
+        <div class="icon-inner">
+          <svg xmlns="http://www.w3.org/2000/svg" width="52" height="52" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <rect width="18" height="11" x="3" y="11" rx="2" ry="2"/>
+            <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+            <circle cx="12" cy="16" r="1" fill="currentColor"/>
+          </svg>
+        </div>
+      </div>
+      <div class="visual-stats">
+        <div class="stat-card">
+          <span class="stat-label">Statut</span>
+          <span class="stat-value closed">Clôturé</span>
+        </div>
+        <div class="stat-card">
+          <span class="stat-label">Session</span>
+          <span class="stat-value">{{ closureDate }}</span>
+        </div>
+      </div>
+      <div class="visual-wave">
+        <svg viewBox="0 0 400 120" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
+          <path d="M0,60 C80,20 160,100 240,60 C320,20 380,80 400,60 L400,120 L0,120 Z" fill="rgba(0,143,187,0.06)"/>
+          <path d="M0,80 C100,40 200,100 300,70 C360,55 390,85 400,80 L400,120 L0,120 Z" fill="rgba(0,143,187,0.04)"/>
+        </svg>
+      </div>
+    </div>
+
+    <!-- Right: Content -->
+    <div class="closure-content">
+
+      <!-- Badge -->
+      <div class="closure-badge">
+        <div class="badge-dot"></div>
+        Session Clôturée
+      </div>
+
+      <h1 class="closure-title">Le portail est<br><span class="highlight">temporairement fermé</span></h1>
+
+      <p class="closure-message">{{ message }}</p>
+
+      <!-- Divider -->
+      <div class="section-divider">
+        <span>Que puis-je faire ?</span>
+      </div>
+
+      <!-- Steps -->
+      <div class="steps-list">
+        <div class="step-item">
+          <div class="step-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect width="20" height="16" x="2" y="4" rx="2"/>
+              <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>
+            </svg>
+          </div>
+          <p>Vérifiez vos emails pour toute communication officielle concernant votre dossier.</p>
+        </div>
+        <div class="step-item">
+          <div class="step-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="10"/>
+              <path d="M12 8v4l3 3"/>
+            </svg>
+          </div>
+          <p>Consultez le site officiel du Ministère de la Santé pour les annonces de résultats.</p>
+        </div>
+        <div class="step-item">
+          <div class="step-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.35 2 2 0 0 1 3.6 1h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L7.91 8.6a16 16 0 0 0 6 6l.92-.92a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
+            </svg>
+          </div>
+          <p>Contactez notre équipe support pour toute réclamation urgente.</p>
+        </div>
+      </div>
+
+      <!-- Actions -->
+      <div class="closure-actions">
+        <button (click)="onLogout()" class="btn-home">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+            <polyline points="16 17 21 12 16 7"></polyline>
+            <line x1="21" y1="12" x2="9" y2="12"></line>
+          </svg>
+          Se déconnecter
+        </button>
+        <a href="mailto:residanat@sante.tn" class="btn-contact">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+            stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <rect width="20" height="16" x="2" y="4" rx="2"/>
+            <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>
+          </svg>
+          Nous contacter
+        </a>
+      </div>
+
+    </div>
+  </div>
+
+</div>

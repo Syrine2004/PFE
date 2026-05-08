@@ -1,0 +1,13 @@
+<svg width="400" height="300" viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg">
+  <rect width="400" height="300" fill="#1a365d" />
+  <path d="M0 50h400M0 100h400M0 150h400M0 200h400M0 250h400M50 0v300M100 0v300M150 0v300M200 0v300M250 0v300M300 0v300M350 0v300" stroke="#2c5282" stroke-width="1" />
+  <rect x="100" y="80" width="200" height="140" fill="none" stroke="white" stroke-width="2" />
+  <rect x="120" y="100" width="60" height="40" fill="none" stroke="white" stroke-width="1" />
+  <rect x="220" y="100" width="60" height="40" fill="none" stroke="white" stroke-width="1" />
+  <line x1="100" y1="230" x2="300" y2="230" stroke="white" stroke-width="1" />
+  <line x1="100" y1="225" x2="100" y2="235" stroke="white" stroke-width="1" />
+  <line x1="300" y1="225" x2="300" y2="235" stroke="white" stroke-width="1" />
+  <text x="180" y="245" fill="white" font-family="Arial" font-size="12">FACULTY_MED_30.5m</text>
+  <text x="10" y="20" fill="white" font-family="Arial" font-size="10">PROJECT: RESIDANAT_MAP_SYSTEM</text>
+  <text x="10" y="35" fill="white" font-family="Arial" font-size="10">SHEET: 2D_ARCH_BLUEPRINT_01</text>
+</svg>

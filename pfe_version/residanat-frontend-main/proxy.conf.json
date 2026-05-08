@@ -1,0 +1,11 @@
+{
+  "/osrm-local": {
+    "target": "https://brouter.de",
+    "secure": false,
+    "changeOrigin": true,
+    "pathRewrite": {
+      "^/osrm-local": ""
+    },
+    "logLevel": "debug"
+  }
+}

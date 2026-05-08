@@ -1,0 +1,101 @@
+<div class="dashboard-container" (click)="isConcoursDropdownOpen && (isConcoursDropdownOpen = false)">
+
+  <!-- Concours Selector Bar -->
+  <div class="concours-selector-bar">
+    <div class="selector-label">
+      <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
+      <span>{{ 'ADMIN_DASHBOARD.CONCOURS_FILTER' | translate }}</span>
+    </div>
+    <div class="concours-dropdown" (click)="$event.stopPropagation()">
+      <button class="concours-trigger" (click)="toggleConcoursDropdown()" [class.open]="isConcoursDropdownOpen">
+        <span class="concours-selected-label">{{ getSelectedConcoursLabel() }}</span>
+        <svg class="chevron-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+      </button>
+      <div class="concours-dropdown-menu" [class.visible]="isConcoursDropdownOpen">
+        <div class="concours-option" (click)="selectConcours('')" [class.active]="selectedConcoursId === ''">
+          {{ 'ADMIN_DASHBOARD.ALL_CONCOURS' | translate }}
+        </div>
+        <div class="concours-option" *ngFor="let c of concoursList" (click)="selectConcours(c.id!)" [class.active]="selectedConcoursId === c.id">
+          <span class="opt-name">{{ c.libelle || c.titre }}</span>
+          <span class="opt-year">{{ c.annee }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modern Nexus Layout -->
+  <div class="main-layout-grid">
+    <!-- Left: Core Metrics -->
+    <div class="stats-column">
+      <app-kpi-card [label]="'ADMIN_DASHBOARD.KPIS.TOTAL_CANDIDATES' | translate" [value]="kpis[0].value" trend="12.5" colorClass="blue">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+          <circle cx="9" cy="7" r="4"></circle>
+          <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+          <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+        </svg>
+      </app-kpi-card>
+      
+      <app-kpi-card 
+        [label]="'ADMIN_DASHBOARD.KPIS.VALIDATED_DOSSIERS' | translate" 
+        [value]="kpis[1].value" 
+        trend="8.2" 
+        colorClass="green">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+          <polyline points="22 4 12 14.01 9 11.01"></polyline>
+        </svg>
+      </app-kpi-card>
+
+      <app-chart-card [title]="'ADMIN_DASHBOARD.CHARTS.DOSSIER_STATUS' | translate" [subtitle]="'COMMON.REAL_TIME' | translate">
+        <app-dossier-status-chart [concoursId]="selectedConcoursId"></app-dossier-status-chart>
+      </app-chart-card>
+    </div>
+
+    <!-- Center: The DNA Nexus -->
+    <div class="central-nexus">
+      <div class="nexus-header">
+        <h2>{{ 'ADMIN_DASHBOARD.TITLE' | translate | uppercase }}</h2>
+        <p class="nexus-concours-label" *ngIf="selectedConcoursId">{{ getSelectedConcoursLabel() }}</p>
+      </div>
+      <div class="nexus-visual">
+        <app-dna-caduceus-visual [concoursId]="selectedConcoursId"></app-dna-caduceus-visual>
+      </div>
+    </div>
+
+    <!-- Right: Secondary Metrics -->
+    <div class="stats-column">
+      <app-kpi-card [label]="'ADMIN_DASHBOARD.KPIS.GENERATED_CONVOCATIONS' | translate" [value]="kpis[2].value" trend="100" colorClass="purple">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"></path>
+          <polyline points="14 2 14 8 20 8"></polyline>
+        </svg>
+      </app-kpi-card>
+
+      <app-kpi-card [label]="'ADMIN_DASHBOARD.KPIS.ACTIVE_CLAIMS' | translate" [value]="kpis[3].value" trend="-5.4" colorClass="orange">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+        </svg>
+      </app-kpi-card>
+
+      <app-chart-card [title]="'ADMIN_DASHBOARD.CHARTS.RECLAMATIONS' | translate">
+        <app-claims-doughnut [concoursId]="selectedConcoursId"></app-claims-doughnut>
+      </app-chart-card>
+    </div>
+  </div>
+
+  <!-- Bottom Analytics -->
+  <div class="bottom-analytics-grid">
+    <div class="map-wrapper">
+      <app-chart-card [title]="'ADMIN_DASHBOARD.CHARTS.GEOGRAPHIC' | translate" [subtitle]="'ADMIN_DASHBOARD.CHARTS.BY_FACULTY' | translate">
+        <app-tunisia-map-chart [concoursId]="selectedConcoursId"></app-tunisia-map-chart>
+      </app-chart-card>
+    </div>
+
+    <div class="secondary-charts-wrapper">
+      <app-chart-card [title]="'ADMIN_DASHBOARD.CHARTS.RESULTS_DISTRIBUTION' | translate">
+        <app-result-histogram [concoursId]="selectedConcoursId"></app-result-histogram>
+      </app-chart-card>
+    </div>
+  </div>
+</div>

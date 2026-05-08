@@ -1,0 +1,66 @@
+<div class="kpi-card" [ngClass]="color">
+  <div class="kpi-content">
+    <div class="kpi-info">
+      <span class="kpi-title">{{ title | uppercase }}</span>
+      <h2 class="kpi-value">{{ value }}</h2>
+    </div>
+    <div class="kpi-icon-container">
+      <div class="icon-3d-wrapper">
+        <!-- Globe Icon -->
+        <svg *ngIf="iconType === 'globe'" viewBox="0 0 100 100" class="icon-3d">
+          <defs>
+            <radialGradient id="globeGrad" cx="50%" cy="50%" r="50%" fx="30%" fy="30%">
+              <stop offset="0%" style="stop-color:#4fc3f7;stop-opacity:1" />
+              <stop offset="100%" style="stop-color:#0277bd;stop-opacity:1" />
+            </radialGradient>
+            <filter id="shadow">
+               <feDropShadow dx="2" dy="2" stdDeviation="3" flood-opacity="0.5"/>
+            </filter>
+          </defs>
+          <circle cx="50" cy="50" r="40" fill="url(#globeGrad)" filter="url(#shadow)"/>
+          <path d="M50 10 A40 40 0 0 1 50 90 M50 10 A40 40 0 0 0 50 90 M10 50 A40 40 0 0 0 90 50 M10 50 A40 40 0 0 1 90 50" fill="none" stroke="rgba(255,255,255,0.3)" stroke-width="2"/>
+        </svg>
+
+        <!-- Checkmark Icon -->
+        <svg *ngIf="iconType === 'check'" viewBox="0 0 100 100" class="icon-3d">
+           <defs>
+            <linearGradient id="checkGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" style="stop-color:#81c784;stop-opacity:1" />
+              <stop offset="100%" style="stop-color:#2e7d32;stop-opacity:1" />
+            </linearGradient>
+          </defs>
+          <circle cx="50" cy="50" r="40" fill="url(#checkGrad)" filter="url(#shadow)"/>
+          <path d="M35 50 L45 60 L65 40" fill="none" stroke="white" stroke-width="6" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+
+        <!-- ID Card Icon -->
+        <svg *ngIf="iconType === 'id-card'" viewBox="0 0 100 100" class="icon-3d">
+          <defs>
+            <linearGradient id="idGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" style="stop-color:#5c6bc0;stop-opacity:1" />
+              <stop offset="100%" style="stop-color:#283593;stop-opacity:1" />
+            </linearGradient>
+          </defs>
+          <rect x="20" y="30" width="60" height="40" rx="5" fill="url(#idGrad)" filter="url(#shadow)"/>
+          <circle cx="35" cy="50" r="8" fill="rgba(255,255,255,0.8)"/>
+          <rect x="50" y="45" width="20" height="4" rx="2" fill="rgba(255,255,255,0.8)"/>
+          <rect x="50" y="52" width="15" height="4" rx="2" fill="rgba(255,255,255,0.8)"/>
+        </svg>
+
+        <!-- Speech Bubble Icon -->
+        <svg *ngIf="iconType === 'speech'" viewBox="0 0 100 100" class="icon-3d">
+          <defs>
+            <linearGradient id="speechGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" style="stop-color:#ff8a65;stop-opacity:1" />
+              <stop offset="100%" style="stop-color:#d84315;stop-opacity:1" />
+            </linearGradient>
+          </defs>
+          <path d="M20 30 H80 V60 H40 L25 75 V60 H20 Z" fill="url(#speechGrad)" filter="url(#shadow)"/>
+          <rect x="35" y="42" width="30" height="3" rx="1.5" fill="rgba(255,255,255,0.6)"/>
+          <rect x="35" y="50" width="20" height="3" rx="1.5" fill="rgba(255,255,255,0.6)"/>
+        </svg>
+      </div>
+    </div>
+  </div>
+  <div class="glass-reflection"></div>
+</div>

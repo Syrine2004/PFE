@@ -1,0 +1,418 @@
+<div class="settings-page">
+  <div class="settings-header">
+    <div class="header-icon-wrap">
+      <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none"
+        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path
+          d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.1a2 2 0 0 1-1-1.72v-.51a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z" />
+        <circle cx="12" cy="12" r="3" />
+      </svg>
+    </div>
+    <div class="header-text">
+      <h1 class="title">{{ 'SETTINGS.TITLE' | translate }}</h1>
+      <p class="subtitle">{{ 'SETTINGS.SUBTITLE' | translate }}</p>
+    </div>
+  </div>
+
+  <div class="settings-container">
+    <!-- Sidebar Tabs -->
+    <aside class="settings-sidebar">
+      <nav class="tabs-nav">
+
+        <!-- Profile Tab -->
+        <button [class.active]="activeTab === 'profile'" (click)="activeTab = 'profile'" id="tab-profile">
+          <div class="tab-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" />
+              <circle cx="12" cy="7" r="4" />
+            </svg>
+          </div>
+          <span class="tab-label">{{ 'SETTINGS.PROFILE_TAB' | translate }}</span>
+          <div class="tab-arrow">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="m9 18 6-6-6-6" />
+            </svg>
+          </div>
+        </button>
+
+        <!-- Security Tab -->
+        <button [class.active]="activeTab === 'security'" (click)="activeTab = 'security'" id="tab-security">
+          <div class="tab-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect width="18" height="11" x="3" y="11" rx="2" ry="2" />
+              <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+            </svg>
+          </div>
+          <span class="tab-label">{{ 'SETTINGS.SECURITY_TAB' | translate }}</span>
+          <div class="tab-arrow">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="m9 18 6-6-6-6" />
+            </svg>
+          </div>
+        </button>
+
+        <!-- Preferences Tab -->
+        <button [class.active]="activeTab === 'preferences'" (click)="activeTab = 'preferences'" id="tab-preferences">
+          <div class="tab-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="3" />
+              <path d="M19.07 4.93a10 10 0 0 0-14.14 0" />
+              <path d="M4.93 19.07a10 10 0 0 0 14.14 0" />
+              <path d="M12 2v2" />
+              <path d="M12 20v2" />
+              <path d="m4.22 4.22 1.42 1.42" />
+              <path d="m18.36 18.36 1.42 1.42" />
+              <path d="M2 12h2" />
+              <path d="M20 12h2" />
+              <path d="m4.22 19.78 1.42-1.42" />
+              <path d="m18.36 5.64 1.42-1.42" />
+            </svg>
+          </div>
+          <span class="tab-label">{{ 'SETTINGS.PREFERENCES_TAB' | translate }}</span>
+          <div class="tab-arrow">
+            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="m9 18 6-6-6-6" />
+            </svg>
+          </div>
+        </button>
+
+      </nav>
+    </aside>
+
+    <!-- Content Area -->
+    <main class="settings-content">
+
+      <!-- Profile Section -->
+      <section *ngIf="activeTab === 'profile'" class="tab-panel animate-fade-in">
+        <div class="panel-header">
+          <div class="panel-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" />
+              <circle cx="12" cy="7" r="4" />
+            </svg>
+          </div>
+          <div>
+            <h2>{{ 'SETTINGS.PROFILE.TITLE' | translate }}</h2>
+            <p>{{ 'SETTINGS.PROFILE.SUBTITLE' | translate }}</p>
+          </div>
+        </div>
+
+        <form [formGroup]="profileForm" (ngSubmit)="onUpdateProfile()" class="settings-form">
+          <div class="form-grid">
+            <div class="form-group">
+              <label>{{ 'SETTINGS.PROFILE.NOM' | translate }}</label>
+              <div class="input-wrap">
+                <div class="input-icon">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" />
+                    <circle cx="12" cy="7" r="4" />
+                  </svg>
+                </div>
+                <input type="text" formControlName="nom" id="input-nom">
+              </div>
+            </div>
+            <div class="form-group">
+              <label>{{ 'SETTINGS.PROFILE.PRENOM' | translate }}</label>
+              <div class="input-wrap">
+                <div class="input-icon">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" />
+                    <circle cx="12" cy="7" r="4" />
+                  </svg>
+                </div>
+                <input type="text" formControlName="prenom" id="input-prenom">
+              </div>
+            </div>
+            <div class="form-group full-width">
+              <label>{{ 'SETTINGS.PROFILE.EMAIL' | translate }}</label>
+              <div class="input-wrap">
+                <div class="input-icon">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect width="20" height="16" x="2" y="4" rx="2" />
+                    <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7" />
+                  </svg>
+                </div>
+                <input type="email" formControlName="email" id="input-email">
+              </div>
+            </div>
+            <div class="form-group full-width">
+              <label>{{ 'SETTINGS.PROFILE.PHONE' | translate }}</label>
+              <div class="input-wrap">
+                <div class="input-icon">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                    stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path
+                      d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.35 2 2 0 0 1 3.6 1h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L7.91 8.6a16 16 0 0 0 6 6l.92-.92a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" />
+                  </svg>
+                </div>
+                <input type="text" formControlName="telephone" id="input-tel">
+              </div>
+            </div>
+          </div>
+          <div class="form-actions">
+            <button type="submit" class="btn-primary" id="btn-save-profile" [disabled]="profileForm.invalid">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z" />
+                <polyline points="17 21 17 13 7 13 7 21" />
+                <polyline points="7 3 7 8 15 8" />
+              </svg>
+              {{ 'SETTINGS.PROFILE.SAVE' | translate }}
+            </button>
+          </div>
+        </form>
+      </section>
+
+      <!-- Security Section -->
+      <section *ngIf="activeTab === 'security'" class="tab-panel animate-fade-in">
+        <div class="panel-header">
+          <div class="panel-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect width="18" height="11" x="3" y="11" rx="2" ry="2" />
+              <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+            </svg>
+          </div>
+          <div>
+            <h2>{{ 'SETTINGS.SECURITY.TITLE' | translate }}</h2>
+            <p>{{ 'SETTINGS.SECURITY.SUBTITLE' | translate }}</p>
+          </div>
+        </div>
+
+        <form [formGroup]="passwordForm" (ngSubmit)="onChangePassword()" class="settings-form">
+          <div class="form-group">
+            <label>{{ 'SETTINGS.SECURITY.OLD_PASSWORD' | translate }}</label>
+            <div class="input-wrap">
+              <div class="input-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                  stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <rect width="18" height="11" x="3" y="11" rx="2" ry="2" />
+                  <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+                </svg>
+              </div>
+              <input type="password" formControlName="oldPassword" id="input-old-pw">
+            </div>
+          </div>
+          <div class="form-group">
+            <label>{{ 'SETTINGS.SECURITY.NEW_PASSWORD' | translate }}</label>
+            <div class="input-wrap">
+              <div class="input-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                  stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path
+                    d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10" />
+                </svg>
+              </div>
+              <input type="password" formControlName="newPassword" id="input-new-pw">
+            </div>
+            <div class="error-messages" *ngIf="passwordForm.get('newPassword')?.invalid && passwordForm.get('newPassword')?.touched">
+              <small *ngIf="passwordForm.get('newPassword')?.hasError('minLength')">Minimum 8 caractères requis</small>
+              <small *ngIf="passwordForm.get('newPassword')?.hasError('uppercase')">Au moins une lettre majuscule</small>
+              <small *ngIf="passwordForm.get('newPassword')?.hasError('lowercase')">Au moins une lettre minuscule</small>
+              <small *ngIf="passwordForm.get('newPassword')?.hasError('number')">Au moins un chiffre (0-9)</small>
+              <small *ngIf="passwordForm.get('newPassword')?.hasError('special')">Au moins un caractère spécial (!&#64;#$%^&* etc.)</small>
+            </div>
+          </div>
+          <div class="form-group">
+            <label>{{ 'SETTINGS.SECURITY.CONFIRM_PASSWORD' | translate }}</label>
+            <div class="input-wrap">
+              <div class="input-icon">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                  stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10" />
+                  <path d="m9 12 2 2 4-4" />
+                </svg>
+              </div>
+              <input type="password" formControlName="confirmPassword" id="input-confirm-pw">
+            </div>
+          </div>
+          <div class="form-actions">
+            <button type="submit" class="btn-primary" id="btn-update-pw" [disabled]="passwordForm.invalid">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10" />
+                <path d="m9 12 2 2 4-4" />
+              </svg>
+              {{ 'SETTINGS.SECURITY.UPDATE' | translate }}
+            </button>
+          </div>
+        </form>
+      </section>
+
+      <!-- Preferences Section -->
+      <section *ngIf="activeTab === 'preferences'" class="tab-panel animate-fade-in">
+        <div class="panel-header">
+          <div class="panel-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <circle cx="12" cy="12" r="3" />
+              <path d="M19.07 4.93a10 10 0 0 0-14.14 0" />
+              <path d="M4.93 19.07a10 10 0 0 0 14.14 0" />
+              <path d="M12 2v2" /><path d="M12 20v2" />
+              <path d="m4.22 4.22 1.42 1.42" /><path d="m18.36 18.36 1.42 1.42" />
+              <path d="M2 12h2" /><path d="M20 12h2" />
+              <path d="m4.22 19.78 1.42-1.42" /><path d="m18.36 5.64 1.42-1.42" />
+            </svg>
+          </div>
+          <div>
+            <h2>{{ 'SETTINGS.PREFERENCES.TITLE' | translate }}</h2>
+            <p>{{ 'SETTINGS.PREFERENCES.SUBTITLE' | translate }}</p>
+          </div>
+        </div>
+
+        <div class="preference-items">
+          <!-- Language Switcher -->
+          <div class="pref-item">
+            <div class="pref-icon-wrap">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="m5 8 6 6" />
+                <path d="m4 14 6-6 2-3" />
+                <path d="M2 5h12" />
+                <path d="M7 2h1" />
+                <path d="m22 22-5-10-5 10" />
+                <path d="M14 18h6" />
+              </svg>
+            </div>
+            <div class="pref-info">
+              <span class="pref-label">{{ 'SETTINGS.PREFERENCES.LANGUAGE' | translate }}</span>
+              <span class="pref-desc">{{ 'SETTINGS.PREFERENCES.LANG_DESC' | translate }}</span>
+            </div>
+            <div class="lang-toggle">
+              <button id="btn-lang-fr" [class.active]="languageService.currentLang() === 'fr'" (click)="switchLanguage('fr')">FR</button>
+              <button id="btn-lang-ar" [class.active]="languageService.currentLang() === 'ar'" (click)="switchLanguage('ar')">AR</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- ===== PORTAL MANAGEMENT (Admin Only) ===== -->
+        <div *ngIf="isAdmin" class="portal-management-section">
+          <div class="portal-section-header">
+            <div class="portal-header-icon">
+              <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none"
+                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <rect width="18" height="11" x="3" y="11" rx="2" ry="2"/>
+                <path d="M7 11V7a5 5 0 0 1 9.9-1"/>
+                <line x1="12" y1="16" x2="12" y2="16.01"/>
+              </svg>
+            </div>
+            <div>
+              <h3 class="portal-section-title">Gestion de l'accès au portail</h3>
+              <p class="portal-section-desc">Contrôlez la disponibilité du portail pour les candidats.</p>
+            </div>
+            <div class="portal-status-badge" [class.badge-open]="!portalForm.get('isClosed')?.value" [class.badge-closed]="portalForm.get('isClosed')?.value">
+              <span class="badge-dot"></span>
+              {{ portalForm.get('isClosed')?.value ? 'Portail Clôturé' : 'Portail Actif' }}
+            </div>
+          </div>
+
+          <form [formGroup]="portalForm" (ngSubmit)="onUpdatePortalSettings()" class="portal-form">
+            
+            <!-- Toggle Fermeture Manuelle -->
+            <div class="portal-control-row">
+              <div class="portal-control-info">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+                  stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M18.36 6.64a9 9 0 1 1-12.73 0"/>
+                  <line x1="12" y1="2" x2="12" y2="12"/>
+                </svg>
+                <div>
+                  <span class="control-label">Fermeture manuelle immédiate</span>
+                  <span class="control-desc">Bloquer l'accès au portail pour tous les candidats maintenant</span>
+                </div>
+              </div>
+              <label class="premium-toggle" for="toggle-portal">
+                <input type="checkbox" id="toggle-portal" formControlName="isClosed" (change)="onPortalToggleChange()">
+                <span class="toggle-slider"></span>
+              </label>
+            </div>
+
+            <!-- Date de Clôture Automatique -->
+            <div class="portal-control-row">
+              <div class="portal-control-info">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
+                  stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <rect width="18" height="18" x="3" y="4" rx="2" ry="2"/>
+                  <line x1="16" y1="2" x2="16" y2="6"/>
+                  <line x1="8" y1="2" x2="8" y2="6"/>
+                  <line x1="3" y1="10" x2="21" y2="10"/>
+                  <path d="m9 16 2 2 4-4"/>
+                </svg>
+                <div>
+                  <span class="control-label">Date de clôture automatique</span>
+                  <span class="control-desc">Le portail se fermera automatiquement à cette date et heure</span>
+                </div>
+              </div>
+              <div>
+                <input 
+                  type="datetime-local" 
+                  formControlName="closingDate" 
+                  id="input-closing-date"
+                  class="portal-date-input"
+                  [min]="minClosingDate"
+                >
+                <div *ngIf="portalForm.get('closingDate')?.hasError('pastDate') && portalForm.get('closingDate')?.touched" class="error-message">
+                  La date ne peut pas être dans le passé
+                </div>
+              </div>
+            </div>
+
+            <!-- Message de Maintenance -->
+            <div class="portal-message-row">
+              <label class="control-label" for="input-maintenance-msg">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                  stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                </svg>
+                Message affiché aux candidats lors de la clôture
+              </label>
+              <textarea 
+                id="input-maintenance-msg"
+                formControlName="maintenanceMessage" 
+                rows="3"
+                class="portal-textarea"
+                placeholder="Ex: Le portail des examens est clôturé pour cette session. Merci pour votre participation."
+              ></textarea>
+            </div>
+
+            <!-- Actions -->
+            <div class="portal-actions">
+              <div class="portal-warning" *ngIf="portalForm.get('isClosed')?.value">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                  stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"/>
+                  <path d="M12 9v4"/><path d="M12 17h.01"/>
+                </svg>
+                Attention : le portail est actuellement <strong>fermé</strong> aux candidats.
+              </div>
+              <button type="submit" class="btn-portal-save" id="btn-save-portal">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                  stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/>
+                  <polyline points="17 21 17 13 7 13 7 21"/>
+                  <polyline points="7 3 7 8 15 8"/>
+                </svg>
+                Enregistrer les paramètres du portail
+              </button>
+            </div>
+
+          </form>
+        </div>
+        <!-- ===== END PORTAL MANAGEMENT ===== -->
+
+      </section>
+
+    </main>
+  </div>
+</div>
+

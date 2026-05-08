@@ -1,0 +1,165 @@
+<div class="support-center-wrapper">
+  <!-- Left Side: Tickets History -->
+  <aside class="tickets-sidebar glass-card">
+    <div class="sidebar-header">
+      <h3>{{ 'RECLAMATIONS.MY_TICKETS' | translate }}</h3>
+      <button class="btn-add-ticket" (click)="startNewChat()" [disabled]="currentChatStep === 'SUBMITTING'" [title]="'RECLAMATIONS.NEW_TICKET' | translate">
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
+        {{ 'COMMON.NEW' | translate }}
+      </button>
+    </div>
+
+    <div class="search-bar">
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+      <input type="text" [placeholder]="'RECLAMATIONS.MY_TICKETS' | translate">
+    </div>
+
+    <div class="tickets-list">
+      <div class="loader-container" *ngIf="isLoading">
+        <div class="spinner"></div>
+      </div>
+
+      <div class="ticket-item" 
+           *ngFor="let rec of reclamations" 
+           [class.active]="selectedReclamation?.id === rec.id"
+           [ngClass]="getCategoryClass(rec.objet)"
+           (click)="selectTicket(rec)">
+        <div class="ticket-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/></svg>
+        </div>
+        <div class="ticket-info">
+          <div class="info-top">
+            <span class="ticket-id">#TK-{{rec.id}}</span>
+            <span class="ticket-date">{{rec.dateSoumission | date:'shortDate'}}</span>
+          </div>
+          <h4 class="ticket-objet">{{getTranslatedText(rec.objet)}}</h4>
+          <div class="info-bottom">
+            <span class="status-badge" [ngClass]="getStatusClass(rec.statut)">{{getTranslate(rec.statut)}}</span>
+            <span class="priority-label" *ngIf="rec.priorite === 'URGENTE'">{{ 'RECLAMATIONS.LABELS.URGENT' | translate }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- Right Side: Interactive Assistant / Conversation -->
+  <main class="chat-container">
+    <!-- Plexus background canvas -->
+    <canvas #plexusCanvas class="plexus-canvas"></canvas>
+    
+    <!-- Header with 3D Avatar -->
+    <header class="chat-header glass-card">
+      <div class="assistant-profile">
+        <div class="avatar-wrapper">
+          <img src="assets/images/ai-robot.png" 
+               alt="Assistant AI" 
+               class="avatar-3d"
+               (error)="$event.target.src='https://ui-avatars.com/api/?name=AI+Assistant&background=0284c7&color=fff'">
+          <div class="pulse-indicator"></div>
+        </div>
+        <div class="assistant-meta">
+          <h2>{{ 'RECLAMATIONS.CHAT.WELCOME' | translate | slice:0:25 }}...</h2>
+          <span class="status-text">
+            {{ currentChatStep === 'SUBMITTING' ? ('RECLAMATIONS.CHAT.SUBMITTING' | translate) : ('RECLAMATIONS.SUBTITLE' | translate) }}
+          </span>
+        </div>
+      </div>
+      <div class="header-actions">
+        <!-- Close/Minimize buttons can go here -->
+      </div>
+    </header>
+
+    <!-- Chat Messages Area -->
+    <div class="messages-viewport" #scrollMe>
+      
+      <!-- DEFAULT STATE: Selected Ticket View -->
+      <div class="ticket-details-view" *ngIf="selectedReclamation && currentChatStep === 'IDLE'">
+        <div class="details-card glass-card animate-zoom">
+          <div class="details-header">
+            <h3>{{getTranslatedText(selectedReclamation.objet)}}</h3>
+            <span class="badge" [ngClass]="getStatusClass(selectedReclamation.statut)">{{getTranslate(selectedReclamation.statut)}}</span>
+          </div>
+          <p class="details-desc">{{selectedReclamation.description}}</p>
+          
+          <div class="admin-reply" *ngIf="selectedReclamation.reponseAdmin">
+            <div class="reply-header">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+              <span>{{ 'RECLAMATIONS.LABELS.STATUS' | translate }} :</span>
+            </div>
+            <p>{{getTranslatedText(selectedReclamation.reponseAdmin)}}</p>
+            <span class="reply-date">{{ 'RECLAMATIONS.LABELS.TREATED_ON' | translate }} {{selectedReclamation.dateTraitement | date:'dd/MM/yyyy HH:mm'}}</span>
+          </div>
+
+          <div class="ticket-footer">
+            <div class="tag"><b>{{ 'RECLAMATIONS.LABELS.CATEGORY' | translate }}:</b> {{getTranslate(selectedReclamation.categorie)}}</div>
+            <div class="tag"><b>{{ 'RECLAMATIONS.LABELS.PRIORITY' | translate }}:</b> {{getTranslate(selectedReclamation.priorite)}}</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ACTIVE CHAT STATE -->
+      <div class="chat-flow" *ngIf="!selectedReclamation || currentChatStep !== 'IDLE'">
+        <div 
+          *ngFor="let msg of messages; let i = index" 
+          class="message-bubble" 
+          [class.bot]="msg.role === 'bot'" 
+          [class.user]="msg.role === 'user'"
+          [style.animation-delay]="(i * 0.07) + 's'">
+          <div class="bubble-content">
+            <p [innerHTML]="msg.text"></p>
+            
+            <div class="msg-attachment" *ngIf="msg.fileName">
+              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>
+              <span>{{msg.fileName}}</span>
+            </div>
+
+            <span class="timestamp">{{msg.timestamp | date:'HH:mm'}}</span>
+          </div>
+
+          <!-- Quick Select Options for Bot -->
+          <div class="bot-options" *ngIf="msg.options && currentChatStep === 'OBJECT_PENDING' && i === messages.length - 1">
+            <button class="choice-chip" *ngFor="let opt of msg.options" (click)="selectOption(opt)">{{opt}}</button>
+          </div>
+        </div>
+
+        <!-- Typing Indicator -->
+        <div class="message-bubble bot typing-bubble" *ngIf="currentChatStep === 'WELCOMING' || currentChatStep === 'SUBMITTING'">
+          <div class="typing-indicator">
+            <span></span><span></span><span></span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Chat Input Area -->
+    <footer class="chat-input-area glass-card" [class.disabled]="currentChatStep === 'IDLE' || currentChatStep === 'DONE' || currentChatStep === 'OBJECT_PENDING'">
+      
+      <!-- Attachment Preview -->
+      <div class="attachment-preview" *ngIf="selectedFile">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><polyline points="13 2 13 9 20 9"/></svg>
+        <span class="file-name">{{selectedFile.name}}</span>
+        <button class="btn-remove-file" (click)="removeFile()">
+          <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6L6 18M6 6l12 12"/></svg>
+        </button>
+      </div>
+
+      <div class="input-wrapper">
+        <input type="file" #fileInput hidden (change)="onFileSelected($event)" accept="image/*,.pdf,.doc,.docx">
+        <button class="btn-attach" (click)="fileInput.click()" [disabled]="currentChatStep === 'IDLE' || currentChatStep === 'OBJECT_PENDING' || currentChatStep === 'SUBMITTING' || currentChatStep === 'DONE'" title="Joindre un fichier ou une capture">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"/></svg>
+        </button>
+
+        <textarea 
+          [(ngModel)]="userInput" 
+          (keyup.enter)="handleUserInput()"
+          [placeholder]="currentChatStep === 'OBJECT_PENDING' ? ('RECLAMATIONS.CHAT.CHOOSE_CAT' | translate) : ('RECLAMATIONS.CHAT.TYPE_MSG' | translate)" 
+          [disabled]="currentChatStep === 'IDLE' || currentChatStep === 'OBJECT_PENDING' || currentChatStep === 'SUBMITTING' || currentChatStep === 'DONE'"></textarea>
+        <button class="btn-send" (click)="handleUserInput()" [disabled]="currentChatStep === 'OBJECT_PENDING' || (!userInput.trim() && !selectedFile) || currentChatStep === 'SUBMITTING'">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polyline points="22 2 15 22 11 13 2 9 22 2"/></svg>
+        </button>
+      </div>
+      <p class="helper-text" *ngIf="currentChatStep === 'IDLE'">{{ 'RECLAMATIONS.CHAT.IDLE_HINT' | translate }}</p>
+    </footer>
+
+  </main>
+</div>

@@ -1,0 +1,6 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://postgres-reclamation:5432/residanat_reclamation_db
+  jpa:
+    hibernate:
+      ddl-auto: update

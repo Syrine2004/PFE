@@ -1,0 +1,62 @@
+# IDE and editor
+.idea/
+.vscode/
+*.iml
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+*.out
+*.err
+
+# Environment and secrets
+.env
+.env.*
+!.env.example
+
+# Documents & Reports (volumineux)
+*.pdf
+rapport*.pdf
+*.doc
+*.docx
+
+# Java / Maven / Spring
+**/target/
+**/.mvn/wrapper/maven-wrapper.jar
+
+# Node / Angular
+**/node_modules/
+**/dist/
+**/.angular/
+**/.cache/
+**/coverage/
+**/.eslintcache
+
+# Python
+**/__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/
+.mypy_cache/
+.venv/
+venv/
+
+# Docker and runtime temp files
+*.pid
+*.seed
+*.pid.lock
+
+# Project generated artifacts
+BACKEND/**/build_log*.txt
+BACKEND/**/run_err*.txt
+BACKEND/**/build_err*.txt
+BACKEND/**/auth_run_log*.txt
+residanat-frontend-main/build_*.txt
+
+# Executables et gros fichiers binaires
+*.exe
+cloudflared.exe

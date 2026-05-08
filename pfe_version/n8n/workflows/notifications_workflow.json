@@ -1,0 +1,58 @@
+{
+  "name": "Residanat Notifications",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "residanat-notifications",
+        "options": {}
+      },
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [
+        250,
+        300
+      ],
+      "webhookId": "9d9e9f9a-8b8c-4d4e-afaf-bfbfcfcfdfdf"
+    },
+    {
+      "parameters": {
+        "fromEmail": "adminresidanat2026@gmail.com",
+        "toEmail": "={{ $json.body.email }}",
+        "subject": "=📢 Notification Ministère de la Santé - {{ $json.body.prenom }} {{ $json.body.nom }}",
+        "html": "=<div style=\"font-family: 'Outfit', sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: auto; border: 1px solid #e2e8f0; border-radius: 12px; overflow: hidden;\">\n  <div style=\"background-color: #1e3a8a; padding: 25px; text-align: center; color: white;\">\n    <h2 style=\"margin: 0; font-size: 24px;\">Ministère de la Santé</h2>\n    <p style=\"margin: 5px 0 0; opacity: 0.8;\">Concours National de Résidanat</p>\n  </div>\n  \n  <div style=\"padding: 30px; background-color: #ffffff;\">\n    <p style=\"font-size: 18px;\">Bonjour <strong>{{ $json.body.prenom }} {{ $json.body.nom }}</strong>,</p>\n    \n    <p style=\"color: #475569; font-size: 16px;\">{{ $json.body.message }}</p>\n    \n    <div style=\"margin: 30px 0; padding: 20px; background-color: #f8fafc; border-left: 4px solid #1e3a8a; border-radius: 4px;\">\n      <p style=\"margin: 0; color: #1e3a8a; font-weight: bold;\">Détails de l'événement :</p>\n      <p style=\"margin: 5px 0 0; font-size: 15px;\">Action : {{ $json.body.action || 'Mise à jour de dossier' }}</p>\n    </div>\n\n    <p style=\"font-size: 14px; color: #64748b;\">Pour toute question, veuillez consulter votre espace candidat sur la plateforme officielle.</p>\n  </div>\n\n  <div style=\"background-color: #f1f5f9; padding: 20px; text-align: center; font-size: 12px; color: #94a3b8; border-top: 1px solid #e2e8f0;\">\n    <p style=\"margin: 0;\">Ceci est un message officiel de l'Administration du Concours de Résidanat.</p>\n    <p style=\"margin: 5px 0 0;\">© 2026 Ministère de la Santé Publique - Tunisie</p>\n  </div>\n</div>",
+        "options": {}
+      },
+      "name": "SMTP",
+      "type": "n8n-nodes-base.emailSend",
+      "typeVersion": 1,
+      "position": [
+        500,
+        300
+      ],
+      "credentials": {
+        "smtp": {
+          "id": "1",
+          "name": "SMTP account"
+        }
+      }
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "SMTP",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {},
+  "id": "1"
+}

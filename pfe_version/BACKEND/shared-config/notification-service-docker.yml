@@ -1,0 +1,5 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://postgres-notification:5432/residanat_notification_db
+  rabbitmq:
+    host: rabbitmq

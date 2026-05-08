@@ -1,0 +1,220 @@
+<div class="resultats-page">
+  <!-- 1. VUE ÉCRAN (MODERNE) - Masquée à l'impression -->
+  <div class="page-content-host no-print" @fadeIn>
+    <header class="page-header">
+        <div class="title-block">
+            <p class="eyebrow">{{ 'RESULTATS.REPUBLIC' | translate }}</p>
+            <h1>{{ 'RESULTATS.TITLE' | translate }}</h1>
+            <p class="subtitle">{{ 'CONVOCATION.LABELS.SESSION' | translate }} {{ currentYear }} / {{ currentYear + 1 }}</p>
+        </div>
+        <div class="header-actions">
+            <button class="print-btn" (click)="imprimer()" *ngIf="!isLoading && !errorMessage">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-printer"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect width="12" height="8" x="6" y="14"/></svg>
+                {{ 'RESULTATS.BTN.PRINT' | translate }}
+            </button>
+            <button class="back-link" routerLink="/dashboard/home">{{ 'RESULTATS.BTN.BACK' | translate }}</button>
+        </div>
+    </header>
+
+    <main class="main-body">
+      <div *ngIf="isLoading" class="white-card status-box">
+        <div class="loader"></div>
+        <p>{{ 'RESULTATS.LOADING' | translate }}</p>
+      </div>
+
+      <div *ngIf="!isLoading && errorMessage" class="white-card status-box error" [class.waiting-state]="isNotAvailableMsg()">
+        <!-- 1. En Attente UI (Priorité) -->
+        <ng-container *ngIf="isNotAvailableMsg()">
+            <div class="icon-pulse waiting-icon">
+               <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            </div>
+            <h3>{{ 'RESULTATS.EMPTY_TITLE' | translate }}</h3>
+            <p>{{ errorMessage }}</p>
+        </ng-container>
+
+        <!-- 2. Anomalie / Non-éligibilité UI -->
+        <ng-container *ngIf="!isNotAvailableMsg()">
+            <div class="info-icon" [style.background-color]="isNonEligible() ? '#ef4444' : ''">!</div>
+            <h3>{{ isNonEligible() ? ('RESULTATS.ELIGIBILITY_ERROR_TITLE' | translate) : ('RESULTATS.EMPTY_TITLE' | translate) }}</h3>
+            <p>{{ errorMessage }}</p>
+        </ng-container>
+      </div>
+
+      <div *ngIf="!isLoading && resultat && isEligible" class="results-layout">
+        <div class="white-card document-card">
+          <div class="document-top-accent" [class.danger]="!isAdmis(resultat.statut)"></div>
+
+          <div class="doc-header">
+            <div class="institution-brand">
+              <img src="/assets/images/tunisie-flag.png" 
+                   alt="Drapeau Tunisie" class="national-flag">
+              <div class="branding-text">
+                <span class="republic">{{ 'RESULTATS.REPUBLIC' | translate }}</span>
+                <span class="ministry">{{ 'RESULTATS.MINISTRY' | translate }}</span>
+              </div>
+            </div>
+            <div class="doc-ref">
+              <span class="label">{{ 'RESULTATS.REF_INSCRIPTION' | translate }}</span>
+              <span class="value">{{ resultat.numeroConvocation }}</span>
+            </div>
+          </div>
+
+          <div class="doc-content">
+            <h2 class="document-title">{{ 'RESULTATS.TITLE' | translate | uppercase }}</h2>
+
+            <section class="identity-section">
+              <div class="identity-grid">
+                <div class="field">
+                  <label>{{ 'RESULTATS.LABELS.CANDIDATE' | translate }}</label>
+                  <div class="val text-bold">{{ resultat.nomPrenom }}</div>
+                </div>
+                <div class="field">
+                  <label>{{ 'RESULTATS.LABELS.CIN' | translate }}</label>
+                  <div class="val">{{ resultat.cin }}</div>
+                </div>
+              </div>
+            </section>
+
+            <div class="results-visual-grid">
+              <section class="grades-partition">
+                <h3 class="panel-title">{{ 'RESULTATS.SCORES_TITLE' | translate }}</h3>
+                <table class="clean-table">
+                  <thead>
+                    <tr>
+                      <th>{{ 'CONVOCATION.LABELS.EXAM' | translate }}</th>
+                      <th class="text-right">{{ 'RESULTATS.LABELS.SCORE' | translate }} (/20)</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>{{ 'RESULTATS.EP1' | translate }}</td>
+                      <td class="text-right val">{{ resultat.noteEpreuve1 | number:'1.2-2' }}</td>
+                    </tr>
+                    <tr>
+                      <td>{{ 'RESULTATS.EP2' | translate }}</td>
+                      <td class="text-right val">{{ resultat.noteEpreuve2 | number:'1.2-2' }}</td>
+                    </tr>
+                    <tr class="average-footer">
+                      <td>
+                        <div class="average-label-container">
+                          <div class="main-label">{{ 'RESULTATS.LABELS.SCORE' | translate }}</div>
+                          <div class="sub-label">{{ 'RESULTATS.LABELS.SECURE' | translate }}</div>
+                        </div>
+                      </td>
+                      <td class="text-right">
+                        <div class="average-pill-container">
+                          <div class="average-pill" 
+                               [class.success]="isAdmis(resultat.statut)"
+                               [class.danger]="!isAdmis(resultat.statut)">
+                            {{ resultat.moyenneGenerale | number:'1.2-3' }}
+                          </div>
+                        </div>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              </section>
+
+              <section class="outcome-partition">
+                <div class="outcome-box" 
+                     [class.success]="isAdmis(resultat.statut)"
+                     [class.danger]="!isAdmis(resultat.statut)">
+                  <div class="outcome-header">{{ 'RESULTATS.LABELS.DECISION' | translate }}</div>
+                  <div class="outcome-status">{{ getTranslatedStatus(resultat.statut) }}</div>
+                  
+                  <div class="ranking-panel" *ngIf="isAdmis(resultat.statut)">
+                    <div class="rank-label">{{ 'RESULTATS.LABELS.RANK' | translate }}</div>
+                    <div class="rank-value">n° {{ resultat.rang }}</div>
+                  </div>
+                </div>
+
+                <div class="print-action-zone">
+                  <button class="download-button" (click)="downloadPdf()">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg>
+                    {{ 'RESULTATS.BTN.DOWNLOAD' | translate }}
+                  </button>
+
+                  <div class="qr-code-zone" *ngIf="qrImageUrl">
+                    <img [src]="qrImageUrl" alt="QR Code de vérification" class="qr-image">
+                    <span class="qr-label">{{ 'RESULTATS.LABELS.VERIFIED' | translate }}</span>
+                  </div>
+                </div>
+              </section>
+            </div>
+          </div>
+
+          <footer class="doc-footer">
+            <div class="footer-content">
+              <div class="verification-note">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+                {{ 'RESULTATS.LABELS.SECURE' | translate }}
+              </div>
+            </div>
+          </footer>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- 2. VUE IMPRESSION (OFFICIELLE - COMPACTE) - Masquée à l'écran -->
+  <div *ngIf="resultat" class="official-print-layout">
+    <div class="print-header">
+      <div class="header-side text-left">
+        {{ 'RESULTATS.REPUBLIC' | translate }}<br>{{ 'RESULTATS.MINISTRY' | translate }}
+      </div>
+      <div class="header-center">
+        <img src="/assets/images/tunisie-flag.png" class="print-flag">
+      </div>
+      <div class="header-side text-right">
+        CONCOURS NATIONAL<br>SESSION {{ currentYear }} / {{ currentYear + 1 }}
+      </div>
+    </div>
+
+    <h1 class="print-title">{{ 'RESULTATS.TITLE' | translate | uppercase }}</h1>
+
+    <div class="print-section-label">{{ 'RESULTATS.LABELS.CANDIDATE' | translate | uppercase }}</div>
+    <div class="print-id-list">
+      <div class="id-row"><span class="label">{{ 'RESULTATS.LABELS.CANDIDATE' | translate }}</span> <span class="val">{{ resultat.nomPrenom }}</span></div>
+      <div class="id-row"><span class="label">{{ 'RESULTATS.LABELS.CIN' | translate }}</span> <span class="val">{{ resultat.cin }}</span></div>
+      <div class="id-row"><span class="label">{{ 'RESULTATS.NUM_INSCRIPTION' | translate }}</span> <span class="val">{{ resultat.numeroConvocation }}</span></div>
+    </div>
+
+    <div class="print-section-label">{{ 'CONVOCATION.LABELS.EXAM' | translate | uppercase }}</div>
+    <table class="print-grades-table">
+      <thead>
+        <tr><th>{{ 'CONVOCATION.LABELS.EXAM' | translate | uppercase }}</th><th class="text-right">{{ 'RESULTATS.LABELS.SCORE' | translate | uppercase }} (/20)</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>{{ 'RESULTATS.EP1' | translate }}</td><td class="text-right">{{ resultat.noteEpreuve1 | number:'1.2-2':'en-US' }}</td></tr>
+        <tr><td>{{ 'RESULTATS.EP2' | translate }}</td><td class="text-right">{{ resultat.noteEpreuve2 | number:'1.2-2':'en-US' }}</td></tr>
+      </tbody>
+    </table>
+
+    <div class="print-average-zone">
+      <div class="avg-label">{{ 'RESULTATS.MOYENNE' | translate }}</div>
+      <div class="avg-val" [class.success]="isAdmis(resultat.statut)" [class.danger]="!isAdmis(resultat.statut)">
+        {{ resultat.moyenneGenerale | number:'1.3-3':'en-US' }}
+      </div>
+    </div>
+
+    <div class="print-decision-box">
+      <div class="dec-label">{{ 'RESULTATS.LABELS.DECISION' | translate | uppercase }}</div>
+      <div class="dec-status" [class.success]="isAdmis(resultat.statut)" [class.danger]="!isAdmis(resultat.statut)">
+        {{ getTranslatedStatus(resultat.statut)?.toUpperCase() }}
+      </div>
+      <div class="dec-rank" *ngIf="isAdmis(resultat.statut)">
+        {{ 'RESULTATS.LABELS.RANK' | translate | uppercase }} : n° {{ resultat.rang }}
+      </div>
+    </div>
+
+    <div class="print-footer">
+      <div class="print-footer-text">
+        {{ 'RESULTATS.LABELS.SECURE' | translate }}
+      </div>
+      <div class="print-qr-zone" *ngIf="qrImageUrl">
+        <img [src]="qrImageUrl" class="print-qr-image">
+        <div class="print-qr-label">{{ 'RESULTATS.LABELS.VERIFIED' | translate }}</div>
+      </div>
+    </div>
+  </div>
+</div>

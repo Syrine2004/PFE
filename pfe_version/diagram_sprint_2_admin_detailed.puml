@@ -1,0 +1,206 @@
+@startuml
+skinparam classAttributeIconSize 0
+skinparam backgroundColor #fdfdfd
+skinparam ArrowColor #263238
+skinparam class {
+    BackgroundColor White
+    BorderColor #1A4E8A
+    FontSize 12
+}
+
+' --- Colors for Sprint 2 ---
+!define ROSE #F8BBD0
+
+' --- Microservice Auth & Actors ---
+class Utilisateur {
+    -Long id
+    -String email
+    -String motDePasse
+    -String role
+    -String civilite
+    -String nom
+    -String prenom
+    -LocalDate dateNaissance
+    -String lieuNaissance
+    -String nationalite
+    -String adresse
+    -String cin
+    -String typeDocumentIdentite
+    -String telephone
+    -String faculte
+    -LocalDate dateDiplome
+    +authentifier()
+    +resetPassword()
+}
+
+class Candidat ROSE {
+    +consulterEtatDossier()
+    +consulterDetailsDossier()
+    +modifierDossierAvantValidation()
+    +consulterNotifications()
+    +telechargerConvocation()
+    +imprimerConvocation()
+    +utiliserPlan3D()
+    +rechercherLieuxFaculte()
+    +calculerItineraire3D()
+}
+
+class Administrateur ROSE {
+    +visualiserAlertesIA()
+    +consulterScoresConformite()
+    +validerDossier()
+    +rejeterDossier()
+    +validerDossiersEnMasse()
+    +importerAffectationsMinistere()
+    +previsualiserFichierImport()
+    +consulterTracesEtStats()
+    +declencherGénérationConvocations()
+}
+
+Utilisateur <|-- Candidat
+Utilisateur <|-- Administrateur
+
+' --- Microservice Concours ---
+class Concours {
+    -UUID id
+    -String typeConcours
+    -String libelle
+    -Integer annee
+    -Etat etat
+    -LocalDateTime dateDebut
+    -LocalDateTime dateFin
+    -String lieuExamen
+    +creerConcours()
+    +publierConcours()
+    +modifierParametres()
+}
+
+enum Etat {
+    NON_PUBLIE
+    PUBLIE
+    ARCHIVE
+}
+
+' --- Microservice Dossier (Sprint 2 focus) ---
+class DossierCandidature ROSE {
+    -Long id
+    -Long candidatId
+    -UUID concoursId
+    -StatutDossier statut
+    -LocalDateTime dateSoumission
+    -String dateDiplome
+    +initierDossier()
+    +uploadDocument()
+    +mettreAJourStatut()
+    +evaluerEligibilite()
+}
+
+enum StatutDossier {
+    EN_ATTENTE
+    VALIDE
+    REJETE
+    INCOMPLET
+}
+
+class Document {
+    -Long id
+    -String nom
+    -TypeDocument type
+    -LocalDateTime dateCreation
+    -String cheminFichier
+}
+
+enum TypeDocument {
+    CIN
+    DIPLOME
+    PHOTO_IDENTITE
+    PASSEPORT
+}
+
+class EvaluationIA ROSE {
+    -Long id
+    -Double score
+    -Double scoreCin
+    -Double scoreDiplome
+    -Double scorePhoto
+    -String analysisBatchId
+    -Integer expectedChecks
+    -Integer completedChecks
+    -String analysisStatus
+    -String anomalies
+    -boolean verifie
+    -LocalDateTime dateEvaluation
+    +extraireMetadonnées()
+    +detecterAnomaliesDocumentaires()
+}
+
+' --- Microservice Convocation (Added in Sprint 2) ---
+class AffectationCandidat ROSE {
+    -Long id
+    -String num
+    -String cin
+    -String concoursId
+    -String nom
+    -String prenom
+    -String fac
+    -String salle
+    -Integer nPlace
+    -Integer anneeConcours
+}
+
+class Convocation ROSE {
+    -Long id
+    -Long dossierId
+    -Long candidatId
+    -String concoursId
+    -String hashSecurise
+    -String cheminFichierPdf
+    -StatutConvocation statut
+    -Integer nombreTelechargements
+    -String numeroInscription
+    -String salle
+    -String place
+    -LocalDateTime dateEpreuve
+    -String heureAppel
+    -String lieuExamenDetail
+}
+
+enum StatutConvocation ROSE {
+    GENEREE
+    ENVOYEE
+    TELECHARGER
+    CONSULTEE
+    EXPIREE
+    ANNULEE
+}
+
+' --- Microservice Notification (Added in Sprint 2) ---
+class Notification ROSE {
+    -Long id
+    -Long candidatId
+    -String message
+    -NotificationType type
+    -LocalDateTime createdAt
+    -boolean read
+    +notifierAvancement()
+    +marquerCommeLu()
+}
+
+enum NotificationType ROSE {
+    SUCCESS
+    ERROR
+    INFO
+}
+
+' --- Relations ---
+Candidat "1" -- "1" DossierCandidature : Dépose >
+Concours "1" -- "0..*" DossierCandidature
+DossierCandidature "1" *-- "0..*" Document
+DossierCandidature "1" -- "0..1" EvaluationIA
+
+Concours "1" -- "0..*" AffectationCandidat
+DossierCandidature "1" -- "0..1" Convocation
+
+Utilisateur "1" -- "0..*" Notification : reçoit >
+
+@enduml

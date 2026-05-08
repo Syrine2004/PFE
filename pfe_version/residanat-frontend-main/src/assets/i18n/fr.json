@@ -1,0 +1,1512 @@
+{
+  "SIDEBAR": {
+    "DASHBOARD": "Tableau de bord",
+    "INSCRIPTION": "Inscription",
+    "DOSSIER": "Mon Dossier",
+    "CENTRE_3D": "Plan d'accès",
+    "CONVOCATION": "Convocation",
+    "RESULTATS": "Résultats",
+    "RECLAMATION": "Réclamations",
+    "SETTINGS": "Paramètres",
+    "LOGOUT": "Déconnexion",
+    "LOGOUT_TITLE": "Déconnexion",
+    "LOGOUT_DESC": "Voulez-vous vraiment vous déconnecter ?",
+    "LOGOUT_CONFIRM": "Oui, me déconnecter",
+    "MODIF_DOSSIER": "Modifier dossier",
+    "ADMIN_ROLE": "Administrateur",
+    "HOME": "Accueil",
+    "ADMIN_CONCOURS": "Gestion des Concours",
+    "ADMIN_CANDIDATS": "Gestion des Candidats",
+    "ADMIN_IMPORT_MINISTERE": "Import Ministère",
+    "ADMIN_IMPORT_RESULTATS": "Import Résultats"
+  },
+  "ADMIN_RECLAMATIONS": {
+    "TITLE": "Centre des Réclamations",
+    "SUBTITLE": "Interface de gestion et réponse aux candidats",
+    "STATS": {
+      "TOTAL": "Total Reçu",
+      "RESOLVED": "Traitées",
+      "NEW": "Nouvelles",
+      "PROGRESS": "En cours"
+    },
+    "LIST": {
+      "CANDIDATE": "Candidat",
+      "CONCOURS": "Concours",
+      "OBJET": "Objet",
+      "STATUS": "Statut",
+      "DATE": "Date",
+      "ACTIONS": "Actions"
+    },
+    "FILTERS": {
+      "SEARCH": "Rechercher une réclamation (Candidat, Objet...)",
+      "ALL_STATUS": "Tous les statuts",
+      "ALL_CATS": "Toutes les catégories",
+      "ALL_CONCOURS": "Tous les concours"
+    },
+    "DETAIL": {
+      "EMPTY_SELECTION": "Sélectionnez un ticket pour voir le détail",
+      "ATTACHMENT": "Pièce jointe",
+      "PREVIEW_ATTACH": "Prévisualiser",
+      "DESCRIPTION": "Description du problème",
+      "RESPONSE_LABEL": "Votre Réponse",
+      "RESPONSE_PLACEHOLDER": "Saisissez votre réponse ici...",
+      "AI_SUGGEST": "Suggestion IA",
+      "ACTIONS": {
+        "TAKE_CHARGE": "Prendre en charge",
+        "RESOLVE": "Résoudre le ticket",
+        "REJECT": "Rejeter la demande"
+      }
+    },
+    "AI_REPLIES": {
+      "RESULTAT": "Bonjour {{name}},\n\nConcernant votre réclamation sur le sujet '{{subject}}', nous avons bien reçu votre demande. Nos services examinent actuellement les résultats du concours. Nous vous tiendrons informé dans les plus brefs délais.\n\nCordialement,\nL'administration.",
+      "TECHNIQUE": "Bonjour {{name}},\n\nNous avons pris connaissance du problème technique ('{{subject}}') que vous rencontrez. Notre équipe informatique travaille à sa résolution. Veuillez réessayer de vous connecter dans quelques heures.\n\nCordialement,\nL'équipe support.",
+      "DEFAULT": "Bonjour {{name}},\n\nNous avons bien reçu votre réclamation concernant '{{subject}}'. Nous l'avons transmise au service compétent qui reviendra vers vous rapidement.\n\nCordialement,\nL'administration."
+    },
+    "ALERTS": {
+      "TAKE_CHARGE_SUCCESS": "Prise en charge effectuée avec succès",
+      "RESOLVE_SUCCESS": "Ticket clôturé avec succès",
+      "MISSING_RESPONSE": "Veuillez saisir une réponse avant de clôturer",
+      "EXPORT_SUCCESS": "Données exportées avec succès"
+    }
+  },
+  "RECLAMATIONS": {
+    "TITLE": "Espace Réclamations",
+    "SUBTITLE": "Assistant IA & Support",
+    "NEW_TICKET": "Nouveau Ticket",
+    "MY_TICKETS": "Mes Demandes",
+    "LOADING": "Chargement...",
+    "NO_TICKETS": "Aucune demande trouvée.",
+    "CHAT": {
+      "WELCOME": "Bonjour ! Je suis votre assistant virtuel intelligent. Je vais vous assister pour formuler votre réclamation de manière structurée et efficace.",
+      "CHOOSE_CAT": "Pour commencer, veuillez sélectionner le type de votre problème :",
+      "DESC_PROMPT": "C'est noté pour : <b>\"{{text}}\"</b>.<br><br>Veuillez maintenant m'expliquer le problème en détail pour que l'administration puisse enquêter. Vous pouvez également joindre une capture d'écran.",
+      "DESC_REACTION": "Je comprends parfaitement. Souhaitez-vous ajouter d'autres précisions ou un document (capture d'écran) ? Ou puis-je envoyer la demande ?",
+      "GIBBERISH": "⚠️ <strong>Désolé, votre message n'est pas assez clair.</strong><br>Veuillez fournir une description détaillée et compréhensible de votre problème (minimum 15 caractères) pour que l'administration puisse vous aider efficacement.",
+      "PROFANITY": "⚠️ <strong>Language non autorisé.</strong><br>Veuillez utiliser un langage professionnel respectueux lors de vos échanges avec l'administration. Merci de reformuler.",
+      "IA_ANALYSIS": "💡 <i>Analyse IA :</i> Votre message semble concerner la catégorie : <b>\"{{detected}}\"</b>.<br><br>",
+      "SUBMITTING": "Enregistrement et transmission de votre dossier en cours...",
+      "SUCCESS": "Parfait ! Votre réclamation a été transmise. Elle a été classée en catégorie **{{cat}}** avec une priorité **{{pri}}**.",
+      "FOLLOW_UP": "Vous pouvez suivre son évolution dans la liste à gauche.",
+      "ERROR": "Désolé, une erreur technique est survenue lors de l'envoi. Veuillez réessayer plus tard.",
+      "ATTACHMENT": "Fichier joint",
+      "TYPE_MSG": "Tapez votre message ici...",
+      "SEND": "Envoyer",
+      "IDLE_HINT": "Veuillez attendre que l'IA vous réponde ou vous pose une question."
+    },
+    "CATEGORIES": {
+      "SCORE": "Erreur sur le score ou le classement",
+      "ELIGIBILITY": "Problème d'éligibilité ou de convocation",
+      "PERSONAL": "Erreur sur les données personnelles",
+      "BUG": "Bug technique sur la plateforme",
+      "OTHER": "Autre (précision requise)",
+      "RESULTAT": "Résultat",
+      "TECHNIQUE": "Technique",
+      "INSCRIPTION": "Inscription",
+      "PROBLEME_RESULTAT": "Problème Résultat",
+      "AUTRE": "Autre"
+    },
+    "LABELS": {
+      "TICKET_REF": "Réf. Ticket",
+      "DATE": "Date",
+      "STATUS": "Statut",
+      "PRIORITY": "Priorité",
+      "CATEGORY": "Catégorie",
+      "ATTACHMENTS": "Pièces jointes",
+      "VIEW_DOC": "Voir le document",
+      "URGENT": "🔥 Urgent",
+      "TREATED_ON": "Traitée le"
+    },
+    "STATUS": {
+      "SOUMISE": "En attente",
+      "EN_COURS": "En traitement",
+      "CLOTUREE_ACCEPTEE": "Acceptée",
+      "CLOTUREE_REJETEE": "Refusée"
+    },
+    "PRIORITIES": {
+      "URGENTE": "Urgente",
+      "HAUTE": "Haute",
+      "MOYENNE": "Moyenne",
+      "BASSE": "Basse"
+    },
+    "CATS": {
+      "RESULTAT": "Résultats",
+      "TECHNIQUE": "Technique",
+      "INSCRIPTION": "Inscription",
+      "PERSONNELLE": "Données personnelles",
+      "AUTRE": "Autre"
+    }
+  },
+  "SETTINGS": {
+    "TITLE": "Paramètres",
+    "SUBTITLE": "Gérez vos préférences et la sécurité de votre compte",
+    "PROFILE_TAB": "Mon Profil",
+    "SECURITY_TAB": "Sécurité",
+    "PREFERENCES_TAB": "Préférences",
+    "PROFILE": {
+      "TITLE": "Informations Personnelles",
+      "SUBTITLE": "Mettez à jour vos informations de contact",
+      "NOM": "Nom",
+      "PRENOM": "Prénom",
+      "EMAIL": "Adresse Email",
+      "PHONE": "Numéro de téléphone",
+      "SAVE": "Sauvegarder les modifications",
+      "SUCCESS": "Profil mis à jour avec succès"
+    },
+    "SECURITY": {
+      "TITLE": "Sécurité du compte",
+      "SUBTITLE": "Modifiez votre mot de passe pour plus de sécurité",
+      "OLD_PASSWORD": "Ancien mot de passe",
+      "NEW_PASSWORD": "Nouveau mot de passe",
+      "CONFIRM_PASSWORD": "Confirmer le nouveau mot de passe",
+      "UPDATE": "Mettre à jour le mot de passe",
+      "SUCCESS": "Mot de passe modifié avec succès",
+      "WIP": "Fonctionnalité en cours de déploiement..."
+    },
+    "PREFERENCES": {
+      "TITLE": "Préférences d'affichage",
+      "SUBTITLE": "Personnalisez votre expérience sur le portail",
+      "LANGUAGE": "Langue de l'interface",
+      "LANG_DESC": "Choisissez votre langue préférée"
+    }
+  },
+  "NAVBAR": {
+    "HOME": "Accueil",
+    "ABOUT": "Qui sommes-nous",
+    "SPECIALTIES": "Spécialités",
+    "LEGAL": "Textes réglementaires",
+    "COLLEGES": "Collèges & Formations",
+    "NEWS": "Actualités",
+    "CONTACT": "Contact",
+    "DASHBOARD": "Tableau de bord",
+    "CONCOURS": "Concours Résidant"
+  },
+  "FOOTER": {
+    "DESC": "Portail officiel dédié au Concours National de Résidanat et au suivi du parcours des médecins résidents, sous l'égide du Ministère de la Santé de la République Tunisienne.",
+    "CONTACT": "contact@residanat.tn",
+    "PHONE": "+216 71 000 000",
+    "ADDRESS": "Tunis, Tunisie",
+    "PLATFORM": "Plateforme",
+    "INFO": "Informations",
+    "QUICK_ACCESS": "Accès rapide",
+    "LOGIN": "Se connecter",
+    "REGISTER": "S'inscrire",
+    "CANDIDAT_AREA": "Espace candidat",
+    "COPYRIGHT": "© 2026 Residanat TN - Ministère de la Santé. Tous droits réservés.",
+    "LEGAL_MENTIONS": "Mentions légales",
+    "PRIVACY": "Politique de confidentialité",
+    "STAGES": "Stages à l'étranger"
+  },
+  "HEADER": {
+    "REP": "République Tunisienne",
+    "MESRS": "Ministère de l'Enseignement Supérieur",
+    "SANTE": "Ministère de la Santé",
+    "DIR_MED": "Direction des Concours Médicaux"
+  },
+  "HOME": {
+    "HERO": {
+      "BADGE": "Plateforme officielle sécurisée",
+      "TITLE_1": "Concours National",
+      "TITLE_2": "de Residanat",
+      "TITLE_ACCENT": "en Médecine",
+      "DESC": "Plateforme officielle de gestion du concours national de résidanat. Inscription, suivi de dossier, convocation et résultats en toute sécurité.",
+      "BTN_CONCOURS": "Concours Résidant →"
+    },
+    "HERO_CARD": {
+      "SESSION": "Session 2026",
+      "EN_COURS": "EN COURS",
+      "POSTES": "Postes ouverts",
+      "SPECIALTIES": "Spécialités",
+      "CANDIDATS": "Candidats inscrits",
+      "FACULTES": "Facultés",
+      "DESC_CONCOURS": "Votre portail pour le concours de résidanat : gérez vos inscriptions, suivez votre dossier en direct et accédez à vos résultats de spécialisation médicale."
+    },
+    "FLASH_INFOS": {
+      "BADGE": "ACTUALITÉS",
+      "TITLE": "Dernières Actualités",
+      "SUBTITLE": "Restez informé des dernières mises à jour et événements du concours de résidanat",
+      "READ_MORE": "Lire plus",
+      "ITEM_1_TITLE": "Ouverture des inscriptions 2026",
+      "ITEM_1_TITLE_DESC": "Le portail d'inscription pour la session 2026 est désormais ouvert. Veuillez préparer vos documents.",
+      "ITEM_2_TITLE": "Spécialité : Médecine d'urgence",
+      "ITEM_2_TITLE_DESC": "Une nouvelle spécialité en médecine d'urgence est désormais disponible pour les candidats cette année.",
+      "ITEM_3_TITLE": "Résultats du concours 2025",
+      "ITEM_3_TITLE_DESC": "Les résultats définitifs du concours de résidanat session 2025 sont désormais publiés officiellement.",
+      "ITEM_4_TITLE": "Textes réglementaires : Mise à jour",
+      "ITEM_4_TITLE_DESC": "Consultez les nouveaux décrets concernant l'organisation des épreuves et les critères de sélection.",
+      "ITEM_5_TITLE": "Convention : Université de Bordeaux",
+      "ITEM_5_TITLE_DESC": "Signature d'une nouvelle convention de partenariat international pour les échanges académiques.",
+      "ITEM_6_TITLE": "Sessions de préparation intensive",
+      "ITEM_6_TITLE_DESC": "Inscrivez-vous aux sessions de préparation organisées par les facultés partenaires."
+    },
+    "PRESENTATION": {
+      "BADGE": "A PROPOS",
+      "TITLE_1": "Le concours de residanat",
+      "TITLE_ACCENT": "en medecine",
+      "DESC": "Le concours national de residanat est le passage obligatoire pour tout medecin souhaitant acceder a une specialite medicale ou chirurgicale en Tunisie. Il est organise chaque annee sous legide du Ministere de la Sante.",
+      "FEATURE_1_TITLE": "Concours unifie",
+      "FEATURE_1_DESC": "Un concours national unique garantissant equite et transparence pour tous les candidats medecins.",
+      "FEATURE_2_TITLE": "48 Specialites",
+      "FEATURE_2_DESC": "Large choix de specialites medicales et chirurgicales reparties sur differentes durees de formation.",
+      "FEATURE_3_TITLE": "Excellence academique",
+      "FEATURE_3_DESC": "Formation de qualite assuree par les meilleurs colleges de specialites et CHU du pays.",
+      "FEATURE_4_TITLE": "4 Facultes partenaires",
+      "FEATURE_4_DESC": "Tunis, Sfax, Sousse et Monastir contribuent a la formation des futurs specialistes."
+    },
+    "PROCESS": {
+      "BADGE": "PROCESSUS",
+      "TITLE": "Les etapes du concours",
+      "SUBTITLE": "Du depot de candidature jusquaux resultats finaux, suivez chaque etape directement depuis votre espace candidat.",
+      "STEP": "Etape",
+      "STEP_1_TITLE": "Inscription",
+      "STEP_1_DESC": "Creez votre compte et remplissez le formulaire dinscription en ligne.",
+      "STEP_2_TITLE": "Depot du dossier",
+      "STEP_2_DESC": "Telechargez vos documents et soumettez votre dossier pour validation.",
+      "STEP_3_TITLE": "Convocation",
+      "STEP_3_DESC": "Telechargez votre convocation avec QR code de verification.",
+      "STEP_4_TITLE": "Resultats",
+      "STEP_4_DESC": "Consultez vos notes, classement et statut dadmission.",
+      "STEP_5_TITLE": "Reclamation",
+      "STEP_5_DESC": "Deposez une reclamation si necessaire et suivez son traitement."
+    },
+    "STATS": {
+      "STAT_1": "Annees dexperience",
+      "STAT_2": "Specialites disponibles",
+      "STAT_3": "Postes ouverts / an",
+      "STAT_4": "Candidats / an"
+    }
+  },
+  "CONNEXION": {
+    "TITLE": "Se connecter",
+    "SUBTITLE": "Accédez à votre espace candidat",
+    "ID_LABEL": "Numéro d'identité",
+    "ID_PLACEHOLDER": "Votre CIN ou Passeport",
+    "ID_REQUIRED": "L'identifiant est obligatoire",
+    "ID_MINLENGTH": "L'identifiant doit contenir au moins 6 caractères",
+    "PWD_LABEL": "Mot de passe",
+    "PWD_FORGOT": "Mot de passe oublié ?",
+    "PWD_PLACEHOLDER": "Votre mot de passe",
+    "PWD_REQUIRED": "Le mot de passe est requis",
+    "BTN_LOGIN": "Se connecter",
+    "NO_ACCOUNT": "Pas encore de compte ?",
+    "REGISTER": "S'inscrire",
+    "ALERTS": {
+      "LOGIN_ERROR_TITLE": "Erreur",
+      "LOGIN_ERROR_TEXT": "CIN ou mot de passe incorrect ou problème serveur.",
+      "LOGIN_ERROR_RETRY": "Réessayer",
+      "FORGOT_INFO_TITLE": "Information requise",
+      "FORGOT_INFO_TEXT": "Veuillez d'abord saisir votre Numéro d'identité (CIN/Passeport) dans le formulaire de connexion.",
+      "FORGOT_VERIFY_TITLE": "Vérification de sécurité",
+      "FORGOT_VERIFY_HTML": "<p style='font-size: 14px;'>Identité : <b>{{cin}}</b></p><p>Saisissez l'adresse email associée à votre compte pour recevoir le code.</p>",
+      "BTN_SEND": "Vérifier et envoyer",
+      "BTN_CANCEL": "Annuler",
+      "FORGOT_ERR_SEND": "Impossible d'envoyer le code.",
+      "RESET_TITLE": "Réinitialisation",
+      "RESET_HTML_1": "Un code de sécurité a été envoyé à : <br>",
+      "RESET_HTML_2": "Code secret (6 chiffres)",
+      "RESET_HTML_3": "Nouveau mot de passe",
+      "RESET_HTML_4": "Confirmer le mot de passe",
+      "BTN_UPDATE": "Mettre à jour le mot de passe",
+      "VAL_ALL_REQ": "Veuillez remplir tous les champs",
+      "VAL_MATCH": "Les mots de passe ne correspondent pas",
+      "VAL_CODE_LEN": "Le code doit contenir 6 chiffres",
+      "SUCCESS_TITLE": "Succès !",
+      "SUCCESS_TEXT": "Votre mot de passe a été modifié avec succès. Vous pouvez maintenant vous connecter.",
+      "ERR_INVALID_CODE": "Code invalide ou expiré."
+    }
+  },
+  "INSCRIPTION": {
+    "TITLE": "S'inscrire",
+    "SUBTITLE": "Créez votre compte candidat en quelques étapes",
+    "CIVILITE": "Civilité",
+    "CIVILITE_REQ": "Civilité requise",
+    "CIVILITE_OPTS": {
+      "M": "Monsieur",
+      "MME": "Madame"
+    },
+    "NOM": "Nom",
+    "NOM_PLACEHOLDER": "Votre nom",
+    "NOM_REQ": "Nom requis (min 2 car.)",
+    "PRENOM": "Prénom",
+    "PRENOM_PLACEHOLDER": "Votre prénom",
+    "PRENOM_REQ": "Prénom requis (min 2 car.)",
+    "DATE_NAISSANCE": "Date de naissance",
+    "DATE_REQ": "Date obligatoire",
+    "DATE_AGE_ERROR": "Vous devez avoir au moins 19 ans",
+    "LIEU_NAISSANCE": "Lieu de naissance",
+    "LIEU_PLACEHOLDER": "Ville de naissance",
+    "LIEU_REQ": "Lieu requis",
+    "NATIONALITE": "Nationalité",
+    "NAT_PLACEHOLDER": "Votre nationalité",
+    "NAT_REQ": "Nationalité requise",
+    "ADRESSE": "Adresse",
+    "ADRESSE_PLACEHOLDER": "Votre adresse complète",
+    "ADRESSE_REQ": "Adresse obligatoire",
+    "DOC_TYPE": "Type de document",
+    "DOC_PLACEHOLDER": "Choisir votre document",
+    "DOC_CIN": "Carte d'Identité Nationale (CIN)",
+    "DOC_CIN_SHORT": "Carte d'Identité",
+    "DOC_CIN_DESC": "Citoyen tunisien",
+    "DOC_PASS": "Passeport",
+    "DOC_PASS_DESC": "Candidat étranger",
+    "ID_NUM": "Numéro d'identité",
+    "ID_NUM_PLACEHOLDER": "Votre numéro",
+    "ID_NUM_DISABLED": "Sélectionnez d'abord un type",
+    "ID_NUM_REQ": "Numéro obligatoire",
+    "ID_NUM_PATTERN": "8 chiffres requis pour CIN",
+    "ID_NUM_MIN": "Minimum 6 caractères requis",
+    "TELEPHONE": "Téléphone",
+    "TEL_PLACEHOLDER": "55 000 000",
+    "TEL_REQ": "Téléphone obligatoire",
+    "TEL_PATTERN": "8 chiffres (ex: 2/4/5/7/9)",
+    "EMAIL": "Email",
+    "EMAIL_PLACEHOLDER": "votre@email.com",
+    "EMAIL_INVALID": "Email invalide",
+    "FACULTE": "Faculté de médecine",
+    "FAC_PLACEHOLDER": "Choisir votre faculté",
+    "FAC_REQ": "Faculté obligatoire",
+    "FACULTES": {
+      "TUNIS": "Faculté de Médecine de Tunis",
+      "SFAX": "Faculté de Médecine de Sfax",
+      "SOUSSE": "Faculté de Médecine de Sousse",
+      "MONASTIR": "Faculté de Médecine de Monastir",
+      "ETRANGER": "Faculté Étrangère"
+    },
+    "PWD_LABEL": "Mot de passe",
+    "PWD_PLACEHOLDER": "Mot de passe",
+    "PWD_REQ": "Mot de passe requis",
+    "PWD_CONFIRM": "Confirmer",
+    "PWD_CONFIRM_REQ": "Confirmation obligatoire",
+    "PWD_MISMATCH": "Mots de passe différents",
+    "BTN_REGISTER": "Créer mon compte",
+    "HAS_ACCOUNT": "Déjà un compte ?",
+    "LOGIN": "Se connecter",
+    "ALERTS": {
+      "SUCCESS_TITLE": "Inscription Réussie !",
+      "SUCCESS_TEXT": "Bienvenue sur la plateforme Résidanat TN.",
+      "SUCCESS_BTN": "Aller à la connexion",
+      "ERR_TITLE": "Erreur",
+      "ERR_TEXT_DEFAULT": "Vérifiez vos informations ou le serveur est injoignable.",
+      "ERR_RETRY": "Réessayer"
+    }
+  },
+  "INFO_PAGES": {
+    "ACTUALITES": {
+      "TAG": "Actualités",
+      "TITLE": "Dernières actualités",
+      "DESC": "Restez informé des dernières nouvelles concernant le concours national de résidanat en médecine.",
+      "READ_MORE": "Lire plus",
+      "ARTICLES": [
+        {
+          "TITLE": "Ouverture des inscriptions pour le concours 2026",
+          "EXCERPT": "Les inscriptions en ligne pour le concours national de résidanat 2026 sont désormais ouvertes. Les candidats sont invités à compléter leur dossier avant la date limite.",
+          "DATE": "15 Février 2026",
+          "CATEGORY": "Inscription"
+        },
+        {
+          "TITLE": "Nouvelle spécialité: Médecine d'urgence",
+          "EXCERPT": "Le Ministère de la Santé annonce l'ouverture d'une nouvelle spécialité de médecine d'urgence avec 20 postes disponibles pour la session 2026.",
+          "DATE": "10 Février 2026",
+          "CATEGORY": "Nouveauté"
+        },
+        {
+          "TITLE": "Résultats du concours 2025 publiés",
+          "EXCERPT": "Les résultats définitifs du concours national de résidanat 2025 sont disponibles. Les candidats peuvent consulter leurs notes et classements.",
+          "DATE": "01 Février 2026",
+          "CATEGORY": "Résultats"
+        },
+        {
+          "TITLE": "Critères d'éligibilité au concours de résidanat",
+          "EXCERPT": "Découvrez tous les critères et conditions pour accéder au concours national de résidanat 2026. Consultez les diplômes requis, les conditions d'inscription et les pièces nécessaires avant de vous inscrire.",
+          "DATE": "25 Janvier 2026",
+          "CATEGORY": "Réglementation"
+        },
+        {
+          "TITLE": "Convention avec l'Université de Bordeaux",
+          "EXCERPT": "Signature d'une nouvelle convention de coopération pour les stages à l'étranger avec la Faculté de Médecine de Bordeaux.",
+          "DATE": "20 Janvier 2026",
+          "CATEGORY": "International"
+        },
+        {
+          "TITLE": "Session de préparation au concours",
+          "EXCERPT": "Organisation d'une session de préparation gratuite pour les candidats au concours 2026, en partenariat avec les 4 facultés de médecine.",
+          "DATE": "15 Janvier 2026",
+          "CATEGORY": "Formation"
+        },
+        {
+          "TITLE": "Conseils pour réussir l'examen écrit",
+          "EXCERPT": "Découvrez les meilleures stratégies et conseils pratiques pour bien préparer et réussir l'examen écrit du concours de résidanat. Méthodologie, gestion du temps et astuces essentielles.",
+          "DATE": "10 Janvier 2026",
+          "CATEGORY": "Conseils"
+        },
+        {
+          "TITLE": "Témoignages des résidents 2025",
+          "EXCERPT": "Lisez les témoignages inspirants de résidents sélectionnés lors de la session 2025. Leurs expériences et conseils vous aideront à mieux comprendre le parcours de résidanat.",
+          "DATE": "05 Janvier 2026",
+          "CATEGORY": "Témoignages"
+        },
+        {
+          "TITLE": "Programmes de bourses et d'aide financière",
+          "EXCERPT": "Consultez les différents programmes de bourses et d'aide financière disponibles pour les résidents. Conditions d'éligibilité et démarches de demande expliquées.",
+          "DATE": "01 Janvier 2026",
+          "CATEGORY": "Bourses"
+        },
+        {
+          "TITLE": "Calendrier complet des épreuves 2026",
+          "EXCERPT": "Retrouvez le calendrier officiel complet des épreuves 2026 : dates des examens, convocations, résultats et tous les jalons importants de la session 2026.",
+          "DATE": "28 Décembre 2025",
+          "CATEGORY": "Agenda"
+        },
+        {
+          "TITLE": "Guide complet d'utilisation de la plateforme",
+          "EXCERPT": "Apprenez comment utiliser efficacement la plateforme Résidanat TN. Tutoriels étape par étape pour l'inscription, le suivi et la gestion de votre candidature.",
+          "DATE": "20 Décembre 2025",
+          "CATEGORY": "Tutoriels"
+        },
+        {
+          "TITLE": "Ressources en bien-être pour les candidats",
+          "EXCERPT": "Accédez à des ressources complètes pour votre bien-être mental et physique pendant la préparation du concours. Gestion du stress, santé et équilibre vie-études.",
+          "DATE": "15 Décembre 2025",
+          "CATEGORY": "Santé"
+        }
+      ]
+    },
+    "QUI_SOMMES_NOUS": {
+      "TAG": "À propos",
+      "TITLE": "Qui sommes-nous ?",
+      "DESC": "La plateforme Résidanat TN est le portail officiel du Concours National de Résidanat en Médecine, placé sous la tutelle du Ministère de la Santé de la République Tunisienne.",
+      "MISSIONS": [
+        {
+          "TITLE": "Ministère de la Santé",
+          "DESC": "Le Ministère de la Santé de la République Tunisienne supervise l'ensemble du processus du concours national de résidanat, garantissant équité, transparence et respect des réglementations en vigueur."
+        },
+        {
+          "TITLE": "Mission du résidanat",
+          "DESC": "Le concours de résidanat a pour mission de sélectionner les meilleurs candidats pour les formations spécialisées en médecine, assurant ainsi la qualité des soins de santé en Tunisie."
+        },
+        {
+          "TITLE": "Collèges de spécialités",
+          "DESC": "Chaque spécialité est gérée par un collège responsable de la formation, de l'encadrement des résidents et de l'évaluation continue tout au long du cursus."
+        },
+        {
+          "TITLE": "Équité et transparence",
+          "DESC": "Le concours est organisé selon des règles strictes d'équité, avec un jury national et des critères de sélection uniformes pour tous les candidats."
+        }
+      ],
+      "ENGAGEMENT_TITLE": "Notre engagement",
+      "ENGAGEMENT_DESC": "Nous nous engageons à fournir une plateforme numérique moderne, sécurisée et accessible à tous les candidats. Notre objectif est de simplifier les démarches administratives tout en maintenant les plus hauts standards de qualité et de fiabilité dans la gestion du concours national de résidanat."
+    },
+    "SPECIALITES": {
+      "TAG": "Formation",
+      "TITLE": "Spécialités médicales",
+      "DESC": "Découvrez les différentes spécialités proposées au concours de résidanat, organisées par durée de formation.",
+      "TABS": {
+        "ANS_5": "5 ans",
+        "ANS_4": "4 ans",
+        "ANS_3": "3 ans"
+      },
+      "POSTES": "postes",
+      "POSTES_OUVERTS": "postes ouverts",
+      "DUREE": "Durée",
+      "NAMES": {
+        "CHIRURGIE_GENERALE": "Chirurgie générale",
+        "MEDECINE_INTERNE": "Médecine interne",
+        "CARDIOLOGIE": "Cardiologie",
+        "NEUROLOGIE": "Neurologie",
+        "NEPHROLOGIE": "Néphrologie",
+        "GASTRO_ENTEROLOGIE": "Gastro-entérologie",
+        "PNEUMOLOGIE": "Pneumologie",
+        "PEDIATRIE": "Pédiatrie",
+        "GYNECOLOGIE_OBSTETRIQUE": "Gynécologie-Obstétrique",
+        "UROLOGIE": "Urologie",
+        "DERMATOLOGIE": "Dermatologie",
+        "OPHTALMOLOGIE": "Ophtalmologie",
+        "ORL": "ORL",
+        "RHUMATOLOGIE": "Rhumatologie",
+        "ENDOCRINOLOGIE": "Endocrinologie",
+        "PSYCHIATRIE": "Psychiatrie",
+        "RADIOLOGIE": "Radiologie",
+        "ANATOMIE_PATHOLOGIQUE": "Anatomie pathologique",
+        "BIOLOGIE_MEDICALE": "Biologie médicale",
+        "MEDECINE_LEGALE": "Médecine légale",
+        "MEDECINE_DU_TRAVAIL": "Médecine du travail",
+        "SANTE_PUBLIQUE": "Santé publique",
+        "MEDECINE_PHYSIQUE": "Médecine physique",
+        "PHARMACOLOGIE": "Pharmacologie"
+      },
+      "COLLEGES": {
+        "CHIRURGIE": "Collège de Chirurgie",
+        "MEDECINE": "Collège de Médecine",
+        "CARDIOLOGIE": "Collège de Cardiologie",
+        "NEUROLOGIE": "Collège de Neurologie",
+        "NEPHROLOGIE": "Collège de Néphrologie",
+        "GASTRO_ENTEROLOGIE": "Collège de Gastro-entérologie",
+        "PNEUMOLOGIE": "Collège de Pneumologie",
+        "PEDIATRIE": "Collège de Pédiatrie",
+        "GYNECOLOGIE": "Collège de Gynécologie",
+        "UROLOGIE": "Collège d'Urologie",
+        "DERMATOLOGIE": "Collège de Dermatologie",
+        "OPHTALMOLOGIE": "Collège d'Ophtalmologie",
+        "ORL": "Collège d'ORL",
+        "RHUMATOLOGIE": "Collège de Rhumatologie",
+        "ENDOCRINOLOGIE": "Collège d'Endocrinologie",
+        "PSYCHIATRIE": "Collège de Psychiatrie",
+        "RADIOLOGIE": "Collège de Radiologie",
+        "ANATOMIE_PATHOLOGIQUE": "Collège d'Anatomie Pathologique",
+        "BIOLOGIE": "Collège de Biologie",
+        "MEDECINE_LEGALE": "Collège de Médecine Légale",
+        "MEDECINE_DU_TRAVAIL": "Collège de Médecine du Travail",
+        "SANTE_PUBLIQUE": "Collège de Santé Publique",
+        "MEDECINE_PHYSIQUE": "Collège de Médecine Physique",
+        "PHARMACOLOGIE": "Collège de Pharmacologie"
+      }
+    },
+    "TEXTES_REGLEMENTAIRES": {
+      "TAG": "Réglementation",
+      "TITLE": "Textes réglementaires",
+      "DESC": "Consultez l'ensemble des textes juridiques et réglementaires régissant le concours national de résidanat en médecine.",
+      "ARRETES_TITLE": "Arrêtés et décrets",
+      "POSTES_TITLE": "Répartition des postes par spécialité",
+      "POSTES_COL": {
+        "SPECIALITE": "Spécialité",
+        "POSTES": "Postes ouverts",
+        "FACULTE": "Faculté concernée"
+      },
+      "ARRETES": [
+        {
+          "TITLE": "Arrêté du 15 Janvier 2026",
+          "DESC": "Fixant les conditions et modalités d'organisation du concours national de résidanat en médecine.",
+          "DATE": "15/01/2026",
+          "TYPE": "Arrêté ministériel"
+        },
+        {
+          "TITLE": "Arrêté du 01 Février 2026",
+          "DESC": "Fixant la liste des postes ouverts au concours de résidanat pour l'année universitaire 2026-2027.",
+          "DATE": "01/02/2026",
+          "TYPE": "Arrêté ministériel"
+        },
+        {
+          "TITLE": "Décret n° 2025-1234",
+          "DESC": "Portant organisation des études médicales spécialisées et du concours de résidanat.",
+          "DATE": "15/12/2025",
+          "TYPE": "Décret"
+        },
+        {
+          "TITLE": "Circulaire n° 2026-05",
+          "DESC": "Relative aux conditions d'inscription des candidats étrangers au concours de résidanat.",
+          "DATE": "20/01/2026",
+          "TYPE": "Circulaire"
+        }
+      ],
+      "POSTES": [
+        {
+          "SPEC": "Chirurgie générale",
+          "POSTES": 45,
+          "FAC": "Toutes"
+        },
+        {
+          "SPEC": "Médecine interne",
+          "POSTES": 40,
+          "FAC": "Toutes"
+        },
+        {
+          "SPEC": "Pédiatrie",
+          "POSTES": 38,
+          "FAC": "Toutes"
+        },
+        {
+          "SPEC": "Gynécologie-Obstétrique",
+          "POSTES": 42,
+          "FAC": "Toutes"
+        },
+        {
+          "SPEC": "Cardiologie",
+          "POSTES": 35,
+          "FAC": "Toutes"
+        },
+        {
+          "SPEC": "Radiologie",
+          "POSTES": 30,
+          "FAC": "Toutes"
+        },
+        {
+          "SPEC": "Psychiatrie",
+          "POSTES": 25,
+          "FAC": "Toutes"
+        },
+        {
+          "SPEC": "Neurologie",
+          "POSTES": 25,
+          "FAC": "Toutes"
+        }
+      ]
+    },
+    "COLLEGES_FORMATIONS": {
+      "TAG": "Organisation",
+      "TITLE": "Collèges de spécialités",
+      "DESC": "Découvrez les différents collèges responsables de la formation spécialisée et de l'encadrement des résidents en médecine.",
+      "PRESIDENT": "Président",
+      "SPECIALITES": "Spécialités",
+      "STAGES": "Lieux de stage principaux",
+      "COLLEGES": [
+        {
+          "NAME": "Collège de Chirurgie",
+          "PRESIDENT": "Pr. Ahmed Ben Salah",
+          "SPECIALITES": [
+            "Chirurgie générale",
+            "Chirurgie cardiovasculaire",
+            "Neurochirurgie",
+            "Chirurgie pédiatrique"
+          ],
+          "STAGES": [
+            "CHU Charles Nicolle",
+            "CHU La Rabta",
+            "Hôpital Militaire"
+          ]
+        },
+        {
+          "NAME": "Collège de Médecine",
+          "PRESIDENT": "Pr. Fatma Kammoun",
+          "SPECIALITES": [
+            "Médecine interne",
+            "Cardiologie",
+            "Pneumologie",
+            "Néphrologie"
+          ],
+          "STAGES": [
+            "CHU Mongi Slim",
+            "CHU Hedi Chaker",
+            "CHU Farhat Hached"
+          ]
+        },
+        {
+          "NAME": "Collège de Pédiatrie",
+          "PRESIDENT": "Pr. Mohamed Habib Sfar",
+          "SPECIALITES": [
+            "Pédiatrie",
+            "Néonatologie",
+            "Chirurgie pédiatrique"
+          ],
+          "STAGES": [
+            "Hôpital d'enfants",
+            "CHU Monastir",
+            "CHU Sfax"
+          ]
+        },
+        {
+          "NAME": "Collège de Gynécologie",
+          "PRESIDENT": "Pr. Leila Ayadi",
+          "SPECIALITES": [
+            "Gynécologie-Obstétrique",
+            "Médecine de la reproduction"
+          ],
+          "STAGES": [
+            "Centre de maternité",
+            "CHU La Rabta",
+            "CHU Sousse"
+          ]
+        },
+        {
+          "NAME": "Collège de Radiologie",
+          "PRESIDENT": "Pr. Nabil Dridi",
+          "SPECIALITES": [
+            "Radiologie diagnostique",
+            "Radiologie interventionnelle"
+          ],
+          "STAGES": [
+            "CHU Charles Nicolle",
+            "CHU Habib Bourguiba"
+          ]
+        },
+        {
+          "NAME": "Collège de Psychiatrie",
+          "PRESIDENT": "Pr. Rim Ben Amor",
+          "SPECIALITES": [
+            "Psychiatrie adulte",
+            "Pédopsychiatrie"
+          ],
+          "STAGES": [
+            "Hôpital Razi",
+            "CHU Monastir",
+            "CHU Sfax"
+          ]
+        }
+      ]
+    },
+    "CONTACT": {
+      "TAG": "Assistance",
+      "TITLE": "Contact & Support",
+      "DESC": "Une question ? Un problème technique ? Notre équipe est à votre disposition pour vous accompagner dans vos démarches.",
+      "INFO": [
+        {
+          "TITLE": "Email",
+          "VALUE": "contact@residanat.tn",
+          "DESC": "Réponse sous 48h ouvrables"
+        },
+        {
+          "TITLE": "Téléphone",
+          "VALUE": "+216 71 000 000",
+          "DESC": "Lun - Ven, 8h - 17h"
+        },
+        {
+          "TITLE": "Adresse",
+          "VALUE": "Ministère de la Santé",
+          "DESC": "Tunis, Tunisie"
+        },
+        {
+          "TITLE": "Horaires",
+          "VALUE": "Lundi - Vendredi",
+          "DESC": "08:00 - 17:00"
+        }
+      ],
+      "FORM": {
+        "TITLE": "Envoyez-nous un message",
+        "NOM": "Nom complet",
+        "NOM_PLACEHOLDER": "Votre nom",
+        "EMAIL": "Email",
+        "EMAIL_PLACEHOLDER": "votre@email.com",
+        "SUJET": "Sujet",
+        "SUJET_PLACEHOLDER": "Sujet de votre demande",
+        "MESSAGE": "Message",
+        "MESSAGE_PLACEHOLDER": "Détaillez votre demande ici...",
+        "SEND": "Envoyer le message",
+        "SUCCESS_TITLE": "Message Envoyé !",
+        "SUCCESS_TEXT": "Nous vous répondrons dans les plus brefs délais."
+      }
+    },
+    "STAGES_ETRANGER": {
+      "TAG": "International",
+      "TITLE": "Stages à l'étranger",
+      "DESC": "Informations et procédures pour les résidents souhaitant effectuer une partie de leur formation dans un établissement hospitalier à l'étranger.",
+      "PROG_TITLE": "Description du programme",
+      "PROG_P1": "Le programme de stages à l'étranger permet aux résidents en médecine d'effectuer des périodes de formation dans des établissements hospitaliers et universitaires internationaux reconnus.",
+      "PROG_P2": "Ces stages, d'une durée de 3 à 12 mois, visent à compléter la formation spécialisée par l'acquisition de techniques et compétences spécifiques non disponibles localement.",
+      "CONDITIONS_TITLE": "Conditions d'éligibilité",
+      "ETAPES_TITLE": "Étapes de la procédure",
+      "CONDITIONS": [
+        "Être inscrit en année de spécialité supérieure à la 2ème année",
+        "Avoir l'accord du chef de service et du directeur du CHU",
+        "Disposer d'une convention avec l'établissement d'accueil",
+        "Fournir un plan de stage détaillé approuvé par le collège",
+        "Avoir un avis favorable du comité scientifique",
+        "Justifier d'un financement pour la durée du stage"
+      ],
+      "ETAPES": [
+        {
+          "TITLE": "Demande initiale",
+          "DESC": "Déposer une demande auprès du collège de spécialité avec le dossier complet."
+        },
+        {
+          "TITLE": "Validation collège",
+          "DESC": "Le collège étudie la demande et rend son avis dans un délai de 30 jours."
+        },
+        {
+          "TITLE": "Accord ministériel",
+          "DESC": "Le Ministère de la Santé accorde l'autorisation finale de stage à l'étranger."
+        },
+        {
+          "TITLE": "Convention",
+          "DESC": "Signature de la convention tripartite entre le CHU, le candidat et l'établissement d'accueil."
+        }
+      ]
+    }
+  },
+  "DASHBOARD_HOME": {
+    "TITLE": "Tableau de bord",
+    "SUBTITLE": "Bienvenue, {{name}}. Suivez l'avancement de votre candidature.",
+    "STEPS": {
+      "DOSSIER_TITRE": "Dossier Validé",
+      "DOSSIER_VALIDE": "Votre dossier a été validé par l'administration. La liste d'affectation n'est pas encore publiée."
+    },
+    "NOTIFICATIONS": {
+      "TITLE": "Notifications",
+      "COUNT": "NOTIFICATIONS",
+      "NEW": "NOUVELLES",
+      "JUST_NOW": "À l'instant",
+      "MIN_AGO": "Il y a {{min}} min",
+      "HOURS_AGO": "Il y a {{hours}} h",
+      "DAYS_AGO": "Il y a {{days}} j",
+      "MSG": {
+        "DOSSIER_VALIDATED": "Votre dossier a été validé.",
+        "DOSSIER_REJECTED": "Votre dossier a été rejeté. Veuillez refaire l'inscription.",
+        "CONVOCATION_READY": "Votre convocation est disponible.",
+        "RESULTATS_READY": "Vos résultats sont disponibles.",
+        "RECLAMATION_ACCEPTED": "Votre réclamation a été acceptée.",
+        "RECLAMATION_REJECTED": "Votre réclamation a été rejetée.",
+        "RECLAMATION_REPLY": "Une réponse a été apportée à votre réclamation."
+      }
+    },
+    "BANNER": {
+      "SESSION": "Session",
+      "DEADLINE": "Date limite :",
+      "NO_DEADLINE": "Date limite non définie",
+      "LOCATION": "Tunisie ({{type}})",
+      "BTN_REGISTER": "S'inscrire au concours",
+      "BTN_MODIFY": "Modifier dossier",
+      "BTN_VIEW": "Consulter mon dossier",
+      "NO_CONCOURS": "Aucun concours publié pour le moment."
+    },
+    "STATS": {
+      "DOSSIER": {
+        "LABEL": "Statut dossier",
+        "VAL_NOT_STARTED": "Non commencé",
+        "VAL_PENDING": "En attente",
+        "VAL_VALIDATED": "Validé",
+        "VAL_REJECTED": "Rejeté",
+        "VAL_INCOMPLETE": "Incomplet",
+        "BADGE_TO_COMPLETE": "À compléter",
+        "BADGE_COMPLETE": "Dossier complet",
+        "BADGE_EXAM": "En cours d'examen",
+        "BADGE_REFUSED": "Dossier refusé"
+      },
+      "SCORE": {
+        "LABEL": "SCORE CONFORMITÉ",
+        "SUBLABEL_OCR": "Conformité OCR",
+        "ID_DIP": "Identité: {{id}}% | Diplôme: {{dip}}%",
+        "ID_ONLY": "Identité: {{id}}%",
+        "DIP_ONLY": "Diplôme: {{dip}}%"
+      },
+      "CONVOCATION": {
+        "LABEL": "Convocation",
+        "VAL_NOT_GEN": "Non générée",
+        "VAL_CHECK": "Vérification...",
+        "VAL_AVAILABLE": "Disponible",
+        "VAL_ASSIGNING": "Affectation en cours",
+        "VAL_NOT_ELIGIBLE": "Non éligible",
+        "VAL_PREPARING": "En préparation",
+        "BADGE_AFTER_ADMIN": "Après validation admin",
+        "BADGE_CHECKING": "Contrôle en cours",
+        "BADGE_WAITING_MIN": "Liste Ministère en attente",
+        "BADGE_DENIED": "Accès refusé",
+        "BADGE_SOON": "Vérification bientôt finie",
+        "BTN_DOWNLOAD": "Télécharger"
+      },
+      "RESULTATS": {
+        "LABEL": "Résultats",
+        "VAL_NOT_PUB": "Non publié",
+        "VAL_PUBLISHED": "PUBLIÉ",
+        "BADGE_AFTER_EXAM": "Après le concours",
+        "BADGE_OFFICIAL": "Officiel",
+        "BTN_DOWNLOAD": "Fiche Résultat"
+      }
+    },
+    "PROGRESS": {
+      "TITLE": "Votre parcours de candidature",
+      "LABEL_PROGRESS": "Progression",
+      "BADGE": {
+        "DONE": "Terminé",
+        "CURRENT": "En cours",
+        "BLOCKED": "Bloqué",
+        "PENDING": "À venir"
+      },
+      "STEP_1": {
+        "LABEL": "Inscription au concours",
+        "NOTE_TO_COMPLETE": "À compléter",
+        "NOTE_SUCCESS": "Dossier soumis avec succès",
+        "NOTE_DOCS": "{{count}}/{{total}} documents téléchargés"
+      },
+      "STEP_2": {
+        "LABEL": "Vérification IA (OCR & conformité)",
+        "NOTE_PENDING": "Score : - — En attente",
+        "NOTE_PROGRESS": "Analyse IA en cours...",
+        "NOTE_DONE": "Score IA : {{score}}% ({{details}})"
+      },
+      "STEP_3": {
+        "LABEL": "Validation administrative",
+        "NOTE_PENDING": "En attente",
+        "NOTE_DONE": "Dossier validé par l'administration",
+        "NOTE_REJECTED": "Dossier rejeté — Veuillez consulter vos emails",
+        "NOTE_MODIFIABLE": "Dossier modifiable (en attente de validation administrative)"
+      },
+      "STEP_4": {
+        "LABEL": "Convocation officielle",
+        "NOTE_PENDING": "Disponible après validation",
+        "NOTE_ELIGIBILITY": "Vérification d'éligibilité en cours...",
+        "NOTE_AVAILABLE": "Disponible dans votre espace personnel",
+        "NOTE_WAITING_LIST": "En attente de la liste d'affectation ministérielle",
+        "NOTE_NOT_ELIGIBLE": "Non éligible : vous ne figurez pas sur la liste officielle du Ministère. Si erreur, soumettez une réclamation.",
+        "NOTE_GENERATING": "Convocation en cours de génération"
+      },
+      "STEP_5": {
+        "LABEL": "Publication des résultats",
+        "NOTE_PENDING": "Après le concours",
+        "NOTE_CLOSED": "Résultats publiés — Session clôturée",
+        "NOTE_ADMITTED": "Résultats publiés — Félicitations !",
+        "NOTE_NOT_ADMITTED": "Résultats publiés — Non admis"
+      }
+    }
+  },
+  "INSCRIPTION_CONCOURS": {
+    "BANNER": {
+      "SESSION": "Session",
+      "DEADLINE": "Date limite :",
+      "NO_DEADLINE": "Date limite non définie",
+      "LOCATION": "Tunisie ({{type}})",
+      "PARTICIPATE": "Participez !",
+      "LOADING": "Chargement des informations du concours..."
+    },
+    "HEADER": {
+      "TITLE_REGISTER": "Inscription au concours",
+      "TITLE_EDIT": "Modifier dossier",
+      "SUBTITLE": "Remplissez le formulaire pour valider votre candidature. Une convocation vous sera générée automatiquement."
+    },
+    "STEPS": {
+      "IDENTITY": "Identité",
+      "DOCUMENTS": "Documents",
+      "CONFIRMATION": "Confirmation"
+    },
+    "ALERTS": {
+      "LOCKED_TITLE": "Dossier verrouillé",
+      "LOCKED_DESC": "Votre dossier a été accepté par l'administration. Il n'est plus modifiable.",
+      "REJECTED_TITLE": "Dossier rejeté",
+      "REJECTED_DESC": "Vous pouvez corriger vos informations et vos documents puis cliquer sur <strong>Soumettre le dossier</strong> pour refaire l'inscription."
+    },
+    "STEP1": {
+      "TITLE": "Informations personnelles",
+      "NOM": "Nom",
+      "NOM_PLACEHOLDER": "Votre nom",
+      "PRENOM": "Prénom",
+      "PRENOM_PLACEHOLDER": "Votre prénom",
+      "CIN": "Numéro CIN/Passeport",
+      "CIN_PLACEHOLDER": "00000000 / Passeport",
+      "BIRTH_DATE": "Date de naissance",
+      "NATIONALITY": "Nationalité",
+      "NATIONALITY_PLACEHOLDER": "Votre nationalité",
+      "DIPLOMA_DATE": "Date de diplôme",
+      "FACULTY": "Faculté de médecine",
+      "CHOOSE_FACULTY": "Choisir votre faculté",
+      "AUTRE": "Autre",
+      "PRECISE_FACULTY": "Précisez votre faculté",
+      "FACULTY_PLACEHOLDER": "Nom de la faculté",
+      "FACULTES": {
+        "TUNIS": "Faculté de Médecine de Tunis",
+        "SOUSSE": "Faculté de Médecine de Sousse",
+        "MONASTIR": "Faculté de Médecine de Monastir",
+        "SFAX": "Faculté de Médecine de Sfax",
+        "ETRANGER": "Faculté Étrangère"
+      }
+    },
+    "STEP2": {
+      "TITLE": "Documents justificatifs",
+      "DESC": "Veuillez télécharger les documents requis au format PDF ou JPG.",
+      "CIN_LABEL": "Copie {{type}}",
+      "CIN_HINT_CIN": "Recto-Verso",
+      "CIN_HINT_PASS": "Page principale",
+      "DIPLOMA_LABEL": "Diplôme",
+      "DIPLOMA_HINT": "Ou attestation de réussite",
+      "PHOTO_LABEL": "Photo d'identité",
+      "PHOTO_HINT": "Format passeport",
+      "BTN_CHOOSE": "Choisir",
+      "BTN_MODIFY": "Modifier"
+    },
+    "STEP3": {
+      "TITLE": "Vérification finale",
+      "DESC": "Veuillez confirmer que toutes les informations saisies sont exactes.",
+      "SUMMARY_CANDIDATE": "Candidat",
+      "SUMMARY_CONCOURS": "Concours",
+      "SUMMARY_DOCS": "Documents",
+      "DOCS_DOWNLOADED": "{{count}}/3 Téléchargés",
+      "DISCLAIMER": "Je certifie sur l'honneur l'exactitude des informations fournies.",
+      "LOCKED_MSG": "Votre inscription est <strong>validée</strong>. Vous pouvez suivre la suite des étapes sur votre tableau de bord.",
+      "IA_MESSAGE": {
+        "INIT": "Initialisation de l'analyse IA...",
+        "PROGRESS": "Analyse IA en cours ({{completed}}/{{expected}})...",
+        "LANCEMENT": "Analyse IA lancée. Attente du score final...",
+        "VALIDATED": "Score IA final validé.",
+        "FAILED": "Analyse IA échouée. Corrigez les documents puis relancez."
+      },
+      "IA_HINT": "Vérification automatique par le service IA de validation"
+    },
+    "NAV": {
+      "PREV": "Précédent",
+      "BACK_DASHBOARD": "Retour au tableau de bord",
+      "NEXT": "Suivant",
+      "CONTINUE": "Continuer",
+      "SUBMIT": "Soumettre le dossier",
+      "UPDATE": "Mettre à jour le dossier"
+    },
+    "SWAL": {
+      "FORMAT_ERROR": "Format invalide",
+      "PHOTO_FORMAT_DESC": "La photo d'identité doit être au format JPG ou PNG.",
+      "DOC_FORMAT_DESC": "Le document doit être au format PDF, JPG ou PNG.",
+      "SIZE_ERROR": "Fichier trop volumineux",
+      "PHOTO_SIZE_DESC": "La photo d'identité ne doit pas dépasser 2 Mo.",
+      "DOC_SIZE_DESC": "Le document ne doit pas dépasser 5 Mo.",
+      "REQUIRED_TITLE": "Champs obligatoires",
+      "REQUIRED_DESC": "Veuillez remplir tous les champs avant de continuer.",
+      "IA_FAILED_TITLE": "Analyse IA échouée",
+      "IA_FAILED_DESC": "Le score final n'a pas pu être validé. Corrigez les documents puis réessayez.",
+      "IA_FAILED_RETRY_DESC": "Impossible de lancer une analyse fiable. Veuillez réessayer.",
+      "IA_WAIT_TITLE": "Analyse IA en attente",
+      "IA_WAIT_DESC": "Le score final n'est pas encore prêt. Merci de réessayer dans quelques instants.",
+      "SUCCESS_TITLE": "Inscription envoyée !",
+      "SUCCESS_DESC": "Votre candidature a été soumise avec succès. Vous recevrez une confirmation prochainement.",
+      "SUCCESS_BTN": "Retour au tableau de bord",
+      "ERROR_TITLE": "Erreur",
+      "ERROR_DESC": "Une erreur est survenue. Veuillez réessayer."
+    }
+  },
+  "DOSSIER_DETAIL": {
+    "BTN_BACK": "Tableau de bord",
+    "TITLE": "Détails du Dossier",
+    "SECTIONS": {
+      "CANDIDATE": "Informations Candidat",
+      "DOCUMENTS": "Pièces Justificatives",
+      "IA_REPORT": "Analyse Prédictive",
+      "IDENTITY": "Identité"
+    },
+    "FIELDS": {
+      "NOM_COMPLET": "Nom Complet",
+      "CIN": "Identifiant CIN",
+      "EMAIL": "E-mail",
+      "FACULTY": "Établissement",
+      "DIPLOMA_YEAR": "Année Diplôme",
+      "SCORE_LABEL": "Indice de Conformité",
+      "IA_POINTS": "Points de vigilance IA",
+      "ANOMALIES": "Anomalies détectées",
+      "NO_DOCS": "Aucun document disponible.",
+      "DEFAULT_OBS": "Le dossier semble complet et conforme aux exigences réglementaires."
+    },
+    "BTN_REANALYSE": "Réanalyser",
+    "ANALYSING": "Analyse...",
+    "VERIFIED_BY": "Verified by SmartCheck IA",
+    "LOADING": "Finalisation du rendu premium...",
+    "IA": {
+      "IDENTITY": "Identité",
+      "DIPLOMA": "Diplôme",
+      "PHOTO": "Photo"
+    },
+    "STATUS": {
+      "VALIDE": "Dossier Validé",
+      "EN_ATTENTE": "En cours de vérification",
+      "REJETE": "Dossier Rejeté",
+      "PENDING": "Non soumis"
+    }
+  },
+  "CONVOCATION": {
+    "TITLE": "Votre Convocation Officielle",
+    "LOADING": "Récupération de vos informations de convocation...",
+    "STATUS": {
+      "PENDING": "Affectation en cours",
+      "PENDING_DESC": "Votre dossier est validé. L'administration procède actuellement à l'affectation des centres et à la génération des convocations. Merci de patienter.",
+      "WAITING_DESC": "Votre dossier est en cours de vérification. La convocation sera disponible une fois votre dossier validé.",
+      "REJECTED_DESC": "Votre dossier a été rejeté par l'administration. Vous ne pouvez pas obtenir de convocation.",
+      "NOT_ELIGIBLE": "Dossier non éligible",
+      "NOT_ELIGIBLE_DESC": "Dossier non éligible : Vous ne figurez pas sur la liste officielle du Ministère et n'avez donc pas droit à une convocation. Si vous contestez cette décision, veuillez soumettre une réclamation.",
+      "NOT_SUBMITTED": "Dossier non soumis",
+      "NOT_SUBMITTED_DESC": "Vous n'avez pas encore finalisé votre inscription pour ce concours.",
+      "GENERATED": "Générée"
+    },
+    "LABELS": {
+      "CANDIDATE": "Candidat",
+      "CIN": "CIN/Passeport",
+      "EXAM": "Épreuve",
+      "DATE": "Date & Heure",
+      "LOCATION": "Lieu d'examen",
+      "CENTER": "Centre",
+      "SESSION": "Session",
+      "FACULTY": "Faculté",
+      "NUM_INSCRIPTION": "N° Inscription",
+      "CALL_TIME": "Heure d'appel",
+      "ROOM_SEAT": "Salle / Place",
+      "ROOM": "Salle",
+      "SEAT": "Place",
+      "STATUS": "Statut",
+      "FACULTES": {
+        "TUNIS": "Faculté de Médecine de Tunis",
+        "SOUSSE": "Faculté de Médecine de Sousse",
+        "MONASTIR": "Faculté de Médecine de Monastir",
+        "SFAX": "Faculté de Médecine de Sfax",
+        "NONE": "Faculté non spécifiée"
+      }
+    },
+    "FOOTER": {
+      "INSTRUCTIONS": "Consignes importantes",
+      "INST_1": "Présentation obligatoire de la CIN originale et de cette convocation (format numérique ou papier).",
+      "INST_2": "Présence requise au centre d'examen 30 minutes avant le début de l'épreuve.",
+      "INST_3": "Tout retard entraînera l'interdiction d'accès à la salle.",
+      "DATE_PRINT": "Généré le {{date}}"
+    },
+    "BTN": {
+      "PRINT": "Imprimer",
+      "DOWNLOAD": "Télécharger PDF",
+      "DASHBOARD": "Retour"
+    },
+    "SECURE_MSG": "Document sécurisé par QR Code unique."
+  },
+  "RESULTATS": {
+    "TITLE": "Relevé de notes",
+    "LOADING": "Chargement de vos résultats...",
+    "EMPTY_TITLE": "Résultats non disponibles",
+    "ELIGIBILITY_ERROR_TITLE": "Non éligible",
+    "REPUBLIC": "RÉPUBLIQUE TUNISIENNE",
+    "MINISTRY": "MINISTÈRE DE LA SANTÉ",
+    "SCORES_TITLE": "Scores de l'Évaluation",
+    "EP1": "Épreuve n°1 : Théorique",
+    "EP2": "Épreuve n°2 : Pratique",
+    "MOYENNE": "Moyenne Générale",
+    "RANG": "Rang",
+    "REF_INSCRIPTION": "Réf. Inscription",
+    "NUM_INSCRIPTION": "N° Inscription",
+    "STATUS": {
+      "ADMIS": "Admis(e)",
+      "REFUSE": "Refusé(e)"
+    },
+    "LABELS": {
+      "CANDIDATE": "Candidat",
+      "CIN": "CIN",
+      "SCORE": "Note",
+      "DECISION": "Décision finale",
+      "RANK": "Classement",
+      "SECURE": "Document officiel sécurisé par QR Code unique",
+      "VERIFIED": "Document vérifié"
+    },
+    "BTN": {
+      "PRINT": "Imprimer",
+      "DOWNLOAD": "Télécharger PDF",
+      "BACK": "Retour au tableau de bord"
+    },
+    "ERRORS": {
+      "NOT_PUBLISHED": "Les résultats ne sont pas encore publiés pour ce concours."
+    }
+  },
+  "CENTRE_3D": {
+    "TITLE": "Plan d'Accès Interactif",
+    "SUBTITLE": "Explorez votre centre d'examen en 3D et calculez votre itinéraire",
+    "LOADING_MAP": "Initialisation de la cartographie...",
+    "LOADING_CESIUM": "Chargement de la scène 3D...",
+    "CESIUM_ERROR": "Plan d'accès 3D indisponible sur cet environnement.",
+    "LABELS": {
+      "ENTRANCE": "Entrée officielle",
+      "OCCUPANCY": "Affluence estimée",
+      "LEVELS": "Étages",
+      "DISTANCE": "Distance",
+      "DURATION": "Durée estimée",
+      "ARRIVAL": "Arrivée prévue",
+      "DEPARTURE": "Point de départ",
+      "DESTINATION": "Votre centre",
+      "SEARCH_PLACE": "Rechercher un lieu...",
+      "USE_MY_LOCATION": "Ma position actuelle",
+      "PICK_ON_MAP": "Choisir sur la carte",
+      "TRAVEL_MODES": {
+        "DRIVING": "Voiture",
+        "WALKING": "À pied"
+      }
+    },
+    "BTN": {
+      "VIEW_3D": "Vue 3D Immersive",
+      "CLOSE_3D": "Quitter le mode 3D",
+      "DOWNLOAD_CONV": "Ma Convocation",
+      "RECENTER": "Recentrer",
+      "ROUTE": "Calculer l'itinéraire"
+    },
+    "OCCUPANCY_STATE": {
+      "LOW": "Faible",
+      "MEDIUM": "Moyen",
+      "HIGH": "Élevé"
+    },
+    "ASSIGNMENT_CARD": {
+      "TITLE": "Votre Affectation Officielle",
+      "DESC": "Vous êtes affecté à ce centre selon la liste ministérielle.",
+      "HALL": "Salle / Place",
+      "TIME": "Heure d'appel"
+    },
+    "FACULTES": {
+      "TUNIS": "Faculté de Médecine de Tunis",
+      "SFAX": "Faculté de Médecine de Sfax",
+      "SOUSSE": "Faculté de Médecine de Sousse",
+      "MONASTIR": "Faculté de Médecine de Monastir"
+    }
+  },
+  "ADMIN_CANDIDATS": {
+    "TITLE": "Gestion des Candidats",
+    "SUBTITLE": "Suivi et validation des dossiers d'inscription",
+    "STATS": {
+      "TOTAL": "Total Candidats",
+      "VALIDE": "Dossiers Validés",
+      "ATTENTE": "En Attente",
+      "REJETE": "Dossiers Rejetés"
+    },
+    "FILTERS": {
+      "SEARCH": "Rechercher un candidat (Nom, CIN, ID...)",
+      "STATUS": "Filtrer par statut",
+      "CONCOURS": "Sélectionner un concours",
+      "ALL_STATUS": "Tous les statuts",
+      "ALL_CONCOURS": "Tous les concours"
+    },
+    "TABLE": {
+      "CANDIDAT": "Candidat",
+      "NAME": "Nom & Prénom",
+      "ID": "ID",
+      "CONCOURS": "Concours",
+      "FACULTY": "Faculté",
+      "STATUS": "Statut",
+      "IA_SCORE": "Score IA",
+      "ACTIONS": "Actions",
+      "VIEW_DOSSIER": "Voir le dossier",
+      "VALIDATE": "Valider le dossier",
+      "REJECT": "Rejeter le dossier",
+      "ANOMALIES": "Voir les anomalies",
+      "FOOTER_SHOW": "Affichage de",
+      "FOOTER_ON": "sur"
+    },
+    "BULK": {
+      "SELECT_100": "Sélectionner Score 100%",
+      "CLEAR": "Effacer la sélection",
+      "VALIDATE": "Valider la sélection",
+      "SELECTED_COUNT": "{{count}} dossier(s) sélectionné(s)",
+      "HINT_100": "Sélectionne automatiquement les dossiers avec score IA à 100% en attente."
+    },
+    "MODAL": {
+      "TITLE": "Détails du Dossier",
+      "PERSONAL_INFO": "Informations Personnelles",
+      "DOCUMENTS": "Documents Justificatifs",
+      "IA_EVAL": "Évaluation Intelligence Artificielle",
+      "ANOMALIES_FOUND": "Anomalies détectées",
+      "NO_DOCS": "Aucun document joint.",
+      "OVERALL": "Score Global IA",
+      "FIELDS": {
+        "TYPE": "Type"
+      }
+    },
+    "ALERTS": {
+      "BULK_CONFIRM_TITLE": "Valider la sélection ?",
+      "BULK_CONFIRM_DESC": "{{count}} dossier(s) seront validés définitivement.",
+      "BULK_SUCCESS": "Traitement terminé : {{success}} validé(s), {{failed}} échec(s).",
+      "SINGLE_SUCCESS": "Dossier mis à jour avec succès.",
+      "NO_SELECTION": "Aucun dossier éligible dans la sélection.",
+      "NO_DATA": "Aucune donnée à exporter.",
+      "ANOMALIES_TITLE": "Anomalies détectées",
+      "ANOMALIES_NONE": "Aucune anomalie critique."
+    },
+    "EXCEL": {
+      "FILENAME": "liste_candidats",
+      "HEADERS": {
+        "ID": "Identifiant",
+        "NOM": "Nom",
+        "PRENOM": "Prénom",
+        "CONCOURS": "Concours",
+        "EMAIL": "Email",
+        "CIN": "CIN",
+        "PHONE": "Téléphone",
+        "NATIONALITY": "Nationalité",
+        "FACULTY": "Faculté",
+        "STATUS": "Statut",
+        "SCORE": "Score IA %"
+      }
+    },
+    "STATUS": {
+      "VALIDE": "Validé",
+      "EN_ATTENTE": "En attente",
+      "REJETE": "Rejeté",
+      "NON_COMMENCE": "Non commencé",
+      "SANS_DOSSIER": "Sans dossier",
+      "DEJA_VALIDE": "Déjà validé"
+    }
+  },
+  "ADMIN_CONCOURS": {
+    "TITLE": "Gestion des Concours",
+    "SUBTITLE": "Configuration et pilotage des sessions de résidanat",
+    "STATS": {
+      "TOTAL": "Total Concours",
+      "PUBLIES": "Sessions Publiées"
+    },
+    "BTN": {
+      "CREATE": "Nouveau Concours",
+      "PUBLISH": "Publier",
+      "UNPUBLISH": "Dépublier",
+      "EDIT": "Modifier",
+      "DELETE": "Supprimer"
+    },
+    "TABLE": {
+      "TITLE": "Titre du Concours",
+      "YEAR": "Année",
+      "TYPE": "Type",
+      "DATES": "Période d'inscription",
+      "CANDIDATES": "Candidats",
+      "STATUS": "Statut",
+      "ACTIONS": "Actions"
+    },
+    "MODAL": {
+      "CREATE_TITLE": "Créer un nouveau concours",
+      "EDIT_TITLE": "Modifier le concours",
+      "FIELDS": {
+        "TITLE": "Titre / Libellé",
+        "YEAR": "Année académique",
+        "TYPE": "Type de concours",
+        "START_DATE": "Date de début",
+        "END_DATE": "Date de fin"
+      },
+      "TYPES": {
+        "NATIONAL": "National",
+        "INTERNATIONAL": "International"
+      }
+    },
+    "ALERTS": {
+      "DELETE_CONFIRM_TITLE": "Confirmer la suppression",
+      "DELETE_CONFIRM_DESC": "Êtes-vous sûr de vouloir supprimer le concours '{{name}}' ?",
+      "CREATE_SUCCESS": "Le concours a été créé avec succès.",
+      "EDIT_SUCCESS": "Le concours a été mis à jour avec succès.",
+      "DELETE_SUCCESS": "Le concours a été supprimé.",
+      "INVALID_DATES": "La date de début ne peut pas être après la date de fin.",
+      "CONFLICT_ERROR": "Un concours avec ces informations existe déjà.",
+      "CONFIRM_PUBLISH_TITLE": "Confirmer la publication",
+      "CONFIRM_PUBLISH_DESC": "Êtes-vous sûr de vouloir publier le concours '{{name}}' ? Cela entraînera la dépublication automatique de tout autre concours actif."
+    },
+    "STATUS": {
+      "PUBLIE": "Publié",
+      "NON_PUBLIE": "Brouillon",
+      "TERMINE": "Terminé"
+    }
+  },
+  "ADMIN_DASHBOARD": {
+    "TITLE": "Dashboard Système",
+    "SUBTITLE": "Statistiques et performance en temps réel",
+    "CONCOURS_FILTER": "Filtrer par concours",
+    "ALL_CONCOURS": "Tous les concours",
+    "DNA_STATS": {
+      "HEALTH_CHECKS": "Health Checks",
+      "AI_REQUESTS": "Requêtes IA",
+      "ACTIVE_SESSIONS": "Sessions Actives",
+      "SYNCHRONIZATIONS": "Synchronisations",
+      "DATA_FLOW": "Flux de Données"
+    },
+    "KPIS": {
+      "TOTAL_CANDIDATES": "Total Candidats",
+      "VALIDATED_DOSSIERS": "Dossiers Validés",
+      "GENERATED_CONVOCATIONS": "Convocations",
+      "ACTIVE_CLAIMS": "Réclamations Actives"
+    },
+    "CHARTS": {
+      "DOSSIER_STATUS": "Statut des Dossiers",
+      "RESULTS_DISTRIBUTION": "Distribution des Résultats",
+      "GEOGRAPHIC": "Répartition Géographique",
+      "RECLAMATIONS": "Analyse des Réclamations",
+      "BY_FACULTY": "Par Faculté",
+      "SPECIALTIES": "Spécialités demandées"
+    },
+    "DOSSIER_CHART": {
+      "TITLE": "Flux des Dossiers",
+      "PENDING": "En attente",
+      "IN_PROGRESS": "En cours",
+      "VALIDATED": "Validés",
+      "REJECTED": "Rejetés",
+      "THRESHOLD": "Seuil",
+      "LIVE": "Analyse Temps Réel",
+      "TOTAL_PCT": "{{pct}}% du Total",
+      "DETAIL_PENDING": "Détail Attente",
+      "DETAIL_IN_PROGRESS": "Détail en Cours",
+      "DETAIL_VALIDATED": "Détail Validé",
+      "DETAIL_REJECTED": "Détail Rejeté"
+    },
+    "MAP": {
+      "TUNIS": "Tunis",
+      "SOUSSE": "Sousse",
+      "MONASTIR": "Monastir",
+      "SFAX": "Sfax",
+      "CANDIDATES": "Candidats"
+    },
+    "RESULTS_CHART": {
+      "ADMIS": "Admis (Moy >= 10)",
+      "REFUSED": "Refusés (Moy < 10)",
+      "THRESHOLD": "Seuil (10/20)",
+      "Y_AXIS": "Nombre de Candidats",
+      "THRESHOLD_TITLE": "Seuil d'Admission"
+    },
+    "CLAIMS": {
+      "AI_ACTIVE": "IA Actif",
+      "RESOLVED": "Résolus",
+      "URGENT_DOSSIERS": "Dossiers Urgents",
+      "CRITICAL": "Critiques",
+      "UP_TO_DATE": "À jour"
+    }
+  },
+  "IMPORT": {
+    "MINISTERE": {
+      "TITLE": "Import Ministère (Affectations)",
+      "SUBTITLE": "Gestion des convocations et des centres d'examen"
+    },
+    "RESULTATS": {
+      "TITLE": "Import Résultats",
+      "SUBTITLE": "Publication des scores et classements finaux"
+    },
+    "SELECT_CONCOURS": "Choisir un concours...",
+    "STATS": {
+      "TOTAL_RECORDS": "Total Enregistrements",
+      "TOTAL_IMPORTS": "Total Imports",
+      "LATEST": "Dernier import : {{name}} ({{count}} lignes) - {{date}}",
+      "LATEST_TITLE": "Dernier import"
+    },
+    "DROPZONE": {
+      "PROMPT": "Glissez-déposez votre fichier Excel ici",
+      "SUBPROMPT": "ou cliquez pour parcourir vos fichiers (.xlsx, .xls)",
+      "SELECTED": "Fichier sélectionné : {{name}}"
+    },
+    "OPTIONS": {
+      "CORRECTION_MODE": "Mode Correction / Mise à jour",
+      "CORRECTION_HINT": "Permet de remplacer les données existantes pour ce concours."
+    },
+    "BTN": {
+      "UPLOAD": "Démarrer l'importation",
+      "PREVIEW": "Aperçu Excel",
+      "CLEAR": "Vider les données",
+      "PUBLISH": "Diffuser les résultats",
+      "PUBLISH_CONVOCATIONS": "Diffuser les convocations"
+    },
+    "HISTORY": {
+      "TITLE": "Historique des Imports",
+      "NAME": "Fichier",
+      "COUNT": "Lignes",
+      "DATE": "Date"
+    },
+    "ALERTS": {
+      "UPLOAD_SUCCESS": "{{count}} enregistrements ont été importés avec succès.",
+      "CLEAR_CONFIRM": "Toutes les données de ce concours seront définitivement supprimées.",
+      "CLEAR_SUCCESS": "Les données ont été réinitialisées.",
+      "PUBLISH_CONFIRM": "Les candidats pourront voir leurs résultats sur leur portail.",
+      "PUBLISH_SUCCESS": "Les résultats sont maintenant publics.",
+      "PREVIEW_ERROR": "Impossible de charger l'aperçu du fichier Excel.",
+      "LOCKED_ERROR": "Ce concours est déjà verrouillé.",
+      "PUBLISH_CONFIRM_TITLE": "⚠️ Diffusion publique des résultats",
+      "CLEAR_CONFIRM_TITLE": "Vider les données ?",
+      "PUBLISH_CONFIRM_HTML": "<p style=\"color:#475569; font-size:0.95rem; line-height:1.6; margin:0;\">Cette action est <strong style=\"color:#dc2626\">irréversible</strong>.<br><br>Dès que vous confirmez, <strong>{{count}} candidat(s)</strong> pourront immédiatement consulter leurs notes et télécharger leur relevé officiel depuis leur tableau de bord.</p>"
+    }
+  },
+  "AUTH": {
+    "CIN": "CIN"
+  },
+  "COMMON": {
+    "SUCCESS": "Succès !",
+    "ERROR": "Erreur",
+    "ERROR_DESC": "Une erreur est survenue. Veuillez réessayer.",
+    "WARNING": "Attention",
+    "INFO": "Information",
+    "VALIDATE": "Valider",
+    "CONFIRM": "Confirmer",
+    "CANCEL": "Annuler",
+    "DELETE": "Supprimer",
+    "CLOSE": "Fermer",
+    "SAVE": "Enregistrer",
+    "REAL_TIME": "Temps Réel",
+    "NO_DATA": "Aucune donnée à afficher.",
+    "PREVIOUS": "Précédent",
+    "NEXT": "Suivant",
+    "NONE": "Aucun",
+    "MANAGE": "Gérer",
+    "EXPORT": "Exporter",
+    "SHOWING": "Affichage de {{count}} sur {{total}}",
+    "TOTAL": "Total",
+    "YES": "Oui",
+    "YES_PUBLISH": "Oui, publier",
+    "NEW": "Nouveau",
+    "REJECT": "Rejeter",
+    "LOADING": "Chargement...",
+    "DETAILS": "Détails",
+    "ACTION": "Action",
+    "PUBLISHED_ON": "Publié le",
+    "FORCE_DOWNLOAD": "Forcer le téléchargement",
+    "PAGE": "Page",
+    "TEL": "Tél",
+    "VISUALIZE": "Visualiser",
+    "VIEW": "Visualiser"
+  }
+}

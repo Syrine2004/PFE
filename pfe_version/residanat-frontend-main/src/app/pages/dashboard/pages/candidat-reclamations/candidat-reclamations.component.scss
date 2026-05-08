@@ -1,0 +1,581 @@
+.support-center-wrapper {
+  display: flex;
+  height: calc(100vh - 120px);
+  gap: 1.5rem;
+  padding: 1.5rem;
+  background: #f1f5f9;
+  font-family: 'Inter', sans-serif;
+  animation: fadeIn 0.8s ease-out;
+
+  // Global Glass Utility
+  .glass-card {
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.07);
+  }
+
+  // --- Sidebar: Tickets History ---
+  .tickets-sidebar {
+    width: 320px;
+    flex-shrink: 0;
+    border-radius: 24px;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+
+    .sidebar-header {
+      padding: 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+
+      h3 { font-size: 1.25rem; font-weight: 800; color: #1e293b; margin: 0; }
+      
+      .btn-add-ticket {
+        background: #0284c7;
+        color: white;
+        border: none;
+        padding: 0.6rem 1rem;
+        border-radius: 12px;
+        font-weight: 700;
+        font-size: 0.875rem;
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+        cursor: pointer;
+        transition: all 0.3s;
+        &:hover:not(:disabled) { background: #0369a1; transform: translateY(-2px); }
+        &:disabled { opacity: 0.5; cursor: not-allowed; }
+      }
+    }
+
+    .search-bar {
+      margin: 0 1.5rem 1.5rem;
+      position: relative;
+      background: #f8fafc;
+      border-radius: 12px;
+      padding: 0.75rem 1rem;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      border: 1px solid #e2e8f0;
+
+      svg { color: #94a3b8; }
+      input {
+        background: none;
+        border: none;
+        width: 100%;
+        font-size: 0.9rem;
+        color: #1e293b;
+        &:focus { outline: none; }
+      }
+    }
+
+    .tickets-list {
+      flex: 1;
+      overflow-y: auto;
+      padding: 0 1rem 1.5rem;
+
+      &::-webkit-scrollbar { width: 4px; }
+      &::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+
+      .ticket-item {
+        display: flex;
+        gap: 1rem;
+        padding: 1rem;
+        border-radius: 12px;
+        cursor: pointer;
+        transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        margin-bottom: 0.75rem;
+        border-left: 5px solid transparent;
+
+        &.bg-cat-resultat { background: #fff0f0; border-left-color: #ef4444; } /* Rouge pour les réclamations de notes */
+        &.bg-cat-technique { background: #fffbeb; border-left-color: #f59e0b; } /* Jaune pour problèmes techniques */
+        &.bg-cat-inscription { background: #eef2ff; border-left-color: #4f46e5; } /* Violet/Bleu pour dossier/convocation */
+        &.bg-cat-donnees { background: #f0fdf4; border-left-color: #10b981; } /* Vert pâle pour données personnelles */
+        &.bg-cat-autre, &:not([class*="bg-cat-"]) { background: #f8fafc; border-left-color: #94a3b8; } /* Gris par défaut */
+
+        &:hover { filter: brightness(0.96); transform: translateX(2px); }
+        &.active {
+          transform: translateX(4px);
+          filter: brightness(0.92);
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08); /* Effet d'élévation mta3 selection */
+        }
+
+        .ticket-icon {
+          width: 40px;
+          height: 40px;
+          background: white;
+          border-radius: 12px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          color: #0284c7;
+          box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+        }
+
+        .ticket-info {
+          flex: 1;
+          .info-top {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+            .ticket-id { color: #64748b; }
+            .ticket-date { color: #94a3b8; }
+          }
+          .ticket-objet {
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: #1e293b;
+            margin: 0 0 0.5rem 0;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 180px;
+          }
+          .info-bottom {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            .status-badge {
+              font-size: 0.7rem;
+              font-weight: 800;
+              padding: 0.2rem 0.6rem;
+              border-radius: 20px;
+              &.badge-new { background: #e0f2fe; color: #0369a1; }
+              &.badge-progress { background: #fef3c7; color: #d97706; }
+              &.badge-success { background: #dcfce7; color: #15803d; }
+              &.badge-danger { background: #fee2e2; color: #b91c1c; }
+            }
+            .priority-label { font-size: 0.75rem; }
+          }
+        }
+      }
+    }
+  }
+
+  // --- Main Content: Chat Area ---
+  .chat-container {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    position: relative;  // needed for canvas absolute positioning
+    overflow: hidden;
+
+    // =============================================
+    // Plexus background canvas
+    // =============================================
+    .plexus-canvas {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      border-radius: 24px;
+      pointer-events: none;  // clicks pass through to UI
+      z-index: 0;
+      background: transparent;
+    }
+
+    .chat-header {
+      padding: 1.25rem 2rem;
+      border-radius: 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: relative;
+      z-index: 1;  // above plexus canvas
+
+      .assistant-profile {
+        display: flex;
+        align-items: center;
+        gap: 1.25rem;
+
+        .avatar-wrapper {
+          position: relative;
+          .avatar-3d {
+            width: 72px;  // Agrandissement
+            height: 72px; // Agrandissement
+            border-radius: 50%;
+            object-fit: contain;
+            background: white;
+            border: 3px solid #e0f2fe; // Bordure plus épaisse
+            box-shadow: 0 8px 25px rgba(14, 165, 233, 0.2);
+            animation: float 3s ease-in-out infinite;
+            padding: 2px; // Moins de padding pour voir le visage de plus près
+          }
+          .pulse-indicator {
+            position: absolute;
+            bottom: 2px;
+            right: 2px;
+            width: 12px;
+            height: 12px;
+            background: #22c55e;
+            border: 2px solid white;
+            border-radius: 50%;
+          }
+        }
+
+        .assistant-meta {
+          h2 { font-size: 1.125rem; font-weight: 800; color: #1e293b; margin: 0; }
+          .status-text { font-size: 0.85rem; color: #64748b; font-weight: 500; }
+        }
+      }
+    }
+
+    .messages-viewport {
+      flex: 1;
+      overflow-y: auto;
+      padding: 1rem 2rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+      position: relative;
+      z-index: 1;  // above plexus canvas
+
+      &::-webkit-scrollbar { width: 6px; }
+      &::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.1); border-radius: 10px; }
+
+      // Ticket Details View (Default State)
+      .ticket-details-view {
+        .details-card {
+          padding: 2.5rem;
+          border-radius: 24px;
+          
+          .details-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1.5rem;
+            h3 { font-size: 1.5rem; font-weight: 800; color: #1e293b; margin: 0; }
+          }
+          .details-desc { font-size: 1rem; color: #475569; line-height: 1.7; margin: 0 0 2rem 0; }
+          
+          .admin-reply {
+            background: #f0fdf4;
+            border: 1px solid #dcfce7;
+            padding: 1.5rem;
+            border-radius: 20px;
+            margin-bottom: 2rem;
+            
+            .reply-header {
+              display: flex;
+              align-items: center;
+              gap: 0.5rem;
+              color: #166534;
+              font-weight: 800;
+              font-size: 0.875rem;
+              margin-bottom: 0.75rem;
+            }
+            p { color: #14532d; font-size: 1rem; margin: 0 0 0.75rem 0; line-height: 1.5; }
+            .reply-date { font-size: 0.75rem; color: #65a30d; font-weight: 700; }
+          }
+
+          .ticket-footer {
+            display: flex;
+            gap: 1rem;
+            .tag {
+              background: #f8fafc;
+              padding: 0.5rem 1rem;
+              border-radius: 10px;
+              font-size: 0.8rem;
+              color: #64748b;
+              b { color: #1e293b; }
+            }
+          }
+        }
+      }
+
+      // Chat Flow
+      .chat-flow {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+      }
+    }
+
+    // Chat Input Area
+    .chat-input-area {
+      padding: 1.5rem 2rem;
+      border-radius: 24px;
+      position: relative;
+      z-index: 1;  // above plexus canvas
+      &.disabled { background: #f8fafc; opacity: 0.8; }
+
+      .attachment-preview {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        background: #f0f9ff;
+        border: 1px solid #bae6fd;
+        padding: 0.5rem 0.75rem;
+        border-radius: 10px;
+        margin-bottom: 0.75rem;
+        width: fit-content;
+        animation: fadeIn 0.3s ease-out;
+
+        svg { color: #0284c7; }
+        .file-name { font-size: 0.8rem; font-weight: 600; color: #0369a1; max-width: 200px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .btn-remove-file {
+          background: none; border: none; padding: 2px; display: flex; align-items: center; justify-content: center;
+          color: #ef4444; cursor: pointer; border-radius: 50%; opacity: 0.7; transition: all 0.2s;
+          &:hover { opacity: 1; background: #fee2e2; }
+        }
+      }
+
+      .input-wrapper {
+        display: flex;
+        gap: 0.75rem;
+        align-items: flex-end;
+        background: white;
+        padding: 0.75rem;
+        border-radius: 16px;
+        border: 2px solid #e2e8f0;
+        transition: border-color 0.3s;
+        
+        &:focus-within { border-color: #0284c7; }
+
+        .btn-attach {
+          background: #f1f5f9;
+          color: #64748b;
+          width: 44px;
+          height: 44px;
+          border-radius: 12px;
+          border: none;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          cursor: pointer;
+          transition: all 0.2s;
+          &:hover:not(:disabled) { background: #e2e8f0; color: #0f172a; }
+          &:disabled { opacity: 0.5; cursor: not-allowed; }
+        }
+
+        textarea {
+          flex: 1;
+          border: none;
+          resize: none;
+          background: none;
+          padding: 0.5rem;
+          font-family: inherit;
+          font-size: 0.95rem;
+          max-height: 120px;
+          &:focus { outline: none; }
+          &:disabled { cursor: not-allowed; }
+        }
+
+        .btn-send {
+          background: #0284c7;
+          color: white;
+          width: 44px;
+          height: 44px;
+          border-radius: 12px;
+          border: none;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          cursor: pointer;
+          transition: all 0.2s;
+          &:hover:not(:disabled) { background: #0369a1; transform: scale(1.05); }
+          &:disabled { opacity: 0.5; background: #94a3b8; }
+        }
+      }
+
+      .helper-text { font-size: 0.75rem; color: #94a3b8; margin: 0.75rem 0 0 0.5rem; font-weight: 500; }
+    }
+  }
+}
+
+// --- Visual Components ---
+
+// 3D Perspective wrapper for each message
+.message-bubble {
+  max-width: 80%;
+  display: flex;
+  flex-direction: column;
+  perspective: 800px;
+  transform-style: preserve-3d;
+
+  // --- Bot message: enters from left with 3D flip ---
+  &.bot {
+    align-self: flex-start;
+    animation: msg3dBot 0.55s cubic-bezier(0.175, 0.885, 0.32, 1.275) both;
+
+    .bubble-content {
+      background: white;
+      color: #1e293b;
+      border-bottom-left-radius: 4px;
+      box-shadow:
+        0 4px 15px rgba(0, 0, 0, 0.07),
+        0 1px 3px rgba(0, 0, 0, 0.05);
+      transform-origin: left center;
+    }
+
+    .bot-options {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      margin-top: 0.75rem;
+      padding-left: 0.5rem;
+      animation: fadeIn 0.4s ease-out 0.3s both;
+
+      .choice-chip {
+        align-self: flex-start;
+        background: white;
+        border: 1.5px solid #bae6fd;
+        color: #0284c7;
+        padding: 0.55rem 1rem;
+        border-radius: 12px;
+        font-size: 0.85rem;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+        &:hover { background: #0284c7; color: white; transform: translateX(5px); box-shadow: 0 4px 10px rgba(2, 132, 199, 0.2); }
+      }
+    }
+  }
+
+  // --- User message: enters from right with 3D flip ---
+  &.user {
+    align-self: flex-end;
+    animation: msg3dUser 0.55s cubic-bezier(0.175, 0.885, 0.32, 1.275) both;
+
+    .bubble-content {
+      background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%);
+      color: white;
+      border-bottom-right-radius: 4px;
+      box-shadow:
+        0 4px 20px rgba(2, 132, 199, 0.35),
+        0 1px 4px rgba(2, 132, 199, 0.2);
+      transform-origin: right center;
+
+      .msg-attachment {
+        background: rgba(255, 255, 255, 0.2);
+        color: white;
+        border: 1px solid rgba(255, 255, 255, 0.3);
+      }
+    }
+    .timestamp { color: rgba(255, 255, 255, 0.65); }
+  }
+
+  .bubble-content {
+    padding: 1rem 1.25rem;
+    border-radius: 18px;
+    position: relative;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+
+    &:hover {
+      transform: translateY(-2px) scale(1.01);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+    }
+
+    p { margin: 0; line-height: 1.6; font-size: 0.95rem; }
+    
+    .msg-attachment {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      margin-top: 0.75rem;
+      padding: 0.5rem 0.75rem;
+      border-radius: 8px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      background: #f1f5f9;
+      color: #475569;
+      border: 1px solid #e2e8f0;
+    }
+
+    .timestamp { font-size: 0.7rem; font-weight: 600; margin-top: 0.5rem; display: block; opacity: 0.7; }
+  }
+}
+
+// Typing Indicator
+.typing-indicator {
+  display: flex;
+  gap: 4px;
+  padding: 0.5rem;
+  span {
+    width: 8px;
+    height: 8px;
+    background: #cbd5e1;
+    border-radius: 50%;
+    animation: bounce 1.4s infinite ease-in-out both;
+    &:nth-child(1) { animation-delay: -0.32s; }
+    &:nth-child(2) { animation-delay: -0.16s; }
+  }
+}
+
+// =====================================================
+// Animations
+// =====================================================
+
+// Avatar floating animation
+@keyframes float {
+  0%, 100% { transform: translateY(0) rotate(-1deg); }
+  50% { transform: translateY(-6px) rotate(1deg); }
+}
+
+// Typing indicator bounce
+@keyframes bounce {
+  0%, 80%, 100% { transform: scale(0); }
+  40% { transform: scale(1.0); }
+}
+
+// Page fade in
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+// Ticket details zoom
+@keyframes zoomIn {
+  from { transform: scale(0.94) translateY(10px); opacity: 0; }
+  to { transform: scale(1) translateY(0); opacity: 1; }
+}
+.animate-zoom { animation: zoomIn 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+
+// ---------------------------------------------------
+// 3D Message Animations
+// ---------------------------------------------------
+
+// Bot message: slides in from left with 3D tilt
+@keyframes msg3dBot {
+  0% {
+    opacity: 0;
+    transform: perspective(600px) translateX(-30px) translateY(12px) rotateY(-25deg) rotateX(8deg);
+  }
+  60% {
+    opacity: 1;
+    transform: perspective(600px) translateX(4px) translateY(-2px) rotateY(4deg) rotateX(-2deg);
+  }
+  100% {
+    opacity: 1;
+    transform: perspective(600px) translateX(0) translateY(0) rotateY(0deg) rotateX(0deg);
+  }
+}
+
+// User message: slides in from right with 3D tilt
+@keyframes msg3dUser {
+  0% {
+    opacity: 0;
+    transform: perspective(600px) translateX(30px) translateY(12px) rotateY(25deg) rotateX(8deg);
+  }
+  60% {
+    opacity: 1;
+    transform: perspective(600px) translateX(-4px) translateY(-2px) rotateY(-4deg) rotateX(-2deg);
+  }
+  100% {
+    opacity: 1;
+    transform: perspective(600px) translateX(0) translateY(0) rotateY(0deg) rotateX(0deg);
+  }
+}
+
+// Stepper node pulse animation
+@keyframes nodePulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(2, 132, 199, 0.4); }
+  50% { box-shadow: 0 0 0 6px rgba(2, 132, 199, 0); }
+}

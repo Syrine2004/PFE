@@ -1,0 +1,6 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://postgres-auth:5432/residanat_db
+    username: postgres
+    password: system
+    driver-class-name: org.postgresql.Driver

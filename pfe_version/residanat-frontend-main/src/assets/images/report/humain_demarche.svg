@@ -1,0 +1,15 @@
+<svg width="400" height="300" viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg">
+  <rect width="400" height="300" fill="#2d3748" />
+  <circle cx="200" cy="80" r="20" fill="none" stroke="white" stroke-width="1" />
+  <line x1="200" y1="100" x2="200" y2="180" stroke="#68d391" stroke-width="2" />
+  <line x1="200" y1="110" x2="160" y2="150" stroke="#68d391" stroke-width="2" />
+  <line x1="200" y1="110" x2="240" y2="150" stroke="#68d391" stroke-width="2" />
+  <line x1="200" y1="180" x2="180" y2="260" stroke="#68d391" stroke-width="2" />
+  <line x1="200" y1="180" x2="220" y2="260" stroke="#68d391" stroke-width="2" />
+  <circle cx="200" cy="100" r="4" fill="#fc8181" />
+  <circle cx="200" cy="180" r="4" fill="#fc8181" />
+  <circle cx="160" cy="150" r="3" fill="#fc8181" />
+  <circle cx="240" cy="150" r="3" fill="#fc8181" />
+  <text x="10" y="20" fill="#a0aec0" font-family="Arial" font-size="10">STATUS: RIGGING_ARMATURE_OK</text>
+  <text x="10" y="35" fill="#a0aec0" font-family="Arial" font-size="10">BONES: 24 | JOINTS: 22</text>
+</svg>
