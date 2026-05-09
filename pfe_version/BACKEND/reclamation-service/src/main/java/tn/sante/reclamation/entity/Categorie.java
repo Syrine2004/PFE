@@ -4,6 +4,7 @@ public enum Categorie {
     RESULTAT,
     TECHNIQUE,
     INSCRIPTION,
+    PERSONNELLE,
     PROBLEME_RESULTAT,
     AUTRE
 }

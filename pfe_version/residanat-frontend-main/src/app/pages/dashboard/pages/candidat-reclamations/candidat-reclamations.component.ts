@@ -216,7 +216,19 @@ export class CandidatReclamationsComponent implements OnInit, AfterViewInit, OnD
     draw();
   }
 
-  getCategoryClass(objet: string): string {
+  getCategoryClass(objet: string, categorie?: string): string {
+    // Priority 1: Use the explicit category from backend if available
+    if (categorie) {
+      switch (categorie) {
+        case 'RESULTAT': return 'bg-cat-resultat';
+        case 'TECHNIQUE': return 'bg-cat-technique';
+        case 'INSCRIPTION': return 'bg-cat-inscription';
+        case 'PERSONNELLE': return 'bg-cat-donnees';
+        case 'AUTRE': return 'bg-cat-autre';
+      }
+    }
+
+    // Priority 2: Fallback to keyword matching on objet string
     if (!objet) return 'bg-cat-autre';
     const lowerObjet = objet.toLowerCase();
     

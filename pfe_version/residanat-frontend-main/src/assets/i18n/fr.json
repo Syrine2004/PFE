@@ -99,11 +99,12 @@
       "PERSONAL": "Erreur sur les données personnelles",
       "BUG": "Bug technique sur la plateforme",
       "OTHER": "Autre (précision requise)",
-      "RESULTAT": "Résultat",
-      "TECHNIQUE": "Technique",
-      "INSCRIPTION": "Inscription",
-      "PROBLEME_RESULTAT": "Problème Résultat",
-      "AUTRE": "Autre"
+      "RESULTAT": "Erreur sur le score ou le classement",
+      "TECHNIQUE": "Bug technique sur la plateforme",
+      "INSCRIPTION": "Problème d'éligibilité ou de convocation",
+      "PROBLEME_RESULTAT": "Erreur sur le score ou le classement",
+      "AUTRE": "Autre",
+      "PERSONNELLE": "Erreur sur les données personnelles"
     },
     "LABELS": {
       "TICKET_REF": "Réf. Ticket",
@@ -129,10 +130,10 @@
       "BASSE": "Basse"
     },
     "CATS": {
-      "RESULTAT": "Résultats",
-      "TECHNIQUE": "Technique",
-      "INSCRIPTION": "Inscription",
-      "PERSONNELLE": "Données personnelles",
+      "RESULTAT": "Erreur sur le score ou le classement",
+      "TECHNIQUE": "Bug technique sur la plateforme",
+      "INSCRIPTION": "Problème d'éligibilité ou de convocation",
+      "PERSONNELLE": "Erreur sur les données personnelles",
       "AUTRE": "Autre"
     }
   },

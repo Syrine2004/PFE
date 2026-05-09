@@ -59,39 +59,55 @@ public class ReclamationCandidateService {
         reclamation.setStatut(Statut.SOUMISE);
 
         // --- AI Keyword and Predefined Category mapping ---
-        String lowerObjet = objet.toLowerCase();
-        String lowerDesc = description.toLowerCase();
+        String lowerObjet = (objet != null) ? objet.toLowerCase() : "";
+        String lowerDesc = (description != null) ? description.toLowerCase() : "";
         
+        log.info("[AI-DEBUG] Analyzing reclamation. Object: '{}', Description Snippet: '{}'", 
+                 lowerObjet, lowerDesc.length() > 50 ? lowerDesc.substring(0, 50) + "..." : lowerDesc);
+
         // Defaults
         Categorie targetCategory = Categorie.AUTRE;
         Priorite targetPriority = Priorite.MOYENNE;
 
-        // 1. Direct mapping based on standard frontend objects
-        if (lowerObjet.contains("score") || lowerObjet.contains("classement") || lowerObjet.contains("resultat")) {
+        // 1. Analyze description (Smart AI-like fallback) - High Priority
+        if (lowerDesc.contains("nom") || lowerDesc.contains("prénom") || lowerDesc.contains("prenom") || 
+            lowerDesc.contains("cin") || lowerDesc.contains("personnelle") || lowerDesc.contains("identit") ||
+            lowerDesc.contains("email") || lowerDesc.contains("mail") || lowerDesc.contains("téléphone") || lowerDesc.contains("tél")) {
+            log.info("[AI-DEBUG] Detected category: PERSONNELLE from description");
+            targetCategory = Categorie.PERSONNELLE;
+            targetPriority = Priorite.MOYENNE;
+        } else if (lowerDesc.contains("note") || lowerDesc.contains("resultat") || lowerDesc.contains("score") || lowerDesc.contains("moyenne")) {
+            log.info("[AI-DEBUG] Detected category: RESULTAT from description");
             targetCategory = Categorie.RESULTAT;
             targetPriority = Priorite.URGENTE;
-        } else if (lowerObjet.contains("technique") || lowerObjet.contains("bug") || lowerObjet.contains("plateforme")) {
+        } else if (lowerDesc.contains("connexion") || lowerDesc.contains("technique") || lowerDesc.contains("bug") || lowerDesc.contains("site")) {
+            log.info("[AI-DEBUG] Detected category: TECHNIQUE from description");
             targetCategory = Categorie.TECHNIQUE;
             targetPriority = Priorite.HAUTE;
-        } else if (lowerObjet.contains("éligibilité") || lowerObjet.contains("convocation") || 
-                   lowerObjet.contains("personnelle") || lowerObjet.contains("inscription")) {
+        } else if (lowerDesc.contains("dossier") || lowerDesc.contains("inscription") || lowerDesc.contains("validation") || lowerDesc.contains("convocation")) {
+            log.info("[AI-DEBUG] Detected category: INSCRIPTION from description");
             targetCategory = Categorie.INSCRIPTION;
             targetPriority = Priorite.MOYENNE;
-        } 
-        // 2. Fallback: analyze description if no standard object matched
-        else {
-            if (lowerDesc.contains("note") || lowerDesc.contains("resultat") || lowerDesc.contains("score") || lowerDesc.contains("moyenne")) {
+        }
+        
+        // 2. Refine based on Object ONLY if description analysis resulted in AUTRE
+        if (targetCategory == Categorie.AUTRE) {
+            if (lowerObjet.contains("score") || lowerObjet.contains("classement") || lowerObjet.contains("resultat")) {
                 targetCategory = Categorie.RESULTAT;
                 targetPriority = Priorite.URGENTE;
-            } else if (lowerDesc.contains("connexion") || lowerDesc.contains("technique") || lowerDesc.contains("bug") || lowerDesc.contains("site")) {
+            } else if (lowerObjet.contains("technique") || lowerObjet.contains("bug") || lowerObjet.contains("plateforme")) {
                 targetCategory = Categorie.TECHNIQUE;
                 targetPriority = Priorite.HAUTE;
-            } else if (lowerDesc.contains("dossier") || lowerDesc.contains("inscription") || lowerDesc.contains("validation") || lowerDesc.contains("convocation")) {
-                targetCategory = Categorie.INSCRIPTION;
+            } else if (lowerObjet.contains("personnelle") || lowerObjet.contains("données") || 
+                       lowerObjet.contains("nom") || lowerObjet.contains("prénom") || lowerObjet.contains("identit")) {
+                targetCategory = Categorie.PERSONNELLE;
                 targetPriority = Priorite.MOYENNE;
             }
+            // If it was INSCRIPTION and nothing better found in objet, it stays INSCRIPTION
+            // If it was AUTRE and nothing better found, it stays AUTRE
         }
 
+        log.info("[AI-DEBUG] Final Mapping -> Category: {}, Priority: {}", targetCategory, targetPriority);
         reclamation.setCategorie(targetCategory);
         reclamation.setPriorite(targetPriority);
 

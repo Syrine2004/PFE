@@ -361,7 +361,7 @@
             .candidate-cell { display: flex; align-items: center; gap: 10px; font-weight: 800; color: #0f172a; white-space: nowrap; }
             .sujet-cell { max-width: 300px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: #475569; font-weight: 500; }
             .date-cell { color: #64748b; font-size: 0.85rem; font-weight: 500; }
-            .type-badge { font-size: 0.7rem; font-weight: 800; padding: 4px 10px; border-radius: 20px; &.RESULTAT { background: #fee2e2; color: #ef4444; } &.TECHNIQUE { background: #e0f2fe; color: #0ea5e9; } &.INSCRIPTION { background: #fef9c3; color: #ca8a04; } &.AUTRE { background: #f1f5f9; color: #64748b; } }
+            .type-badge { font-size: 0.7rem; font-weight: 800; padding: 4px 10px; border-radius: 20px; &.RESULTAT { background: #fee2e2; color: #ef4444; } &.TECHNIQUE { background: #e0f2fe; color: #0ea5e9; } &.INSCRIPTION { background: #fef9c3; color: #ca8a04; } &.PERSONNELLE { background: #ecfdf5; color: #10b981; } &.AUTRE { background: #f1f5f9; color: #64748b; } }
             .status-tab { 
               font-size: 0.75rem; font-weight: 800; padding: 4px 12px; border-radius: 20px; display: inline-flex; align-items: center; background: transparent; border: 1.5px solid currentColor;
               &.badge-new { color: #d97706; } 
@@ -558,7 +558,7 @@
                 svg { color: #94a3b8; }
                 b { color: #0f172a; }
                 .type-dot { width: 8px; height: 8px; border-radius: 50%; 
-                  &.RESULTAT { background: #ef4444; } &.TECHNIQUE { background: #3b82f6; } &.INSCRIPTION { background: #f59e0b; }
+                  &.RESULTAT { background: #ef4444; } &.TECHNIQUE { background: #3b82f6; } &.INSCRIPTION { background: #f59e0b; } &.PERSONNELLE { background: #10b981; }
                 }
                 &.status-wrap {
                   &.badge-new { color: #d97706; border-color: #fef3c7; background: #fffbe6; }
